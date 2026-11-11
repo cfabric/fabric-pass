@@ -39,6 +39,25 @@ tracks:
   ])
 })
 
+// IDEA-167 — devops is a leader role like the others, read in
+// TRACK_LEADER_ROLES order (after developer) whatever order the file uses.
+test('parses a devops leader', () => {
+  const { tracks, invalidRowCount } = parseTracksYaml(`
+tracks:
+  - slug: model
+    name: Model
+    leaders:
+      devops: [octocat]
+      developer: [monalisa]
+`)
+
+  expect(invalidRowCount).toBe(0)
+  expect(tracks[0].leaders).toEqual([
+    { role: 'developer', githubLogin: 'monalisa' },
+    { role: 'devops', githubLogin: 'octocat' },
+  ])
+})
+
 // IDEA-118 — admins: is dead in the file now (derived from leaders at
 // sync time instead) — a hand-edit that still has one is silently ignored,
 // not an error, so a mid-migration file with both old and new shapes still
