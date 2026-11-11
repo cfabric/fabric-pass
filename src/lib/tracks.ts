@@ -183,7 +183,7 @@ async function resolveGithubId(login: string): Promise<string> {
  *
  * IDEA-118 — `track_admins` is no longer a second, independently-edited
  * list in the file; it's derived here as the deduped set of this track's
- * own leaders (any role, including the six-way TRACK_LEADER_ROLES union).
+ * own leaders (any role of the TRACK_LEADER_ROLES union).
  * A person leading two roles on the same track (e.g. both `architect` and
  * `governance`) is still just one admin row — same reasoning as
  * IDEA-055's own (role, login) dedupe above, one level up.

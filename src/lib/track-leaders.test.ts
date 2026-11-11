@@ -68,6 +68,29 @@ test('orders a track’s leaders by the canonical role order, not alphabetically
   expect(byTrack.get(rows[0].id)!.map((leader) => leader.role)).toEqual(['product_manager', 'researcher'])
 })
 
+// IDEA-167 — the database accepts devops (migration 041), and it sorts
+// between developer and quality, not alphabetically ahead of developer.
+test('stores a devops leader and orders it between developer and quality', async () => {
+  await pool.query("INSERT INTO contributors (github_id, github_login) VALUES (1001, 'octocat'), (2002, 'grace'), (3003, 'hubot')")
+
+  const { synced, rejected } = await syncTracks([
+    trackSync({
+      slug: 'model',
+      name: 'Model',
+      leaders: [
+        { role: 'quality', githubLogin: 'hubot' },
+        { role: 'devops', githubLogin: 'octocat' },
+        { role: 'developer', githubLogin: 'grace' },
+      ],
+    }),
+  ])
+
+  expect({ synced, rejected }).toEqual({ synced: ['model'], rejected: [] })
+  const { rows } = await pool.query<{ id: string }>("SELECT id FROM tracks WHERE slug = 'model'")
+  const byTrack = await appointedLeadersByTrackId([rows[0].id])
+  expect(byTrack.get(rows[0].id)!.map((leader) => leader.role)).toEqual(['developer', 'devops', 'quality'])
+})
+
 test('keeps two roles held by the same person as two entries', async () => {
   await pool.query("INSERT INTO contributors (github_id, github_login) VALUES (1001, 'octocat')")
 
