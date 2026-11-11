@@ -2102,16 +2102,18 @@ Result: PR #264 — merged as e84afb0. Event data in cf-internal 6b52b73 (Worksh
 Task: https://github.com/constructorfabric/fabric-pass/issues/263
 By: vzhuman · 2026-11-04
 
-## [TAKEN] [vzhuman] IDEA-166 — Create the Model track
+## [DONE] [vzhuman] IDEA-166 — Create the Model track
 
 Idea: Add a Model track: a `model` entry in cf-internal's `pass/tracks.yaml` with its leaders and two Discord roles (`model-contributors`, `mod-model`, with access to the Model category's private channels), "Model" in `preferred_track_order` and as a `Track` custom property value, the `model-leaders`/`-maintainers`/`-contributors` GitHub teams, and its leaders and maintainers approved as Model maintainers. No fabric-pass code change.
 
+Result: no fabric-pass code change — cf-internal 690d1e8 (`pass/tracks.yaml` Model track, `pass/config.yaml` order) and 54b27d9 (DevOps leader, after IDEA-167), synced to production: 5 leaders, 5 track admins. `Model` added to the `Track` property; teams `model-leaders` (maintain), `model-maintainers` (write), `model-contributors` (triage) created and granted on the track's repository; Discord roles `model-contributors` and `mod-model` created with access to the Model category's private channels; the 9 leaders and maintainers recorded as approved Model maintainers.
 Task: https://github.com/constructorfabric/fabric-pass/issues/265
 By: vzhuman · 2026-11-11
 
-## [TAKEN] [vzhuman] IDEA-167 — DevOps track leader role
+## [DONE] [vzhuman] IDEA-167 — DevOps track leader role
 
 Idea: Add DevOps as a seventh track leader role, next to Product Manager, Architect, Developer, Quality, Researcher and Governance — a `devops` key under `leaders` in `pass/tracks.yaml`, accepted by the database and shown on the track page and the Track Leaders page. The Model track (IDEA-166) has a DevOps leader.
 
+Result: PR #267 — merged as 2774bab. `devops` in `TRACK_LEADER_ROLES` (between Developer and Quality), the `devops:` key in `pass/tracks.yaml`, migration `041_track_leaders_devops_role.sql`. Its number duplicates `041_events.sql`; the runner keys on the full filename, so both applied in production.
 Task: https://github.com/constructorfabric/fabric-pass/issues/266
 By: vzhuman · 2026-11-11
