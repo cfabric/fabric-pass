@@ -2118,7 +2118,7 @@ Result: PR #267 — merged as 2774bab. `devops` in `TRACK_LEADER_ROLES` (between
 Task: https://github.com/constructorfabric/fabric-pass/issues/266
 By: vzhuman · 2026-11-11
 
-## [TAKEN] [vzhuman] IDEA-164 — Invite new contributors as outside collaborators, never as org members
+## [TAKEN] [vzhuman] IDEA-168 — Invite new contributors as outside collaborators, never as org members
 
 Idea:
 Pass must stop inviting newly confirmed contributors as members of the constructorfabric GitHub organization; they get outside-collaborator invitations instead, and any Pass-initiated operation that would add an org member (org invite, team add) is blocked for non-members.
