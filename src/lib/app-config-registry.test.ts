@@ -24,9 +24,26 @@ preferred_track_order: [Studio, Insight, "Gears Rust"]
   })
 })
 
+// IDEA-168 — bare repo names default to pull; {repo, permission} objects
+// keep their permission; normalization happens here, at the boundary.
+test('normalizes github_collaborator_repos entries, defaulting bare names to pull', () => {
+  const config = parseConfigYaml(`
+github_organization: constructorfabric
+github_collaborator_repos:
+  - fabric-pass
+  - repo: construct
+    permission: push
+`)
+  expect(config.githubCollaboratorRepos).toEqual([
+    { repo: 'fabric-pass', permission: 'pull' },
+    { repo: 'construct', permission: 'push' },
+  ])
+})
+
 test('every field is independently optional', () => {
   expect(parseConfigYaml('github_organization: constructorfabric')).toEqual({
     githubOrganization: 'constructorfabric',
+    githubCollaboratorRepos: undefined,
     discordGuildId: undefined,
     discordInviteUrl: undefined,
     preferredTrackOrder: undefined,
@@ -36,6 +53,7 @@ test('every field is independently optional', () => {
 test('parses an empty file as an entirely empty config', () => {
   expect(parseConfigYaml('')).toEqual({
     githubOrganization: undefined,
+    githubCollaboratorRepos: undefined,
     discordGuildId: undefined,
     discordInviteUrl: undefined,
     preferredTrackOrder: undefined,

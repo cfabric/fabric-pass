@@ -1140,12 +1140,6 @@ export async function markDiscordInvited(githubId: string): Promise<void> {
   await pool.query('UPDATE contributors SET discord_invited_at = now() WHERE github_id = $1', [githubId])
 }
 
-/** IDEA-053 — stamped on attempt, same discipline as markGithubOrgInvited
- * above (see lib/invites.ts's inviteConfirmedContributor, the only caller). */
-export async function markGithubContributorsTeamAdded(githubId: string): Promise<void> {
-  await pool.query('UPDATE contributors SET github_contributors_team_added_at = now() WHERE github_id = $1', [githubId])
-}
-
 /** IDEA-047 — the "read the community policies" checklist item's done
  * signal. Called only from policies/visit's redirect route, never
  * from the Policies page itself — landing on the page isn't enough, only

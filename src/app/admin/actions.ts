@@ -14,7 +14,7 @@ import {
   setContributorStatus,
   type ContributorStatus,
 } from '@/lib/contributors'
-import { removeFromGitHubOrg, removeFromGitHubTeam } from '@/lib/github-org'
+import { removeGitHubAccess } from '@/lib/github-org'
 import { inviteConfirmedContributor } from '@/lib/invites'
 import { isAdmin } from '@/lib/roles'
 import { getSession } from '@/lib/session'
@@ -154,14 +154,15 @@ export async function approveRevokeAction(githubId: string): Promise<SetStatusRe
 
   // IDEA-071 — best-effort, after the decision persists but before it's
   // logged: the audit entry records whether GitHub access actually came off,
-  // not just that the decision was made.
+  // not just that the decision was made. IDEA-168 — removeGitHubAccess
+  // strips both forms Pass ever granted in one call: org membership (which
+  // takes every team membership with it) and outside-collaborator standing
+  // (which takes every repo collaboration with it), so there is no separate
+  // contributors-team removal any more.
   const config = await getAppConfig()
   let githubAccessRemoved: boolean | undefined
   if (config?.githubOrganization) {
-    if (config.githubContributorsTeam) {
-      await removeFromGitHubTeam(target.githubLogin, config.githubOrganization, config.githubContributorsTeam)
-    }
-    githubAccessRemoved = await removeFromGitHubOrg(target.githubLogin, config.githubOrganization)
+    githubAccessRemoved = await removeGitHubAccess(target.githubLogin, config.githubOrganization)
   }
 
   await logAdminAction({

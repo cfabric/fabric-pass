@@ -3,7 +3,7 @@ import { logAdminAction } from '@/lib/audit-log'
 import { findByGithubId, type Contributor } from '@/lib/contributors'
 import { pool } from '@/lib/db'
 import { grantDiscordRole, revokeDiscordRole } from '@/lib/discord-role'
-import { addToGitHubTeam, ensureGitHubTeam, removeFromGitHubTeam, teamExists } from '@/lib/github-org'
+import { addToGitHubTeam, ensureGitHubTeam, isOrgMember, removeFromGitHubTeam, teamExists } from '@/lib/github-org'
 import { inviteConfirmedContributor } from '@/lib/invites'
 import { markDiscordRoleAdded, markGithubTeamAdded, removeTrackMember } from '@/lib/track-members'
 import { findTrackBySlug, type Track } from '@/lib/tracks'
@@ -49,21 +49,33 @@ export async function grantTrackAccess(contributor: Contributor, track: Track): 
     const grantsGithubAccess = Boolean(
       config?.githubOrganization && (config.githubTrackTeamPattern || config.githubTrackInternalReaderTeamPattern),
     )
-    // Team membership requires org membership first. A contributor can be
-    // approved onto a track before an Admin has ever confirmed them
-    // org-wide — nothing about the join-request flow requires that
-    // ordering — so this invites them (and adds them to the org-wide
-    // default contributors team) the same way Confirm already does, rather
-    // than letting either team grant below fail against someone GitHub
-    // doesn't recognize as a member or pending invitee at all. Done once,
-    // ahead of both grants, so a contributor with both patterns configured
-    // isn't invited (and, more importantly, isn't sent the Discord-invite
-    // email) twice.
+    // IDEA-168 — team membership is reserved for people who are *already*
+    // org members. GitHub's team-membership PUT silently invites a
+    // non-member into the org as a member, the exact side effect Pass must
+    // never trigger, so every team grant below is gated on this check
+    // (which fails closed on any GitHub error, see github-org.ts). Someone
+    // who is an outside collaborator or not in the org at all simply gets
+    // no GitHub team grant — logged here, and still eligible for the
+    // Discord role below.
+    const isMember = grantsGithubAccess ? await isOrgMember(contributor.githubLogin, config!.githubOrganization!) : false
+    if (grantsGithubAccess && !isMember) {
+      console.warn(
+        `grantTrackAccess(${contributor.githubId}, ${track.slug}): ${contributor.githubLogin} is not an org member of ${config!.githubOrganization} — skipping GitHub team grants (Pass never adds org members)`,
+      )
+    }
+
+    // A contributor can be approved onto a track before an Admin has ever
+    // confirmed them org-wide — nothing about the join-request flow
+    // requires that ordering — so this runs the same Confirm-time invite
+    // (IDEA-168: outside-collaborator invitations on the configured repos,
+    // plus the Discord-invite email) rather than sending that email twice.
+    // It no longer has anything to do with making the team grants below
+    // succeed: an outside collaborator never gains team membership.
     if (grantsGithubAccess && !contributor.githubOrgInvitedAt) {
       await inviteConfirmedContributor(contributor)
     }
 
-    if (config?.githubOrganization && config.githubTrackTeamPattern) {
+    if (isMember && config?.githubOrganization && config.githubTrackTeamPattern) {
       const teamSlug = trackGithubTeamSlug(config.githubTrackTeamPattern, track)
       const teamReady = await ensureGitHubTeam(config.githubOrganization, teamSlug)
       if (teamReady) {
@@ -72,7 +84,7 @@ export async function grantTrackAccess(contributor: Contributor, track: Track): 
       }
     }
 
-    if (config?.githubOrganization && config.githubTrackInternalReaderTeamPattern) {
+    if (isMember && config?.githubOrganization && config.githubTrackInternalReaderTeamPattern) {
       const internalReaderTeamSlug = trackGithubTeamSlug(config.githubTrackInternalReaderTeamPattern, track)
       if (await teamExists(config.githubOrganization, internalReaderTeamSlug)) {
         await addToGitHubTeam(contributor.githubLogin, config.githubOrganization, internalReaderTeamSlug)
@@ -157,6 +169,18 @@ export async function promoteToMaintainer(contributor: Contributor, track: Track
   try {
     const config = await getAppConfig()
     if (!config?.githubOrganization || !config.githubTrackMaintainerTeamPattern) return
+
+    // IDEA-168 — same gate as grantTrackAccess: GitHub's team-membership
+    // PUT would silently invite a non-member into the org as a member, so
+    // the maintainer-team grant runs only for an existing org member. An
+    // outside collaborator keeps their collaborator standing and nothing
+    // more, however they were promoted in-app.
+    if (!(await isOrgMember(contributor.githubLogin, config.githubOrganization))) {
+      console.warn(
+        `promoteToMaintainer(${contributor.githubId}, ${track.slug}): ${contributor.githubLogin} is not an org member of ${config.githubOrganization} — skipping the GitHub team grant (Pass never adds org members)`,
+      )
+      return
+    }
 
     const teamSlug = trackGithubTeamSlug(config.githubTrackMaintainerTeamPattern, track)
     const teamReady = await ensureGitHubTeam(config.githubOrganization, teamSlug)

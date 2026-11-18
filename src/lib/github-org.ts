@@ -5,42 +5,99 @@ const GITHUB_API_HEADERS = {
   'X-GitHub-Api-Version': '2022-11-28',
 }
 
+/** The permission levels GitHub's repo-collaborator endpoint accepts,
+ * verbatim from its API — `pull` (read) is the conservative default every
+ * grant in this app falls back to. */
+export type CollaboratorPermission = 'pull' | 'triage' | 'push' | 'maintain' | 'admin'
+
 /**
- * IDEA-041 — sends a GitHub organization invitation via
- * `PUT /orgs/{org}/memberships/{username}`. This is a real invite, not
- * instant membership: GitHub emails the invitee and they still have to
- * accept it — there's no API that silently adds someone to an org without
- * their own action, which is exactly the security property you'd want.
+ * IDEA-168 — sends a repository collaboration invitation via
+ * `PUT /repos/{org}/{repo}/collaborators/{username}`. For someone who is not
+ * an org member, accepting makes them an *outside collaborator* on that one
+ * repository — never an org member. GitHub has no org-wide outside-
+ * collaborator invitation: collaborator standing only exists per repository,
+ * which is why the caller passes a configured repo list rather than relying
+ * on this one call to mean membership in anything.
  *
- * Never throws — best-effort, same discipline as lib/email.ts's send():
- * the caller (admin/actions.ts's setContributorStatusAction) has already
+ * This function replaces IDEA-041's inviteToGitHubOrg outright. That call
+ * (`PUT /orgs/{org}/memberships/{username}`, role member) was the only API
+ * that invited org members, and Pass must never create org members again —
+ * so it was deleted, not merely left unused: a future caller reintroducing
+ * it has to write it from scratch and reread this comment first.
+ *
+ * Like the invite it replaces: a real invite, not instant access (GitHub
+ * emails the invitee, who has to accept), and never throws — best-effort,
+ * same discipline as lib/email.ts's send(): the caller has already
  * committed the Confirm action by the time this runs, and a GitHub API
- * hiccup must not read as if Confirm itself failed. Returns false, not an
- * error, when GITHUB_ORG_TOKEN isn't configured at all.
+ * hiccup must not read as if Confirm itself failed. 204 means the user is
+ * already a collaborator on the repo (no new invitation needed) — that
+ * reads as success here, the same "already in the desired end state"
+ * reasoning removeFromGitHubTeam applies to its own 404s. Returns false,
+ * not an error, when GITHUB_ORG_TOKEN isn't configured at all.
  */
-export async function inviteToGitHubOrg(githubLogin: string, organization: string): Promise<boolean> {
+export async function inviteAsOutsideCollaborator(
+  githubLogin: string,
+  organization: string,
+  repository: string,
+  permission: CollaboratorPermission = 'pull',
+): Promise<boolean> {
   if (!env.GITHUB_ORG_TOKEN) {
-    console.warn(`GITHUB_ORG_TOKEN not configured — would have invited ${githubLogin} to ${organization}`)
+    console.warn(`GITHUB_ORG_TOKEN not configured — would have invited ${githubLogin} to ${organization}/${repository} as an outside collaborator`)
     return false
   }
 
   try {
-    const response = await fetch(`https://api.github.com/orgs/${organization}/memberships/${githubLogin}`, {
+    const response = await fetch(`https://api.github.com/repos/${organization}/${repository}/collaborators/${githubLogin}`, {
       method: 'PUT',
       headers: {
         ...GITHUB_API_HEADERS,
         Authorization: `Bearer ${env.GITHUB_ORG_TOKEN}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ role: 'member' }),
+      body: JSON.stringify({ permission }),
     })
     if (!response.ok) {
-      console.error(`inviteToGitHubOrg(${githubLogin}, ${organization}) failed: GitHub responded ${response.status} ${await response.text()}`)
+      console.error(
+        `inviteAsOutsideCollaborator(${githubLogin}, ${organization}/${repository}) failed: GitHub responded ${response.status} ${await response.text()}`,
+      )
       return false
     }
     return true
   } catch (error) {
-    console.error(`inviteToGitHubOrg(${githubLogin}, ${organization}) failed:`, error)
+    console.error(`inviteAsOutsideCollaborator(${githubLogin}, ${organization}/${repository}) failed:`, error)
+    return false
+  }
+}
+
+/**
+ * IDEA-168 — `GET /orgs/{org}/members/{username}`: 204 for a member, 404
+ * for anyone else (an outside collaborator, a pending invitee, a stranger).
+ * Every team-membership grant below is gated on this, because GitHub's
+ * team-membership PUT silently invites a non-member into the org as a
+ * *member* — the exact side effect Pass must never trigger.
+ *
+ * Fails closed: any non-404 failure (or a missing token, or a network
+ * error) also returns false, so a hiccup reads as "don't grant", never as
+ * "go ahead and add them to the team". Callers that need to distinguish
+ * "confirmed not a member" from "couldn't tell" should read the logs this
+ * writes, not the return value.
+ */
+export async function isOrgMember(githubLogin: string, organization: string): Promise<boolean> {
+  if (!env.GITHUB_ORG_TOKEN) {
+    console.warn(`GITHUB_ORG_TOKEN not configured — would have checked whether ${githubLogin} is a member of ${organization}`)
+    return false
+  }
+
+  try {
+    const response = await fetch(`https://api.github.com/orgs/${organization}/members/${githubLogin}`, {
+      headers: { ...GITHUB_API_HEADERS, Authorization: `Bearer ${env.GITHUB_ORG_TOKEN}` },
+    })
+    if (response.ok) return true
+    if (response.status === 404) return false
+    console.error(`isOrgMember(${githubLogin}, ${organization}) failed: GitHub responded ${response.status} ${await response.text()}`)
+    return false
+  } catch (error) {
+    console.error(`isOrgMember(${githubLogin}, ${organization}) failed:`, error)
     return false
   }
 }
@@ -95,7 +152,7 @@ export async function teamExists(organization: string, teamSlug: string): Promis
  * configured pattern, see lib/team-access.ts), so GitHub's own
  * name -> slug derivation lands on exactly this slug, and the membership
  * PUT that follows addresses the team GitHub actually created. Same
- * never-throw, best-effort discipline as inviteToGitHubOrg. Returns `true`
+ * never-throw, best-effort discipline as inviteAsOutsideCollaborator. Returns `true`
  * when the team is confirmed to exist either way (already there, or just
  * created) — the caller uses that to decide whether attempting the
  * membership PUT is even worth it. An ambiguous lookup failure (not a
@@ -138,13 +195,18 @@ export async function ensureGitHubTeam(organization: string, teamSlug: string): 
 
 /**
  * IDEA-042 — adds a contributor to a track's GitHub team via
- * `PUT /orgs/{org}/teams/{team_slug}/memberships/{username}`. Requires the
- * same `admin:org`-level token as inviteToGitHubOrg above (or, at minimum,
- * org-admin/team-maintainer permission over that specific team) — reuses
- * GITHUB_ORG_TOKEN, no separate credential. Same never-throw, best-effort
- * discipline as inviteToGitHubOrg. Callers needing the team to exist first
- * (a track's own team may not, IDEA-060) should call ensureGitHubTeam above
- * before this.
+ * `PUT /orgs/{org}/teams/{team_slug}/memberships/{username}`. Requires an
+ * `admin:org`-level token (or, at minimum, org-admin/team-maintainer
+ * permission over that specific team) — reuses GITHUB_ORG_TOKEN, no
+ * separate credential. Same never-throw, best-effort discipline as
+ * inviteAsOutsideCollaborator above. Callers needing the team to exist
+ * first (a track's own team may not, IDEA-060) should call ensureGitHubTeam
+ * above before this.
+ *
+ * IDEA-168 — callers MUST gate this on isOrgMember above: pointed at anyone
+ * who isn't already an org member, GitHub silently invites them into the
+ * org as a member, the exact side effect Pass must never trigger. Every
+ * call site in this app does.
  */
 export async function addToGitHubTeam(githubLogin: string, organization: string, teamSlug: string): Promise<boolean> {
   if (!env.GITHUB_ORG_TOKEN) {
@@ -215,38 +277,56 @@ export async function removeFromGitHubTeam(githubLogin: string, organization: st
 }
 
 /**
- * IDEA-071's Revoke approval — the most destructive call in this file: full
- * removal from the organization itself, via
- * `DELETE /orgs/{org}/memberships/{username}`, not just one team (contrast
- * removeFromGitHubTeam above). Only ever called after a *second* Admin has
- * approved a pending revoke request (see admin/actions.ts's
- * approveRevokeAction) — this function itself has no notion of that
- * approval gate, it just performs the removal it's asked to. Same 404-is-
- * success, never-throw, `GITHUB_ORG_TOKEN`-gated discipline as every other
- * function here.
+ * IDEA-071's Revoke approval, widened by IDEA-168 — the most destructive
+ * call in this file: full removal of every form of GitHub access Pass ever
+ * granted, in two DELETEs. `DELETE /orgs/{org}/memberships/{username}`
+ * drops an actual member (and cancels a still-pending member invitation);
+ * `DELETE /orgs/{org}/outside_collaborators/{username}` strips outside-
+ * collaborator standing — which, on GitHub, removes them as a collaborator
+ * from *every* repository in one call. Dropping org membership alone would
+ * leave a converted-or-invited collaborator's repo access behind, and
+ * dropping only the collaborator standing would leave a member's teams
+ * behind, so a revoke that must be complete runs both. Only ever called
+ * after a *second* Admin has approved a pending revoke request (see
+ * admin/actions.ts's approveRevokeAction) — this function itself has no
+ * notion of that approval gate, it just performs the removal it's asked
+ * to. Each DELETE treats 404 as success ("already gone"), same reasoning
+ * removeFromGitHubTeam already documents; the return value is true only
+ * when *both* removals succeeded (or had nothing to remove) — a partial
+ * removal reads as false so the Admin sees the manual-cleanup warning,
+ * never a false "all done". Same never-throw, `GITHUB_ORG_TOKEN`-gated
+ * discipline as every other function here.
  */
-export async function removeFromGitHubOrg(githubLogin: string, organization: string): Promise<boolean> {
+export async function removeGitHubAccess(githubLogin: string, organization: string): Promise<boolean> {
   if (!env.GITHUB_ORG_TOKEN) {
-    console.warn(`GITHUB_ORG_TOKEN not configured — would have removed ${githubLogin} from org ${organization}`)
+    console.warn(`GITHUB_ORG_TOKEN not configured — would have removed ${githubLogin}'s GitHub access in ${organization}`)
     return false
   }
 
-  try {
-    const response = await fetch(`https://api.github.com/orgs/${organization}/memberships/${githubLogin}`, {
-      method: 'DELETE',
-      headers: { ...GITHUB_API_HEADERS, Authorization: `Bearer ${env.GITHUB_ORG_TOKEN}` },
-    })
-    if (!response.ok && response.status !== 404) {
-      console.error(
-        `removeFromGitHubOrg(${githubLogin}, ${organization}) failed: GitHub responded ${response.status} ${await response.text()}`,
-      )
-      return false
-    }
-    return true
-  } catch (error) {
-    console.error(`removeFromGitHubOrg(${githubLogin}, ${organization}) failed:`, error)
-    return false
-  }
+  const results = await Promise.all(
+    (
+      [
+        [`https://api.github.com/orgs/${organization}/memberships/${githubLogin}`, 'org membership'],
+        [`https://api.github.com/orgs/${organization}/outside_collaborators/${githubLogin}`, 'outside-collaborator standing'],
+      ] as const
+    ).map(async ([url, description]) => {
+      try {
+        const response = await fetch(url, {
+          method: 'DELETE',
+          headers: { ...GITHUB_API_HEADERS, Authorization: `Bearer ${env.GITHUB_ORG_TOKEN}` },
+        })
+        if (!response.ok && response.status !== 404) {
+          console.error(`removeGitHubAccess(${githubLogin}, ${organization}) failed to remove ${description}: GitHub responded ${response.status} ${await response.text()}`)
+          return false
+        }
+        return true
+      } catch (error) {
+        console.error(`removeGitHubAccess(${githubLogin}, ${organization}) failed to remove ${description}:`, error)
+        return false
+      }
+    }),
+  )
+  return results.every(Boolean)
 }
 
 /**
