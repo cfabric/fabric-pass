@@ -2128,4 +2128,5 @@ Confirming a contributor in Pass sends repo-collaborator invitations (outside co
 
 Notes:
 Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborator invitation, so the invite is per-repository (`PUT /repos/{org}/{repo}/collaborators/{user}`) over a new configured repo list. Deployed by patching the droplet directly because GitHub Actions was unavailable; cf-internal config change follows when automation is back.
+Task: https://github.com/constructorfabric/fabric-pass/issues/268
 By: vzhuman · 2026-11-19
