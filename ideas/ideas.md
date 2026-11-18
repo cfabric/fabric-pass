@@ -2117,3 +2117,15 @@ Idea: Add DevOps as a seventh track leader role, next to Product Manager, Archit
 Result: PR #267 — merged as 2774bab. `devops` in `TRACK_LEADER_ROLES` (between Developer and Quality), the `devops:` key in `pass/tracks.yaml`, migration `041_track_leaders_devops_role.sql`. Its number duplicates `041_events.sql`; the runner keys on the full filename, so both applied in production.
 Task: https://github.com/constructorfabric/fabric-pass/issues/266
 By: vzhuman · 2026-11-11
+
+## [TAKEN] [vzhuman] IDEA-164 — Invite new contributors as outside collaborators, never as org members
+
+Idea:
+Pass must stop inviting newly confirmed contributors as members of the constructorfabric GitHub organization; they get outside-collaborator invitations instead, and any Pass-initiated operation that would add an org member (org invite, team add) is blocked for non-members.
+
+Expected outcome:
+Confirming a contributor in Pass sends repo-collaborator invitations (outside collaborator standing), never an org-membership invitation; track-team and maintainer-team grants run only for users who are already org members, and are skipped (with a log line) for everyone else; pending org invitations Pass had created are cancelled.
+
+Notes:
+Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborator invitation, so the invite is per-repository (`PUT /repos/{org}/{repo}/collaborators/{user}`) over a new configured repo list. Deployed by patching the droplet directly because GitHub Actions was unavailable; cf-internal config change follows when automation is back.
+By: vzhuman · 2026-11-19
