@@ -2118,7 +2118,7 @@ Result: PR #267 — merged as 2774bab. `devops` in `TRACK_LEADER_ROLES` (between
 Task: https://github.com/constructorfabric/fabric-pass/issues/266
 By: vzhuman · 2026-11-11
 
-## [TAKEN] [vzhuman] IDEA-168 — Invite new contributors as outside collaborators, never as org members
+## [DONE] [vzhuman] IDEA-168 — Invite new contributors as outside collaborators, never as org members
 
 Idea:
 Pass must stop inviting newly confirmed contributors as members of the constructorfabric GitHub organization; they get outside-collaborator invitations instead, and any Pass-initiated operation that would add an org member (org invite, team add) is blocked for non-members.
@@ -2127,6 +2127,7 @@ Expected outcome:
 Confirming a contributor in Pass sends repo-collaborator invitations (outside collaborator standing), never an org-membership invitation; track-team and maintainer-team grants run only for users who are already org members, and are skipped (with a log line) for everyone else; pending org invitations Pass had created are cancelled.
 
 Notes:
-Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborator invitation, so the invite is per-repository (`PUT /repos/{org}/{repo}/collaborators/{user}`) over a new configured repo list. Deployed by patching the droplet directly because GitHub Actions was unavailable; cf-internal config change follows when automation is back.
+Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborator invitation, so the invite is per-repository (`PUT /repos/{org}/{repo}/collaborators/{user}`) over a new configured repo list. Result:
+PR #269 — merged as 16d5c08. `inviteToGitHubOrg` (the org-member invitation) deleted; Confirm now sends per-repo collaboration invitations from the new `github_collaborator_repos` config key; every team grant gated on a fail-closed `isOrgMember`; revoke strips membership and collaborator standing in one `removeGitHubAccess`. Deployed by patching the droplet directly (GitHub Actions was unavailable; `docker save | ssh`, `/opt/fabric-pass`), migration 042 applied at container start, the one pending member invitation (dev-graf) cancelled and their Pass invite stamps reset. cf-internal's config.yaml still needs the `github_collaborator_repos` key added when automation is back — until then the list is empty and Confirm's GitHub half no-ops by design.
 Task: https://github.com/constructorfabric/fabric-pass/issues/268
 By: vzhuman · 2026-11-19
