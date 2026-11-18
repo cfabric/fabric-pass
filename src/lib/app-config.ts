@@ -1,10 +1,19 @@
 import { pool } from '@/lib/db'
 import type { AppConfigSync } from '@/lib/app-config-registry'
+import type { CollaboratorPermission } from '@/lib/github-org'
 
 export interface AppConfig {
   githubOrganization?: string
+  /** IDEA-168 — repositories every confirmed contributor is invited to as
+   * an *outside collaborator* (per-repo permission included). Replaces the
+   * org-member invite + contributors-team pair of IDEA-041/053, which Pass
+   * no longer performs: an empty/absent list means Confirm's GitHub half
+   * no-ops rather than falling back to inviting anyone into the org. */
+  githubCollaboratorRepos?: { repo: string; permission: CollaboratorPermission }[]
   /** IDEA-053 — org-wide default team every confirmed contributor is added
-   * to on invite, distinct from any per-track team (IDEA-060). */
+   * to on invite, distinct from any per-track team (IDEA-060). IDEA-168:
+   * no longer read by the invite flow — kept only because older configs
+   * still carry it; do not build new grants on it. */
   githubContributorsTeam?: string
   /** IDEA-060 — e.g. `"{track}-contributors"`; lib/team-access.ts replaces
    * `{track}` with a track's own slug at grant time. */
@@ -29,6 +38,7 @@ export interface AppConfig {
 
 interface Row {
   github_organization: string | null
+  github_collaborator_repos: { repo: string; permission: string }[] | null
   github_contributors_team: string | null
   github_track_team_pattern: string | null
   github_track_maintainer_team_pattern: string | null
@@ -41,6 +51,14 @@ interface Row {
 function toAppConfig(row: Row): AppConfig {
   return {
     githubOrganization: row.github_organization ?? undefined,
+    // Cast, not validate: the rows here are only ever written by
+    // syncAppConfig below from a zod-parsed config.yaml, whose permission
+    // enum is exactly CollaboratorPermission. An empty list normalizes to
+    // undefined so "no repos configured" reads the same as every other
+    // unset key, not as a configured-but-empty value.
+    githubCollaboratorRepos: (row.github_collaborator_repos as AppConfig['githubCollaboratorRepos'])?.length
+      ? (row.github_collaborator_repos as AppConfig['githubCollaboratorRepos'])
+      : undefined,
     githubContributorsTeam: row.github_contributors_team ?? undefined,
     githubTrackTeamPattern: row.github_track_team_pattern ?? undefined,
     githubTrackMaintainerTeamPattern: row.github_track_maintainer_team_pattern ?? undefined,
@@ -64,10 +82,11 @@ export async function getAppConfig(): Promise<AppConfig | null> {
  * Upsert against the singleton row, same as track-page-template.ts. */
 export async function syncAppConfig(config: AppConfigSync): Promise<void> {
   await pool.query(
-    `INSERT INTO app_config (id, github_organization, github_contributors_team, github_track_team_pattern, github_track_maintainer_team_pattern, github_track_internal_reader_team_pattern, discord_guild_id, discord_invite_url, preferred_track_order, updated_at)
-     VALUES (true, $1, $2, $3, $4, $5, $6, $7, $8, now())
+    `INSERT INTO app_config (id, github_organization, github_collaborator_repos, github_contributors_team, github_track_team_pattern, github_track_maintainer_team_pattern, github_track_internal_reader_team_pattern, discord_guild_id, discord_invite_url, preferred_track_order, updated_at)
+     VALUES (true, $1, $2, $3, $4, $5, $6, $7, $8, $9, now())
      ON CONFLICT (id) DO UPDATE
        SET github_organization = EXCLUDED.github_organization,
+           github_collaborator_repos = EXCLUDED.github_collaborator_repos,
            github_contributors_team = EXCLUDED.github_contributors_team,
            github_track_team_pattern = EXCLUDED.github_track_team_pattern,
            github_track_maintainer_team_pattern = EXCLUDED.github_track_maintainer_team_pattern,
@@ -78,6 +97,7 @@ export async function syncAppConfig(config: AppConfigSync): Promise<void> {
            updated_at = now()`,
     [
       config.githubOrganization ?? null,
+      JSON.stringify(config.githubCollaboratorRepos ?? []),
       config.githubContributorsTeam ?? null,
       config.githubTrackTeamPattern ?? null,
       config.githubTrackMaintainerTeamPattern ?? null,

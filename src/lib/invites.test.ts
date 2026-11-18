@@ -2,8 +2,7 @@ import { afterAll, beforeEach, expect, test, vi } from 'vitest'
 
 const { state } = vi.hoisted(() => ({
   state: {
-    inviteCalls: [] as [string, string][],
-    teamCalls: [] as [string, string, string][],
+    collaboratorCalls: [] as [string, string, string, string][],
     emailCalls: [] as [string, string][],
   },
 }))
@@ -14,12 +13,8 @@ const { state } = vi.hoisted(() => ({
 // channel was actually attempted) is. Real Postgres still backs app-config.ts
 // and contributors.ts below, same as every other lib test in this codebase.
 vi.mock('@/lib/github-org', () => ({
-  inviteToGitHubOrg: async (login: string, org: string) => {
-    state.inviteCalls.push([login, org])
-    return true
-  },
-  addToGitHubTeam: async (login: string, org: string, team: string) => {
-    state.teamCalls.push([login, org, team])
+  inviteAsOutsideCollaborator: async (login: string, org: string, repo: string, permission: string) => {
+    state.collaboratorCalls.push([login, org, repo, permission])
     return true
   },
 }))
@@ -36,8 +31,7 @@ const { inviteConfirmedContributor } = await import('./invites.ts')
 
 beforeEach(async () => {
   await pool.query('TRUNCATE app_config, contributors CASCADE')
-  state.inviteCalls = []
-  state.teamCalls = []
+  state.collaboratorCalls = []
   state.emailCalls = []
 })
 
@@ -59,52 +53,54 @@ function contributor(githubId: string, email?: string) {
 test('does nothing at all when config has never synced', async () => {
   await inviteConfirmedContributor(contributor('1', 'a@example.com'))
 
-  expect(state.inviteCalls).toEqual([])
+  expect(state.collaboratorCalls).toEqual([])
   expect(state.emailCalls).toEqual([])
 })
 
-test('invites to GitHub org and stamps githubOrgInvitedAt when the org is configured', async () => {
+// IDEA-168 — the headline behavior: a configured org with no collaborator
+// repo list invites nobody, stamps nothing, and never falls back to an
+// org-member invitation.
+test('invites no one and stamps nothing when the org is configured but githubCollaboratorRepos is empty', async () => {
   await seedContributor({ githubId: '1', email: 'a@example.com' })
   await syncAppConfig({ githubOrganization: 'constructorfabric' })
 
   await inviteConfirmedContributor(contributor('1', 'a@example.com'))
 
-  expect(state.inviteCalls).toEqual([['login-1', 'constructorfabric']])
+  expect(state.collaboratorCalls).toEqual([])
+  const { rows } = await pool.query('SELECT github_org_invited_at FROM contributors WHERE github_id = $1', ['1'])
+  expect(rows[0].github_org_invited_at).toBeNull()
+})
+
+test('sends a collaborator invitation per configured repo, each with its permission, and stamps githubOrgInvitedAt', async () => {
+  await seedContributor({ githubId: '1', email: 'a@example.com' })
+  await syncAppConfig({
+    githubOrganization: 'constructorfabric',
+    githubCollaboratorRepos: [
+      { repo: 'fabric-pass', permission: 'pull' },
+      { repo: 'construct', permission: 'push' },
+    ],
+  })
+
+  await inviteConfirmedContributor(contributor('1', 'a@example.com'))
+
+  expect(state.collaboratorCalls).toEqual([
+    ['login-1', 'constructorfabric', 'fabric-pass', 'pull'],
+    ['login-1', 'constructorfabric', 'construct', 'push'],
+  ])
   const { rows } = await pool.query('SELECT github_org_invited_at, discord_invited_at FROM contributors WHERE github_id = $1', ['1'])
   expect(rows[0].github_org_invited_at).not.toBeNull()
   expect(rows[0].discord_invited_at).toBeNull()
 })
 
-test('does not add to the Contributors team when only the org is configured, not the team', async () => {
+test('does not invite collaborators when the repo list is configured but the org is not', async () => {
   await seedContributor({ githubId: '1', email: 'a@example.com' })
-  await syncAppConfig({ githubOrganization: 'constructorfabric' })
+  await syncAppConfig({ githubCollaboratorRepos: [{ repo: 'fabric-pass', permission: 'pull' }] })
 
   await inviteConfirmedContributor(contributor('1', 'a@example.com'))
 
-  expect(state.teamCalls).toEqual([])
-  const { rows } = await pool.query('SELECT github_contributors_team_added_at FROM contributors WHERE github_id = $1', ['1'])
-  expect(rows[0].github_contributors_team_added_at).toBeNull()
-})
-
-test('adds to the configured Contributors team and stamps githubContributorsTeamAddedAt when both org and team are configured', async () => {
-  await seedContributor({ githubId: '1', email: 'a@example.com' })
-  await syncAppConfig({ githubOrganization: 'constructorfabric', githubContributorsTeam: 'contributors' })
-
-  await inviteConfirmedContributor(contributor('1', 'a@example.com'))
-
-  expect(state.teamCalls).toEqual([['login-1', 'constructorfabric', 'contributors']])
-  const { rows } = await pool.query('SELECT github_contributors_team_added_at FROM contributors WHERE github_id = $1', ['1'])
-  expect(rows[0].github_contributors_team_added_at).not.toBeNull()
-})
-
-test('never adds to the Contributors team when the org itself is not configured, even if the team is', async () => {
-  await seedContributor({ githubId: '1', email: 'a@example.com' })
-  await syncAppConfig({ githubContributorsTeam: 'contributors' })
-
-  await inviteConfirmedContributor(contributor('1', 'a@example.com'))
-
-  expect(state.inviteCalls).toEqual([])
-  expect(state.teamCalls).toEqual([])
+  expect(state.collaboratorCalls).toEqual([])
+  const { rows } = await pool.query('SELECT github_org_invited_at FROM contributors WHERE github_id = $1', ['1'])
+  expect(rows[0].github_org_invited_at).toBeNull()
 })
 
 test('sends the Discord invite email and stamps discordInvitedAt when the invite url is configured', async () => {
@@ -130,10 +126,14 @@ test('does not send a Discord invite email when the contributor has no email on 
 
 test('both channels fire independently when both are configured', async () => {
   await seedContributor({ githubId: '1', email: 'a@example.com' })
-  await syncAppConfig({ githubOrganization: 'constructorfabric', discordInviteUrl: 'https://discord.gg/example' })
+  await syncAppConfig({
+    githubOrganization: 'constructorfabric',
+    githubCollaboratorRepos: [{ repo: 'fabric-pass', permission: 'pull' }],
+    discordInviteUrl: 'https://discord.gg/example',
+  })
 
   await inviteConfirmedContributor(contributor('1', 'a@example.com'))
 
-  expect(state.inviteCalls).toEqual([['login-1', 'constructorfabric']])
+  expect(state.collaboratorCalls).toEqual([['login-1', 'constructorfabric', 'fabric-pass', 'pull']])
   expect(state.emailCalls).toEqual([['a@example.com', 'https://discord.gg/example']])
 })

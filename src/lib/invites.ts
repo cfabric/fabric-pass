@@ -1,12 +1,7 @@
 import { getAppConfig } from '@/lib/app-config'
-import {
-  markDiscordInvited,
-  markGithubContributorsTeamAdded,
-  markGithubOrgInvited,
-  type Contributor,
-} from '@/lib/contributors'
+import { markDiscordInvited, markGithubOrgInvited, type Contributor } from '@/lib/contributors'
 import { sendDiscordInviteEmail } from '@/lib/email'
-import { addToGitHubTeam, inviteToGitHubOrg } from '@/lib/github-org'
+import { inviteAsOutsideCollaborator } from '@/lib/github-org'
 
 /**
  * IDEA-041 — called from admin/actions.ts's setContributorStatusAction
@@ -15,27 +10,28 @@ import { addToGitHubTeam, inviteToGitHubOrg } from '@/lib/github-org'
  * a missing config, a missing credential, nor a failed GitHub/email call
  * should read as if Confirm failed.
  *
- * GitHub: a real org invite via the API (see github-org.ts) — the
- * contributor still has to accept it themselves, same as any GitHub org
- * invite. IDEA-053 — also adds them to a configurable default
- * "Contributors" team, independent of the org invite's own outcome (same
- * "attempt regardless, stamp on attempt" discipline as the org invite
- * itself — GitHub's team-membership endpoint works even against a
- * still-pending invitee, not only a full member). Discord: there's no API
- * that silently adds someone to a guild (see providers/discord.ts's module
- * doc — this app only ever requested the `identify` scope and never
- * persisted an access token for any provider), so this sends an email
- * containing cf-internal's configured invite link instead — "automatically
- * invited," not "automatically joined."
+ * IDEA-168 — the GitHub half no longer invites anyone into the
+ * organization. It used to be a real org-member invitation (IDEA-041's
+ * `PUT /orgs/{org}/memberships/{user}`) plus a default-team add
+ * (IDEA-053); both are gone — Pass must never create org members. Instead,
+ * every repository in config's githubCollaboratorRepos gets a
+ * collaboration invitation for the contributor (per-repo permission
+ * included): accepting makes them an *outside collaborator* on exactly
+ * those repos, never a member. GitHub has no org-wide outside-collaborator
+ * invitation, so an empty list means "no GitHub invitation at all" — logged
+ * loudly rather than silently, and githubOrgInvitedAt stays unstamped so
+ * the Admin list's Re-invite button stays available the moment a repo list
+ * appears in config. Discord: unchanged — an email containing
+ * cf-internal's configured invite link, "automatically invited," not
+ * "automatically joined."
  *
- * Each of the three is independently gated on its own config value being
- * present (`githubOrganization`/`githubContributorsTeam`/`discordInviteUrl`
- * from pass/config.yaml) — a deploy can have any subset configured. The
- * timestamp is stamped whenever that config-level precondition is met,
- * regardless of whether GITHUB_ORG_TOKEN is actually set — the underlying
- * github-org.ts calls no-op and log when the token is missing, so nothing
- * unsafe happens, but the Admin list's Re-invite button won't appear until
- * the org name itself is configured at all.
+ * The two channels are independently gated on their own config values
+ * being present (`githubOrganization`+`githubCollaboratorRepos` /
+ * `discordInviteUrl` from pass/config.yaml) — a deploy can have any subset
+ * configured. The timestamp is stamped whenever that config-level
+ * precondition is met, regardless of whether GITHUB_ORG_TOKEN is actually
+ * set — the underlying github-org.ts calls no-op and log when the token is
+ * missing, so nothing unsafe happens.
  */
 export async function inviteConfirmedContributor(contributor: Contributor): Promise<void> {
   try {
@@ -43,12 +39,15 @@ export async function inviteConfirmedContributor(contributor: Contributor): Prom
     if (!config) return
 
     if (config.githubOrganization) {
-      await inviteToGitHubOrg(contributor.githubLogin, config.githubOrganization)
-      await markGithubOrgInvited(contributor.githubId)
-
-      if (config.githubContributorsTeam) {
-        await addToGitHubTeam(contributor.githubLogin, config.githubOrganization, config.githubContributorsTeam)
-        await markGithubContributorsTeamAdded(contributor.githubId)
+      if (config.githubCollaboratorRepos?.length) {
+        for (const { repo, permission } of config.githubCollaboratorRepos) {
+          await inviteAsOutsideCollaborator(contributor.githubLogin, config.githubOrganization, repo, permission)
+        }
+        await markGithubOrgInvited(contributor.githubId)
+      } else {
+        console.warn(
+          `inviteConfirmedContributor(${contributor.githubId}): githubCollaboratorRepos is empty — sending no GitHub invitation (Pass no longer invites org members; add repos to pass/config.yaml to grant collaborator access)`,
+        )
       }
     }
 

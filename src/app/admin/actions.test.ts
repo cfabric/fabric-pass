@@ -46,8 +46,7 @@ const { fakeSession, state } = vi.hoisted(() => ({
     revokeCancellations: [] as string[],
     shouldThrowNotConfirmed: false,
     shouldThrowNotRevokePending: false,
-    teamRemovals: [] as { login: string; org: string; team: string }[],
-    orgRemovals: [] as { login: string; org: string }[],
+    accessRemovals: [] as { login: string; org: string }[],
     orgRemovalSucceeds: true,
     appConfig: {
       githubOrganization: 'constructorfabric',
@@ -120,12 +119,8 @@ vi.mock('@/lib/roles', () => ({
 }))
 
 vi.mock('@/lib/github-org', () => ({
-  removeFromGitHubTeam: async (login: string, org: string, team: string) => {
-    state.teamRemovals.push({ login, org, team })
-    return true
-  },
-  removeFromGitHubOrg: async (login: string, org: string) => {
-    state.orgRemovals.push({ login, org })
+  removeGitHubAccess: async (login: string, org: string) => {
+    state.accessRemovals.push({ login, org })
     return state.orgRemovalSucceeds
   },
 }))
@@ -159,8 +154,7 @@ beforeEach(() => {
   state.revokeCancellations = []
   state.shouldThrowNotConfirmed = false
   state.shouldThrowNotRevokePending = false
-  state.teamRemovals = []
-  state.orgRemovals = []
+  state.accessRemovals = []
   state.orgRemovalSucceeds = true
   state.appConfig = { githubOrganization: 'constructorfabric', githubContributorsTeam: 'contributors' }
 })
@@ -280,8 +274,7 @@ test('an Admin can request a revoke, with a reason, and no GitHub calls happen y
   expect(state.loggedActions).toEqual([
     { actorGithubId: '1001', action: 'revoke_requested', targetGithubId: '2002', details: { reason: 'Left the organization' } },
   ])
-  expect(state.teamRemovals).toEqual([])
-  expect(state.orgRemovals).toEqual([])
+  expect(state.accessRemovals).toEqual([])
 })
 
 test('requestRevokeAction refuses a blank reason', async () => {
@@ -331,8 +324,7 @@ test('a different Admin can approve a pending revoke, which removes GitHub team 
       details: { reason: 'Left the organization', requestedBy: '3003', githubAccessRemoved: true },
     },
   ])
-  expect(state.teamRemovals).toEqual([{ login: 'requester', org: 'constructorfabric', team: 'contributors' }])
-  expect(state.orgRemovals).toEqual([{ login: 'requester', org: 'constructorfabric' }])
+  expect(state.accessRemovals).toEqual([{ login: 'requester', org: 'constructorfabric' }])
 })
 
 // The entire point of the two-person gate — the Admin who requested a
@@ -351,11 +343,10 @@ test('approveRevokeAction refuses the same Admin who requested the revoke', asyn
 
   expect(result).toEqual({ ok: false, message: 'Only another Admin can approve this revoke — not the Admin who requested it.' })
   expect(state.revokeApprovals).toEqual([])
-  expect(state.teamRemovals).toEqual([])
-  expect(state.orgRemovals).toEqual([])
+  expect(state.accessRemovals).toEqual([])
 })
 
-test('approveRevokeAction skips the GitHub team removal when no default team is configured, but still removes from the org', async () => {
+test('approveRevokeAction removes all GitHub access in one call whenever the org is configured', async () => {
   state.target = {
     githubId: '2002',
     githubLogin: 'requester',
@@ -368,8 +359,7 @@ test('approveRevokeAction skips the GitHub team removal when no default team is 
 
   await approveRevokeAction('2002')
 
-  expect(state.teamRemovals).toEqual([])
-  expect(state.orgRemovals).toEqual([{ login: 'requester', org: 'constructorfabric' }])
+  expect(state.accessRemovals).toEqual([{ login: 'requester', org: 'constructorfabric' }])
 })
 
 test('approveRevokeAction reports a clear message when the revoke is no longer pending', async () => {
@@ -397,8 +387,7 @@ test('approveRevokeAction refuses a non-Admin', async () => {
 
   expect(result).toEqual({ ok: false, message: 'Not authorized.' })
   expect(state.revokeApprovals).toEqual([])
-  expect(state.teamRemovals).toEqual([])
-  expect(state.orgRemovals).toEqual([])
+  expect(state.accessRemovals).toEqual([])
 })
 
 test('approveRevokeAction warns when the decision persists but GitHub access could not be removed', async () => {

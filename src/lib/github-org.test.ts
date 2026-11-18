@@ -5,12 +5,13 @@ const { fakeEnv } = vi.hoisted(() => ({ fakeEnv: { GITHUB_ORG_TOKEN: undefined a
 vi.mock('@/lib/env', () => ({ env: fakeEnv }))
 
 const {
-  inviteToGitHubOrg,
+  inviteAsOutsideCollaborator,
+  isOrgMember,
   addToGitHubTeam,
   ensureGitHubTeam,
   teamExists,
   removeFromGitHubTeam,
-  removeFromGitHubOrg,
+  removeGitHubAccess,
   listOrgRepositories,
   listOrgRepositoryProperties,
   listOrgPropertySchema,
@@ -21,38 +22,61 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-test('inviteToGitHubOrg returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
-  await expect(inviteToGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(false)
+test('inviteAsOutsideCollaborator returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
+  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
 })
 
-test('inviteToGitHubOrg calls the org membership endpoint and returns true on success', async () => {
+test('inviteAsOutsideCollaborator calls the repo collaborator endpoint with the permission and returns true on success', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
-  const fetchMock = vi.fn(async () => new Response(null, { status: 200 }))
+  const fetchMock = vi.fn(async () => new Response(null, { status: 201 }))
   vi.stubGlobal('fetch', fetchMock)
 
-  const result = await inviteToGitHubOrg('octocat', 'constructorfabric')
+  const result = await inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass', 'push')
 
   expect(result).toBe(true)
   expect(fetchMock).toHaveBeenCalledWith(
-    'https://api.github.com/orgs/constructorfabric/memberships/octocat',
+    'https://api.github.com/repos/constructorfabric/fabric-pass/collaborators/octocat',
     expect.objectContaining({
       method: 'PUT',
       headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+      body: JSON.stringify({ permission: 'push' }),
     }),
   )
 })
 
-test('inviteToGitHubOrg returns false without throwing when GitHub responds with an error', async () => {
+test('inviteAsOutsideCollaborator defaults to pull permission', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  const fetchMock = vi.fn(async () => new Response(null, { status: 204 }))
+  vi.stubGlobal('fetch', fetchMock)
+
+  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(true)
+  expect(fetchMock).toHaveBeenCalledWith(
+    'https://api.github.com/repos/constructorfabric/fabric-pass/collaborators/octocat',
+    expect.objectContaining({ body: JSON.stringify({ permission: 'pull' }) }),
+  )
+})
+
+test('inviteAsOutsideCollaborator treats 204 (already a collaborator) as success', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(null, { status: 204 })),
+  )
+
+  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(true)
+})
+
+test('inviteAsOutsideCollaborator returns false without throwing when GitHub responds with an error', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => new Response('nope', { status: 403 })),
   )
 
-  await expect(inviteToGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(false)
+  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
 })
 
-test('inviteToGitHubOrg returns false without throwing on a network failure', async () => {
+test('inviteAsOutsideCollaborator returns false without throwing on a network failure', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
   vi.stubGlobal(
     'fetch',
@@ -61,7 +85,61 @@ test('inviteToGitHubOrg returns false without throwing on a network failure', as
     }),
   )
 
-  await expect(inviteToGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(false)
+  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
+})
+
+test('isOrgMember returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
+  await expect(isOrgMember('octocat', 'constructorfabric')).resolves.toBe(false)
+})
+
+test('isOrgMember calls the member-check endpoint and returns true on 204', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  const fetchMock = vi.fn(async () => new Response(null, { status: 204 }))
+  vi.stubGlobal('fetch', fetchMock)
+
+  const result = await isOrgMember('octocat', 'constructorfabric')
+
+  expect(result).toBe(true)
+  expect(fetchMock).toHaveBeenCalledWith(
+    'https://api.github.com/orgs/constructorfabric/members/octocat',
+    expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+    }),
+  )
+})
+
+test('isOrgMember returns false on a 404 (not a member: outside collaborator, pending invitee, or stranger)', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response('not found', { status: 404 })),
+  )
+
+  await expect(isOrgMember('octocat', 'constructorfabric')).resolves.toBe(false)
+})
+
+// Fail closed: an ambiguous error must read as "don't grant", never as
+// license to run the team-membership PUT this check gates.
+test('isOrgMember returns false on a 500, never throwing', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response('server error', { status: 500 })),
+  )
+
+  await expect(isOrgMember('octocat', 'constructorfabric')).resolves.toBe(false)
+})
+
+test('isOrgMember returns false without throwing on a network failure', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => {
+      throw new Error('network down')
+    }),
+  )
+
+  await expect(isOrgMember('octocat', 'constructorfabric')).resolves.toBe(false)
 })
 
 test('addToGitHubTeam returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
@@ -238,38 +316,51 @@ test('removeFromGitHubTeam returns false without throwing on a network failure',
   await expect(removeFromGitHubTeam('octocat', 'constructorfabric', 'studio-contributors')).resolves.toBe(false)
 })
 
-test('removeFromGitHubOrg returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
-  await expect(removeFromGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(false)
+test('removeGitHubAccess returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
+  await expect(removeGitHubAccess('octocat', 'constructorfabric')).resolves.toBe(false)
 })
 
-test('removeFromGitHubOrg calls the org membership endpoint with DELETE and returns true on success', async () => {
+test('removeGitHubAccess removes org membership and outside-collaborator standing, and returns true when both succeed', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
-  const fetchMock = vi.fn(async () => new Response(null, { status: 204 }))
+  const fetchMock = vi.fn(async (..._args: unknown[]) => new Response(null, { status: 204 }))
   vi.stubGlobal('fetch', fetchMock)
 
-  const result = await removeFromGitHubOrg('octocat', 'constructorfabric')
+  const result = await removeGitHubAccess('octocat', 'constructorfabric')
 
   expect(result).toBe(true)
-  expect(fetchMock).toHaveBeenCalledWith(
-    'https://api.github.com/orgs/constructorfabric/memberships/octocat',
-    expect.objectContaining({ method: 'DELETE' }),
-  )
+  expect(fetchMock).toHaveBeenCalledTimes(2)
+  const urls = fetchMock.mock.calls.map((call) => call[0])
+  expect(urls).toContain('https://api.github.com/orgs/constructorfabric/memberships/octocat')
+  expect(urls).toContain('https://api.github.com/orgs/constructorfabric/outside_collaborators/octocat')
 })
 
-// Unlike a grant, a 404 here means "already not a member" — already in the
-// desired end state, not a failure — same reasoning removeFromGitHubTeam's
-// own 404 handling already documents.
-test('removeFromGitHubOrg returns true, not false, on a 404 (already not a member)', async () => {
+// Unlike a grant, a 404 means "already gone" — already in the desired end
+// state, not a failure — for both removals at once.
+test('removeGitHubAccess returns true, not false, when both endpoints 404 (nothing to remove)', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => new Response('not found', { status: 404 })),
   )
 
-  await expect(removeFromGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(true)
+  await expect(removeGitHubAccess('octocat', 'constructorfabric')).resolves.toBe(true)
 })
 
-test('removeFromGitHubOrg returns false without throwing on a network failure', async () => {
+// A partial removal must read as false: the Admin flow surfaces a
+// "remove it manually" warning off this value, which a half-done removal
+// must still trigger.
+test('removeGitHubAccess returns false when one of the two removals fails', async () => {
+  fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
+  const fetchMock = vi
+    .fn()
+    .mockResolvedValueOnce(new Response(null, { status: 204 }))
+    .mockResolvedValueOnce(new Response('nope', { status: 403 }))
+  vi.stubGlobal('fetch', fetchMock)
+
+  await expect(removeGitHubAccess('octocat', 'constructorfabric')).resolves.toBe(false)
+})
+
+test('removeGitHubAccess returns false without throwing on a network failure', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
   vi.stubGlobal(
     'fetch',
@@ -278,7 +369,7 @@ test('removeFromGitHubOrg returns false without throwing on a network failure', 
     }),
   )
 
-  await expect(removeFromGitHubOrg('octocat', 'constructorfabric')).resolves.toBe(false)
+  await expect(removeGitHubAccess('octocat', 'constructorfabric')).resolves.toBe(false)
 })
 
 test('listOrgRepositories returns an empty array without throwing when GITHUB_ORG_TOKEN is unset', async () => {

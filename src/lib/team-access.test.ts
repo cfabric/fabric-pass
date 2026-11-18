@@ -11,6 +11,8 @@ const { state } = vi.hoisted(() => ({
     inviteCalls: [] as string[],
     teamExistsCalls: [] as [string, string][],
     teamExistsResult: true,
+    isMemberCalls: [] as [string, string][],
+    isMemberResult: true,
   },
 }))
 
@@ -30,6 +32,10 @@ vi.mock('@/lib/github-org', () => ({
   teamExists: async (org: string, teamSlug: string) => {
     state.teamExistsCalls.push([org, teamSlug])
     return state.teamExistsResult
+  },
+  isOrgMember: async (login: string, org: string) => {
+    state.isMemberCalls.push([login, org])
+    return state.isMemberResult
   },
 }))
 
@@ -73,6 +79,8 @@ beforeEach(async () => {
   state.inviteCalls = []
   state.teamExistsCalls = []
   state.teamExistsResult = true
+  state.isMemberCalls = []
+  state.isMemberResult = true
 })
 
 afterAll(async () => {
@@ -418,6 +426,66 @@ test('invites the contributor to the org only once when both the contributor and
   await grantTrackAccess(contributor('1', { githubOrgInvitedAt: undefined }), track)
 
   expect(state.inviteCalls).toEqual(['1'])
+})
+
+// IDEA-168 — GitHub's team-membership PUT would silently invite a
+// non-member into the org as a member; Pass must never trigger that, so
+// every team grant is gated on isOrgMember and skipped for everyone else.
+test('skips every GitHub team grant when the contributor is not an org member, and still grants the Discord role', async () => {
+  const track = await seedTrack({ discordRoleId: 'role-123' })
+  await seedContributor('1', 'discord-user-1')
+  await pool.query(`INSERT INTO track_members (track_id, github_id, status) VALUES ($1, '1', 'approved')`, [(track as { id: string }).id])
+  await syncAppConfig({
+    githubOrganization: 'constructorfabric',
+    githubTrackTeamPattern: '{track}-contributors',
+    githubTrackInternalReaderTeamPattern: '{track}-internal-readers',
+    discordGuildId: 'guild-456',
+  })
+  state.isMemberResult = false
+
+  await grantTrackAccess(contributor('1', { discordId: 'discord-user-1', githubOrgInvitedAt: new Date() }), track)
+
+  expect(state.isMemberCalls).toEqual([['login-1', 'constructorfabric']])
+  expect(state.teamCalls).toEqual([])
+  expect(state.ensureTeamCalls).toEqual([])
+  expect(state.teamExistsCalls).toEqual([])
+  const { rows } = await pool.query('SELECT github_team_added_at FROM track_members WHERE github_id = $1', ['1'])
+  expect(rows[0].github_team_added_at).toBeNull()
+  expect(state.roleCalls).toEqual([['discord-user-1', 'guild-456', 'role-123']])
+})
+
+test('still runs the once-only invite for a never-invited contributor who is not an org member', async () => {
+  const track = await seedTrack()
+  await seedContributor('1')
+  await syncAppConfig({ githubOrganization: 'constructorfabric', githubTrackTeamPattern: '{track}-contributors' })
+  state.isMemberResult = false
+
+  await grantTrackAccess(contributor('1', { githubOrgInvitedAt: undefined }), track)
+
+  expect(state.inviteCalls).toEqual(['1'])
+  expect(state.teamCalls).toEqual([])
+})
+
+test('promoteToMaintainer skips the GitHub team grant when the contributor is not an org member', async () => {
+  const track = await seedTrack()
+  await seedContributor('1')
+  await syncAppConfig({ githubOrganization: 'constructorfabric', githubTrackMaintainerTeamPattern: '{track}-maintainers' })
+  state.isMemberResult = false
+
+  await promoteToMaintainer(contributor('1'), track)
+
+  expect(state.ensureTeamCalls).toEqual([])
+  expect(state.teamCalls).toEqual([])
+})
+
+test('isOrgMember is checked against the configured organization only when a team pattern exists', async () => {
+  const track = await seedTrack()
+  await seedContributor('1')
+  await syncAppConfig({ githubOrganization: 'constructorfabric' })
+
+  await grantTrackAccess(contributor('1', { githubOrgInvitedAt: new Date() }), track)
+
+  expect(state.isMemberCalls).toEqual([])
 })
 
 // IDEA-116 — deriving Governance's contributor list from every track's admins.
