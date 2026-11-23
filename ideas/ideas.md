@@ -2140,4 +2140,5 @@ Add GitLab as a linked account on the contributor profile, the same way Discord,
 Notes:
 gitlab.com only, `read_user` scope; stores the GitLab user id, username and display name. Optional on a deploy the way LinkedIn is: hidden until GITLAB_CLIENT_ID/GITLAB_CLIENT_SECRET are both set. An optional field with its own padlock (IDEA-110). Not counted toward profile completeness, so no existing Full Profile drops back to Ready. Registering the OAuth application on gitlab.com and putting its credentials into the deploy env is a companion step for the operator.
 
+Task: https://github.com/cfabric/fabric-pass/issues/270
 By: vzhuman · 2026-11-24
