@@ -99,7 +99,7 @@ if [ "$push" = "yes" ]; then
   git push origin "$tag"
   echo ""
   echo "Done. The 'Release extension' workflow now builds the archive and publishes"
-  echo "https://github.com/constructorfabric/fabric-pass/releases/tag/$tag"
+  echo "https://github.com/cfabric/fabric-pass/releases/tag/$tag"
 else
   echo "Nothing has been pushed. To publish this release:"
   echo ""

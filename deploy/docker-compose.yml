@@ -33,7 +33,7 @@ services:
       retries: 5
 
   app:
-    image: ghcr.io/constructorfabric/fabric-pass:latest
+    image: ghcr.io/cfabric/fabric-pass:latest
     restart: unless-stopped
     env_file: .env
     environment:

@@ -146,13 +146,13 @@ allowed from any status; the body keeps one sentence saying why.
 ## Project tasks — CF Board
 
 Every actionable idea (`TODO` and beyond) has a companion task: a GitHub
-issue in `constructorfabric/fabric-pass`, added to the org project **CF
-Board** — https://github.com/orgs/constructorfabric/projects/52. The links
+issue in `cfabric/fabric-pass`, added to the org project **CF
+Board** — https://github.com/orgs/cfabric/projects/2. The links
 are always bidirectional: the issue body links to the idea, the idea body
 carries a `Task:` line with the issue URL.
 
 **One idea — one task, forever.** Before creating anything, look the idea up
-on the board by title (`gh project item-list 52 --owner constructorfabric
+on the board by title (`gh project item-list 2 --owner cfabric
 --format json --jq '.items[] | {id, title, type: .content.type}'`). If an
 item titled `IDEA-NNN — …` already exists in any form, never create a second
 one — update the existing item (convert, retitle, reassign) instead.
@@ -162,7 +162,7 @@ one — update the existing item (convert, retitle, reassign) instead.
   the idea. Draft items have no URL of their own, so the idea carries no
   `Task:` line yet.
 - **Idea becomes `TODO`** — the task becomes a real issue in
-  `constructorfabric/fabric-pass`, with **no assignee**. If a board draft
+  `cfabric/fabric-pass`, with **no assignee**. If a board draft
   exists, **convert it in place** — do not open a parallel issue:
 
   ```bash
@@ -172,7 +172,7 @@ one — update the existing item (convert, retitle, reassign) instead.
     -F item=<PVTI_ item id> -F repo=<repository node id>
   ```
 
-  (repo node id: `gh api repos/constructorfabric/fabric-pass --jq '.node_id'`.)
+  (repo node id: `gh api repos/cfabric/fabric-pass --jq '.node_id'`.)
   Only when no draft exists, create the issue fresh and `gh project item-add`
   it. Title: `IDEA-NNN — <idea title>`. Body: a link to `ideas/ideas.md`
   naming the IDEA-NNN, plus the one-line idea. Add the `Task:` line to the
@@ -194,9 +194,9 @@ Progress/Done by a human on the board is a status signal for the sync below.
 Commands:
 
 ```bash
-gh issue create -R constructorfabric/fabric-pass \
+gh issue create -R cfabric/fabric-pass \
   --title "IDEA-NNN — <title>" [--assignee <owner>] --body "<link to idea>"
-gh project item-add 52 --owner constructorfabric --url <issue-url>
+gh project item-add 2 --owner cfabric --url <issue-url>
 # set the column (Status option ids: Backlog 5b786606, Todo f75ad846,
 # In Progress 47fc9ee4, In Test 09d0e0a8, Done 98236657):
 gh project item-edit --id <PVTI_ item id> \
@@ -214,7 +214,7 @@ and push.
 The sync is two-way: people also move tasks directly on CF Board, and the
 registry must follow. As part of the pre-work check (next section), after
 `git pull`, also read the board state of any idea you're about to touch
-(`gh issue view <n>` / `gh project item-list 52 --owner constructorfabric`)
+(`gh issue view <n>` / `gh project item-list 2 --owner cfabric`)
 and reconcile:
 
 - Task **assigned** on the board (or moved to **In Progress**), idea still

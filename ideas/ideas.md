@@ -18,9 +18,9 @@ Expected outcome:
 - Save button (edit mode only) switches back to view-only mode.
 - Pressing Save enforces the mandatory fields — Name and Email must be filled in, or Save is blocked and the contributor is prompted to fill them in.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/9 (merged; IDEA-000 landed as fd7537c)
+Result: PR https://github.com/cfabric/fabric-pass/pull/9 (merged; IDEA-000 landed as fd7537c)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/1
+Task: https://github.com/cfabric/fabric-pass/issues/1
 
 By: vzhuman · 2026-07-31
 
@@ -38,23 +38,23 @@ Expected outcome:
 Notes:
 Depends on IDEA-000's view/edit mode split — "view mode disallows editing" only means something once that mode exists.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/9 (merged; IDEA-001 landed as 353bf08)
+Result: PR https://github.com/cfabric/fabric-pass/pull/9 (merged; IDEA-001 landed as 353bf08)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/2
+Task: https://github.com/cfabric/fabric-pass/issues/2
 
 By: frontgeeks · 2026-07-31
 By: vzhuman · 2026-07-31
 
 ## [DONE] [frontgeeks] IDEA-002 — Review of the database–git data exchange process
 Idea: Review how data flows between the Postgres database and git (the cf-internal registry sync): what is exported, what is imported back, and whether the process holds up.
-Result: review report on the task issue — https://github.com/constructorfabric/fabric-pass/issues/3#issuecomment-5176740537 (single-writer model sound; main risks: export silently reverts admin edits after a missed/partial sync, and sync can clobber app-set aliases)
-Task: https://github.com/constructorfabric/fabric-pass/issues/3
+Result: review report on the task issue — https://github.com/cfabric/fabric-pass/issues/3#issuecomment-5176740537 (single-writer model sound; main risks: export silently reverts admin edits after a missed/partial sync, and sync can clobber app-set aliases)
+Task: https://github.com/cfabric/fabric-pass/issues/3
 By: frontgeeks · 2026-07-31
 
 ## [DONE] [frontgeeks] IDEA-003 — Root user configured via env by GitHub ID
 Idea: A root user for the app, designated by GitHub ID through an environment variable.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/11
-Task: https://github.com/constructorfabric/fabric-pass/issues/4
+Result: PR https://github.com/cfabric/fabric-pass/pull/11
+Task: https://github.com/cfabric/fabric-pass/issues/4
 By: frontgeeks · 2026-07-31
 
 ## [DONE] [vzhuman] IDEA-004 — Public contributor profile view
@@ -74,9 +74,9 @@ Feeds IDEA-005 (contributor search) as its destination page.
 Visible only to `confirmed` contributors (both as search results and as viewable profiles) — a `draft` contributor is neither searchable nor has a viewable profile page yet.
 Transfer to frontgeeks on 2026-08-05 was made in error and reverted the next day — vzhuman remains the owner. An `internal`-status-gating note added at the same time was also a mistake — this page is gated on `confirmed`, not a not-yet-existing `internal` status.
 
-Result: commit af56e5b — https://github.com/constructorfabric/fabric-pass/commit/af56e5b
+Result: commit af56e5b — https://github.com/cfabric/fabric-pass/commit/af56e5b
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/12
+Task: https://github.com/cfabric/fabric-pass/issues/12
 
 By: vzhuman · 2026-07-31
 
@@ -95,9 +95,9 @@ Only searches, and only returns, `confirmed` contributors — a `draft` contribu
 Transfer to frontgeeks on 2026-08-05 was made in error and reverted the next day — vzhuman remains the owner. An `internal`-status-gating note added at the same time was also a mistake — this searches `confirmed` contributors, not a not-yet-existing `internal` status.
 Also matches LinkedIn name — not in the original list above, which predates LinkedIn linking (IDEA-024); leaving it out once LinkedIn existed would have read as a gap rather than a deliberate omission.
 
-Result: commit af56e5b — https://github.com/constructorfabric/fabric-pass/commit/af56e5b
+Result: commit af56e5b — https://github.com/cfabric/fabric-pass/commit/af56e5b
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/13
+Task: https://github.com/cfabric/fabric-pass/issues/13
 
 By: vzhuman · 2026-07-31
 
@@ -115,9 +115,9 @@ Track-specific policy links, if any, are out of scope until IDEA-007's track dir
 Approach: the list of links comes from IDEA-032's artifact-links registry (cf-internal `pass/`), not hardcoded or scraped from the governance repository directly — the registry holds the label and URL, the governance repository still holds the actual policy documents.
 Depends on IDEA-032 for where these links are sourced from.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f)
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/29
+Task: https://github.com/cfabric/fabric-pass/issues/29
 
 By: vzhuman · 2026-07-31
 
@@ -135,9 +135,9 @@ Depends on IDEA-010 for the underlying tracks data — nothing to display until 
 A track's entry can also surface its own artifact links (e.g. vision doc, contributing guide) from IDEA-032's registry, scoped to that track's slug — the same mechanism IDEA-006/008/009 use for their own links.
 Depends on IDEA-032 for any artifact links shown alongside the rest of a track's entry.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f) — reconciled with IDEA-035 as list (/tracks) + detail (/tracks/[slug]).
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f) — reconciled with IDEA-035 as list (/tracks) + detail (/tracks/[slug]).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/30
+Task: https://github.com/cfabric/fabric-pass/issues/30
 
 By: vzhuman · 2026-07-31
 
@@ -153,9 +153,9 @@ Depends on IDEA-007 for the directory to attach to. Diagram source/format (stati
 Approach: a diagram is a link into IDEA-032's artifact-links registry, pointing at wherever it's actually maintained (any repository under `constructorfabric`, or elsewhere) — this app never stores or generates the diagram itself, only the link to it.
 Depends on IDEA-032 for where this link is sourced from.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f) — folded into the artifact-links registry (category `roadmap`), no bespoke UI.
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f) — folded into the artifact-links registry (category `roadmap`), no bespoke UI.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/31
+Task: https://github.com/cfabric/fabric-pass/issues/31
 
 By: vzhuman · 2026-07-31
 
@@ -171,9 +171,9 @@ Depends on IDEA-007 for the directory to attach to. Whether schedules link out t
 Approach: a schedule is a link into IDEA-032's artifact-links registry (e.g. to an external calendar or a scheduling doc), not data entered/maintained directly in this app — consistent with IDEA-006/008 using the same registry for their own links.
 Depends on IDEA-032 for where this link is sourced from.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f) — folded into the artifact-links registry (category `schedule`), no bespoke UI.
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f) — folded into the artifact-links registry (category `schedule`), no bespoke UI.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/32
+Task: https://github.com/cfabric/fabric-pass/issues/32
 
 By: vzhuman · 2026-07-31
 
@@ -191,9 +191,9 @@ The per-repository description/issue-tracker-link fields go beyond the source re
 Prerequisite for IDEA-007/008/009 (nothing to display until this data exists) and for IDEA-011's Track Admin role, IDEA-013's join requests, and IDEA-014's per-track membership.
 Pulled in as a direct prerequisite while implementing IDEA-011 — Track Admin has nothing to scope against otherwise. One-way sync only (file -> DB) — unlike contributors, nothing about a track is self-reported, so there's no export direction.
 
-Result: commit 3cb589c — https://github.com/constructorfabric/fabric-pass/commit/3cb589c
+Result: commit 3cb589c — https://github.com/cfabric/fabric-pass/commit/3cb589c
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/16
+Task: https://github.com/cfabric/fabric-pass/issues/16
 
 By: vzhuman · 2026-07-31
 
@@ -211,9 +211,9 @@ Notes:
 Depends on IDEA-010 for tracks to scope Track Admin against.
 Track Admin gates nothing yet — IDEA-014 (the page that would consult it) isn't built; the role and its data (track_admins) exist as groundwork, same as isRootUser was before this.
 
-Result: commit 3cb589c — https://github.com/constructorfabric/fabric-pass/commit/3cb589c
+Result: commit 3cb589c — https://github.com/cfabric/fabric-pass/commit/3cb589c
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/14
+Task: https://github.com/cfabric/fabric-pass/issues/14
 
 By: vzhuman · 2026-07-31
 
@@ -231,9 +231,9 @@ Depends on IDEA-011 for the Admin role itself.
 IDEA-021 (leave the community) hits this same single-writer question, from a different angle (self-service vs. admin-triggered) — worth deciding both together.
 Decided: the app writes `status` directly (setContributorStatus) — simplest, matches the request literally. It folds back through the registry file on the next scheduled export; the accepted risk is a registry-file edit landing between an Admin's click and that export, which would overwrite the in-app change back on the following import. Blocked behaves exactly like draft everywhere status already gates something (search, public profile) — no additional restriction on signing in or editing your own profile.
 
-Result: commit 3cb589c — https://github.com/constructorfabric/fabric-pass/commit/3cb589c
+Result: commit 3cb589c — https://github.com/cfabric/fabric-pass/commit/3cb589c
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/15
+Task: https://github.com/cfabric/fabric-pass/issues/15
 
 By: vzhuman · 2026-07-31
 
@@ -249,9 +249,9 @@ Expected outcome:
 Notes:
 Depends on IDEA-010 (tracks must exist) and IDEA-007 (the track page this is requested from).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — app-owned track_members table, not synced to cf-internal (contributor-initiated + admin-decided, same category as email confirmation).
+Result: PR https://github.com/cfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — app-owned track_members table, not synced to cf-internal (contributor-initiated + admin-decided, same category as email confirmation).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/39
+Task: https://github.com/cfabric/fabric-pass/issues/39
 
 By: vzhuman · 2026-07-31
 
@@ -269,9 +269,9 @@ Expected outcome:
 Notes:
 Depends on IDEA-011 (roles), IDEA-013 (the requests being reviewed), and IDEA-010 (tracks and their membership).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — /tracks/admin, linked from the account menu as "Track membership".
+Result: PR https://github.com/cfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — /tracks/admin, linked from the account menu as "Track membership".
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/40
+Task: https://github.com/cfabric/fabric-pass/issues/40
 
 By: vzhuman · 2026-07-31
 
@@ -287,9 +287,9 @@ Expected outcome:
 Notes:
 Depends on IDEA-000 (mandatory-field/completeness concept), IDEA-006 (policies), and IDEA-013 (join request) all existing first — this is a thin layer tying them together, not a new capability on its own.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/48 (merged as c36e0bd) — visibility gated on IDEA-034's full completeness, not just IDEA-000's original mandatory-field check.
+Result: PR https://github.com/cfabric/fabric-pass/pull/48 (merged as c36e0bd) — visibility gated on IDEA-034's full completeness, not just IDEA-000's original mandatory-field check.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/41
+Task: https://github.com/cfabric/fabric-pass/issues/41
 
 By: vzhuman · 2026-07-31
 
@@ -306,7 +306,7 @@ Notes:
 Depends on IDEA-010 for the repository list. Needs its own GitHub API access (rate limits, possibly a token) — worth scoping separately before committing to it.
 Split from IDEA-015 rather than folded in — it's a materially different piece of engineering (external API integration) from the rest of the onboarding checklist.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/212
+Task: https://github.com/cfabric/fabric-pass/issues/212
 By: vzhuman · 2026-07-31
 
 ## [TODO] IDEA-017 — Leave a track
@@ -321,7 +321,7 @@ Expected outcome:
 Notes:
 Depends on IDEA-010 (track membership existing at all) and IDEA-013/014 (the membership this removes).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/213
+Task: https://github.com/cfabric/fabric-pass/issues/213
 By: vzhuman · 2026-07-31
 
 ## [DONE] [vzhuman] IDEA-018 — Nominate a contributor, or yourself, for a track leader slot
@@ -338,7 +338,7 @@ Notes:
 Replaces this idea's original "each empty leader slot shows a Volunteer action" framing: nomination is per track rather than per slot, and the leader profile (Product Manager, Architect, …) is picked by the Admin at approval time (IDEA-150), not by the nominator.
 Depends on IDEA-010 (tracks and leader roles) and IDEA-013 (track membership, which defines who is nominable). The Admin-side list is IDEA-149, the decision is IDEA-150, the GitHub/Discord consequences are IDEA-151.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/214
+Task: https://github.com/cfabric/fabric-pass/issues/214
 Result: PR #244 — merged. `track_leader_nominations` (migration 039) keyed (track, candidate, nominator), accumulating per nominator; `NominateLeaderButton` pick → confirm → nominate dialog shared by the track page (leaderless message + Nominate for everyone; Nominate always for Admins) and the Track Leaders page sections; picker searches approved track members the way the People screen searches contributors (lock guard included). Verified live: nomination recorded as an Admin on leaderless Governance, visibility rules for Admin vs plain member. 692 tests pass, `tsc --noEmit` clean.
 By: vzhuman · 2026-07-31
 
@@ -352,9 +352,9 @@ Expected outcome:
 Notes:
 Depends on IDEA-013/014 for the decision this reports. Notification channel (in-app only vs. also email) is undecided.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — in-app status on the track page, plus a best-effort email via the existing Resend integration.
+Result: PR https://github.com/cfabric/fabric-pass/pull/46 (merged as 5f5c6bd) — in-app status on the track page, plus a best-effort email via the existing Resend integration.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/42
+Task: https://github.com/cfabric/fabric-pass/issues/42
 
 By: vzhuman · 2026-07-31
 
@@ -370,7 +370,7 @@ Expected outcome:
 Notes:
 Open question, needs research before committing to this shape: can Discord's API report per-channel unread state for an arbitrary linked account from a server-side integration, or only from a client the user is actually running? If not, this idea reduces to a plain static link to the channel with no unread indicator.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/215
+Task: https://github.com/cfabric/fabric-pass/issues/215
 By: vzhuman · 2026-07-31
 
 ## [TODO] IDEA-021 — Leave the community (self-service)
@@ -390,7 +390,7 @@ Masking rule above is my best reading of the two worked examples, not a formal s
 Written here as lowercase `left` to match the existing `draft`/`confirmed` convention (CONTRIBUTOR_STATUSES) rather than the literal uppercase `LEFT` — flag if uppercase is actually wanted.
 Same single-writer concern as IDEA-012: `status` is currently owned by the cf-internal registry file, and this is a second, self-service writer to it.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/216
+Task: https://github.com/cfabric/fabric-pass/issues/216
 By: vzhuman · 2026-07-31
 
 ## [DONE] [vzhuman] IDEA-022 — Audit log for admin operations
@@ -405,9 +405,9 @@ Notes:
 Registry-file-driven changes (editing pass/contributors.yaml or pass/tracks.yaml directly) already have their own audit trail via git history — this idea covers only actions taken in-app, which don't.
 Depends on IDEA-012/014 existing as the actions being logged.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/47 (merged as c6eb9a8) — Admin-only, no Track Admin view.
+Result: PR https://github.com/cfabric/fabric-pass/pull/47 (merged as c6eb9a8) — Admin-only, no Track Admin view.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/43
+Task: https://github.com/cfabric/fabric-pass/issues/43
 
 By: vzhuman · 2026-07-31
 
@@ -416,9 +416,9 @@ By: vzhuman · 2026-07-31
 Idea:
 A confirmation link stops working the moment anything touches it once (confirmEmail consumes the token before checking anything), and every resend rotates the token, killing all previously sent emails. Real failure seen in production: contributor pressed Confirm twice, opened the newest email, got "That confirmation link is not valid" while the address was in fact confirmed by an earlier request (link scanner or double navigation). Fix: confirmEmail reports already-confirmed as success instead of invalid and no longer destroys the token on success; resendConfirmationEmail re-sends the existing unexpired token instead of rotating it.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/6 (merged as d62d49c)
+Result: PR https://github.com/cfabric/fabric-pass/pull/6 (merged as d62d49c)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/5
+Task: https://github.com/cfabric/fabric-pass/issues/5
 
 By: frontgeeks · 2026-08-03
 
@@ -427,11 +427,11 @@ Idea:
 Add LinkedIn to the contributor profile alongside GitHub/Discord/Telegram, so community members can reach each other professionally. Open question: a linked account via OAuth like Discord/Telegram, or a typed profile-URL field — LinkedIn's OAuth (OpenID Connect) readily proves account ownership, but its API is restrictive, so the typed field may be the pragmatic start.
 
 Notes:
-Creating the LinkedIn application itself (developer-portal app, OAuth credentials for the deploy env) is a companion task owned by vzhuman: https://github.com/constructorfabric/fabric-pass/issues/8.
+Creating the LinkedIn application itself (developer-portal app, OAuth credentials for the deploy env) is a companion task owned by vzhuman: https://github.com/cfabric/fabric-pass/issues/8.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/10 (merged; landed as 478867e..c97db50). Feature stays hidden on a deploy until LINKEDIN_CLIENT_ID/SECRET are both set (issue #8).
+Result: PR https://github.com/cfabric/fabric-pass/pull/10 (merged; landed as 478867e..c97db50). Feature stays hidden on a deploy until LINKEDIN_CLIENT_ID/SECRET are both set (issue #8).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/7
+Task: https://github.com/cfabric/fabric-pass/issues/7
 
 By: frontgeeks · 2026-08-04
 
@@ -466,9 +466,9 @@ Expected outcome:
 - Disk freed and today's actual latest commit deployed to production immediately.
 - The webhook prunes dangling images after every successful deploy, so this can't silently recur.
 
-Result: commit eab2d08 (deploy/webhook/server.mjs) — https://github.com/constructorfabric/fabric-pass/commit/eab2d08
+Result: commit eab2d08 (deploy/webhook/server.mjs) — https://github.com/cfabric/fabric-pass/commit/eab2d08
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/217
+Task: https://github.com/cfabric/fabric-pass/issues/217
 By: vzhuman · 2026-08-04
 
 ## [DONE] [vzhuman] IDEA-027 — Droplet operational metrics, sourced
@@ -485,11 +485,11 @@ Recommended source: DigitalOcean's Droplet Monitoring API, via a read-only DO AP
 Alternative considered and rejected: reading `/proc`, `/sys`, or Docker stats directly from inside the app container, which would need mounting host paths or the Docker socket into the app — the same "host-root-equivalent power" already flagged as a real risk for the webhook container (cfabric-pass-setup.md's Implementation notes under Step 6), and the app is the public-facing, larger-attack-surface service, not a narrow bearer-token-gated one. Calling out to the DO API instead keeps the app itself unprivileged.
 Depends on nothing existing in this app yet; IDEA-028 depends on this.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/50 (merged as af8dd44) — `do-agent` confirmed running on the droplet. Gated behind new optional `DO_API_TOKEN`/`DO_DROPLET_ID` (unprovisioned in this environment — you'll need to generate a read-only DO token and set both before this shows live data). CPU/RAM/disk-usage math follows DigitalOcean's documented formulas, verified against their written docs, not against a live token — worth a sanity check once configured.
+Result: PR https://github.com/cfabric/fabric-pass/pull/50 (merged as af8dd44) — `do-agent` confirmed running on the droplet. Gated behind new optional `DO_API_TOKEN`/`DO_DROPLET_ID` (unprovisioned in this environment — you'll need to generate a read-only DO token and set both before this shows live data). CPU/RAM/disk-usage math follows DigitalOcean's documented formulas, verified against their written docs, not against a live token — worth a sanity check once configured.
 
 Correction (2026-08-10, once the token was actually provisioned): the "worth a sanity check" above turned out to matter. Disk I/O has no DigitalOcean droplet monitoring endpoint at all — confirmed via a direct call to `disk_read` returning a bare `404 page not found`, and absent from DO's published OpenAPI spec's full metric list (`bandwidth`, `cpu`, `filesystem_free`, `filesystem_size`, `load_1/5/15`, `memory_*`). Compounded by a real implementation bug: every metric was fetched in one `Promise.all`, so those two 404s discarded the three metrics (CPU/RAM/disk usage) that fetched successfully alongside them — nothing showed at all, not just a missing fourth box. Fixed in a follow-up PR: disk I/O removed (there's nothing to show), each metric now fetched and saved independently (`Promise.allSettled`, one failing metric can't blank the others), and a metric that fails on a later refresh keeps its last-known-good value instead of being overwritten with null.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/44
+Task: https://github.com/cfabric/fabric-pass/issues/44
 
 By: vzhuman · 2026-08-04
 
@@ -506,11 +506,11 @@ Notes:
 Suggested thresholds, not confirmed: green < 60%, yellow 60–85%, red > 85% — reasonable defaults, but worth agreeing on deliberately rather than treating these as settled.
 Depends on IDEA-027 for real data to show, and IDEA-011 for the Admin role to gate on.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/50 (merged as af8dd44) — thresholds shipped as originally proposed (green<60/yellow60-85/red>85); Disk I/O uses MB/s cutoffs instead, since it has no natural percentage denominator.
+Result: PR https://github.com/cfabric/fabric-pass/pull/50 (merged as af8dd44) — thresholds shipped as originally proposed (green<60/yellow60-85/red>85); Disk I/O uses MB/s cutoffs instead, since it has no natural percentage denominator.
 
 Correction (2026-08-10): the footer is three boxes (CPU/RAM/Disk), not four — see IDEA-027's own correction. DigitalOcean has no disk I/O metric for droplets at all, so there was never a real percentage or MB/s figure behind that fourth box to show.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/45
+Task: https://github.com/cfabric/fabric-pass/issues/45
 
 By: vzhuman · 2026-08-04
 
@@ -523,7 +523,7 @@ Expected outcome:
 
 Result: generated the secret directly on the droplet (`openssl rand -hex 32` appended to `/opt/fabric-pass/.env`) and force-recreated `app` — confirmed `/`, `/admin`, and `/profile` all back to 200 with no errors in `docker compose logs app`. Self-inflicted and caught within minutes of the deploy, not an independent discovery — recorded so the brief production 500 has a paper trail, and as a reminder: a new *required* env var needs to land on the target environment before the commit that requires it ships, not after.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/218
+Task: https://github.com/cfabric/fabric-pass/issues/218
 By: vzhuman · 2026-08-05
 
 ## [DONE] [vzhuman] IDEA-030 — Wire up cf-internal's tracks.yaml and populate initial tracks
@@ -538,16 +538,16 @@ Expected outcome:
 
 Result: no fabric-pass code change — cf-internal commits 80f691e (`pass/tracks.yaml` + sync workflow), f3874da (null out leader slots for people not yet in Fabric Pass), and 9f2ed7d (switch leaders/admins to GitHub logins). Verified live: 7 tracks in the production `tracks` table, matching the file.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/17
+Task: https://github.com/cfabric/fabric-pass/issues/17
 
 By: vzhuman · 2026-08-06
 
 ## [DONE] [frontgeeks] IDEA-031 — Local dev sign-in without OAuth
 Idea: Signing in on a local checkout currently needs its own registrations at GitHub, Discord and Telegram, since each redirect URI must match `APP_URL` exactly — a route that puts an existing contributor's `github_id` straight into the session, refusing to run anywhere but a local development server, would let a developer reach the signed-in and Admin views without any of that.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/19 (merged; landed as 4a1602d)
+Result: PR https://github.com/cfabric/fabric-pass/pull/19 (merged; landed as 4a1602d)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/18
+Task: https://github.com/cfabric/fabric-pass/issues/18
 
 By: frontgeeks · 2026-08-06
 
@@ -564,18 +564,18 @@ Split out as its own idea rather than folded into IDEA-006/008/009 individually 
 Schema beyond the shape above is undecided: whether "scope" is a free-form track slug or an enum, whether entries carry a category (policy/vision/roadmap/schedule/etc.) for filtering or grouping, and whether one registry file covers everything or splits by concern (e.g. `pass/artifacts.yaml` vs. per-category files) are all open.
 Depends on IDEA-010 (`tracks.yaml` already exists) for the per-track scoping to key against.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f) — `pass/artifact-links.yaml`, scope validated against `listTracks()` in application code (no DB FK, since `community` isn't a track), category enum `policy|vision|roadmap|schedule|discord|guide|other`.
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f) — `pass/artifact-links.yaml`, scope validated against `listTracks()` in application code (no DB FK, since `community` isn't a track), category enum `policy|vision|roadmap|schedule|discord|guide|other`.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/33
+Task: https://github.com/cfabric/fabric-pass/issues/33
 
 By: vzhuman · 2026-08-06
 
 ## [DONE] [frontgeeks] IDEA-033 — MR step in the ideas flow: PR opens → In Test, merge → DONE
 Idea: The ideas skill and CONTRIBUTING describe finishing as "set DONE, commit, push", skipping how the implementation itself lands — all development goes through a PR. Record the missing step: when an idea's implementation PR opens, its board item moves to **In Test**; only after the PR merges does the idea become `DONE` (with the merged PR as `Result`) and the item move to Done.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/21 (merged; landed as 5d34468)
+Result: PR https://github.com/cfabric/fabric-pass/pull/21 (merged; landed as 5d34468)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/20
+Task: https://github.com/cfabric/fabric-pass/issues/20
 
 By: frontgeeks · 2026-08-06
 
@@ -597,9 +597,9 @@ Derived, not self-reported — computed from fields autosave already tracks, not
 Feeds IDEA-036's Admin-page completeness column/filter. Could later replace IDEA-015's simpler binary completeness check for the onboarding checklist, though that's not required for this idea itself.
 Named Incomplete/Ready/Complete — "Ready" chosen over "Good Enough" per the alternative above. Optional fields are Telegram and LinkedIn (LinkedIn only counted when enabled on the deploy — see profile-completeness.ts's computeProfileCompleteness).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/25 (merged as 05c999d)
+Result: PR https://github.com/cfabric/fabric-pass/pull/25 (merged as 05c999d)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/23
+Task: https://github.com/cfabric/fabric-pass/issues/23
 
 By: vzhuman · 2026-08-06
 
@@ -618,9 +618,9 @@ Template format/placeholder syntax is undecided.
 Natural home for IDEA-008 (roadmap diagrams) and IDEA-032 (artifact links) once those exist, alongside the rest of a track's page.
 Marked DRAFT rather than TODO specifically because of the IDEA-007 overlap above — recording it shouldn't read as two approved, independently-buildable ideas for the same page.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/35 (merged as 1ea196f) — reconciled with IDEA-007: `/tracks` is the directory, `/tracks/[slug]` is this template-rendered detail page. Template placeholders: `{{name}}`, `{{description}}`, `{{leaders}}`, `{{repositories}}`, `{{artifact_links}}` (flat substitution, no loop syntax, rendered via markdown-it).
+Result: PR https://github.com/cfabric/fabric-pass/pull/35 (merged as 1ea196f) — reconciled with IDEA-007: `/tracks` is the directory, `/tracks/[slug]` is this template-rendered detail page. Template placeholders: `{{name}}`, `{{description}}`, `{{leaders}}`, `{{repositories}}`, `{{artifact_links}}` (flat substitution, no loop syntax, rendered via markdown-it).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/34
+Task: https://github.com/cfabric/fabric-pass/issues/34
 
 By: vzhuman · 2026-08-06
 
@@ -641,9 +641,9 @@ Four changes bundled into one idea rather than split, since they're all the same
 Tile content (which fields show on a tile vs. only on click-through, if any) isn't specified — needs a quick design pass before implementation.
 Shipped alongside IDEA-034 in the same PR, since the completeness column/filter depends on it directly.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/25 (merged as 05c999d)
+Result: PR https://github.com/cfabric/fabric-pass/pull/25 (merged as 05c999d)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/24
+Task: https://github.com/cfabric/fabric-pass/issues/24
 
 By: vzhuman · 2026-08-06
 
@@ -662,9 +662,9 @@ Expected outcome:
 Notes:
 Purely a UI pass over IDEA-036's own tiles — no data model or server-action change, aside from adding `discordUsername` to the row already fetched by `listContributorsForRegistry`.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/27 (merged as e97a3ed)
+Result: PR https://github.com/cfabric/fabric-pass/pull/27 (merged as e97a3ed)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/26
+Task: https://github.com/cfabric/fabric-pass/issues/26
 
 By: vzhuman · 2026-08-07
 
@@ -686,18 +686,18 @@ Item 3's "preferred" option per the request — rename Cancel to Close — is wh
 Item 4 only changes Profile *view* mode — edit mode keeps today's actionable Confirm/Re-confirm button, since sending a confirmation email is still something the contributor needs to be able to trigger.
 Items 5/6 reuse existing pieces — `CompanyMark`/`CloseMark` (added for IDEA-036/037 and IDEA-001 respectively) and the Profile page's own `icon-button-square` pattern — no new icon design needed.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/49 (merged as ed42ac8) — item 2 resolved as status-only (never completeness) on search results and public profiles.
+Result: PR https://github.com/cfabric/fabric-pass/pull/49 (merged as ed42ac8) — item 2 resolved as status-only (never completeness) on search results and public profiles.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/28
+Task: https://github.com/cfabric/fabric-pass/issues/28
 
 By: vzhuman · 2026-08-07
 
 ## [DONE] [vzhuman] IDEA-039 — Track leaders shown by GitHub login, not real name
 Idea: A track's leaders (`/tracks/[slug]`) resolved a filled leader slot to the contributor's real `name` field when set, showing full real names on a page visible to any signed-in contributor; always show `@github_login` instead, matching how the Admin tiles already fall back.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/38 (merged as 967c517)
+Result: PR https://github.com/cfabric/fabric-pass/pull/38 (merged as 967c517)
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/37
+Task: https://github.com/cfabric/fabric-pass/issues/37
 
 By: vzhuman · 2026-08-08
 
@@ -714,9 +714,9 @@ Notes:
 Singleton-row table, not per-field env vars — env vars need a droplet SSH session and a redeploy to change; this only needs a commit, matching the "easy to maintain for Track Admins and Org Admins" goal already established for IDEA-032/035.
 Depends on nothing existing in this app yet; IDEA-041/042 depend on this.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/54 (merged as 01b440d) — `pass/config.yaml` live in cf-internal with real `github_organization` (constructorfabric) and `discord_invite_url` (the same real link already in the app's footer). `discord_guild_id` left unset — no verified real snowflake id exists yet.
+Result: PR https://github.com/cfabric/fabric-pass/pull/54 (merged as 01b440d) — `pass/config.yaml` live in cf-internal with real `github_organization` (constructorfabric) and `discord_invite_url` (the same real link already in the app's footer). `discord_guild_id` left unset — no verified real snowflake id exists yet.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/51
+Task: https://github.com/cfabric/fabric-pass/issues/51
 
 By: vzhuman · 2026-08-08
 
@@ -737,9 +737,9 @@ Re-invite cooldown: recommend 15 minutes over the suggested 5 — GitHub/Discord
 Needs a new `admin:org`-scoped GitHub token and a Discord bot token (with `Create Instant Invite` permission in the target guild) as new deploy secrets — provisioning both is on you; I can wire up the app-side once they exist.
 Depends on IDEA-040 for the org/guild identity this targets.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/54 (merged as 01b440d) — gated behind new optional `GITHUB_ORG_TOKEN` (unprovisioned — GitHub org invite correctly no-ops and logs why, verified live). Discord "invite" ships as a real invite-link email (no bot token needed for this half — see IDEA-042 for where the bot token is actually needed).
+Result: PR https://github.com/cfabric/fabric-pass/pull/54 (merged as 01b440d) — gated behind new optional `GITHUB_ORG_TOKEN` (unprovisioned — GitHub org invite correctly no-ops and logs why, verified live). Discord "invite" ships as a real invite-link email (no bot token needed for this half — see IDEA-042 for where the bot token is actually needed).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/52
+Task: https://github.com/cfabric/fabric-pass/issues/52
 
 By: vzhuman · 2026-08-08
 
@@ -757,9 +757,9 @@ Discord role assignment additionally requires the contributor to already be a gu
 Reuses IDEA-041's GitHub org token (team membership needs the same `admin:org`-level privilege, or org-admin/team-maintainer permission over that specific team) and Discord bot token (role assignment needs `Manage Roles`, with the bot's own role positioned above every role it's asked to grant in the guild's role hierarchy) — no new credentials beyond what IDEA-041 already needs.
 Depends on IDEA-013/014 (the join-request/acceptance this hooks into), IDEA-040 (org/guild identity), and IDEA-041 (the GitHub/Discord credentials and invite mechanism this extends from org-level to per-track).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/54 (merged as 01b440d) — gated behind new optional `GITHUB_ORG_TOKEN`/`DISCORD_BOT_TOKEN` (neither provisioned — both correctly no-op and log why, verified live: GitHub team-add attempted with the real team slug; Discord role grant correctly skipped for a contributor with no linked Discord account, by design). `github_team`/`discord_role_id` are new optional per-track fields on `pass/tracks.yaml` — none of the real tracks have them set yet, no fabricated team slugs or role ids.
+Result: PR https://github.com/cfabric/fabric-pass/pull/54 (merged as 01b440d) — gated behind new optional `GITHUB_ORG_TOKEN`/`DISCORD_BOT_TOKEN` (neither provisioned — both correctly no-op and log why, verified live: GitHub team-add attempted with the real team slug; Discord role grant correctly skipped for a contributor with no linked Discord account, by design). `github_team`/`discord_role_id` are new optional per-track fields on `pass/tracks.yaml` — none of the real tracks have them set yet, no fabricated team slugs or role ids.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/53
+Task: https://github.com/cfabric/fabric-pass/issues/53
 
 By: vzhuman · 2026-08-08
 
@@ -768,7 +768,7 @@ Idea: PR #46 and PR #38 were merged ~3 seconds apart, firing two overlapping "Bu
 
 Result: removed the stuck container and force-recreated `app` (`docker compose up -d --force-recreate app`) — confirmed `/` and `/tracks` back to 200, migration 015 applied, all four containers healthy. Self-inflicted (merged two PRs back-to-back without waiting for the first deploy to finish) and caught within minutes, not an independent discovery. Going forward: verify one PR's deploy has actually landed (not just that the GitHub Actions run reports success — that only covers build+push+webhook-call, not the droplet's own `docker compose up`) before merging the next.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/219
+Task: https://github.com/cfabric/fabric-pass/issues/219
 By: vzhuman · 2026-08-08
 
 ## [DONE] [vzhuman] IDEA-044 — Deploy webhook: verify GitHub's signature and source IP
@@ -788,24 +788,24 @@ Caddy proxies this endpoint, so the observed source IP has to come from `X-Forwa
 Webhook delivery is at-least-once — GitHub retries, so duplicate deliveries are routine rather than exceptional. The webhook still has no concurrency guard, which makes IDEA-045 more pressing under this design, not less.
 Creating the webhook in repo settings (URL, secret, event) is an owner action; this repo's code can't do it.
 
-Result: PRs https://github.com/constructorfabric/fabric-pass/pull/58 (merged as 23dab7c) and https://github.com/constructorfabric/fabric-pass/pull/59 (merged as d22d76e). Verified live end to end: two real `workflow_run` deliveries passed the IP allowlist, the signature check and the event gate, and redeployed `app` — `deploying d22d76e… (run 31369715149)` in the webhook log, with `/`, `/tracks` and `/policies` all 200 afterwards.
+Result: PRs https://github.com/cfabric/fabric-pass/pull/58 (merged as 23dab7c) and https://github.com/cfabric/fabric-pass/pull/59 (merged as d22d76e). Verified live end to end: two real `workflow_run` deliveries passed the IP allowlist, the signature check and the event gate, and redeployed `app` — `deploying d22d76e… (run 31369715149)` in the webhook log, with `/`, `/tracks` and `/policies` all 200 afterwards.
 The webhook is registered at the **organization** level, not on the repo, so `GET /repos/.../hooks` reports none — worth knowing before concluding it's missing.
 #59 fixed a bug that would otherwise have silently killed every deploy: the origin is behind Cloudflare, so the address Caddy observes is a Cloudflare edge and the rightmost `X-Forwarded-For` entry is too. The first cut read those, and would have rejected every genuine delivery with a 403. It reads `CF-Connecting-IP` instead. Confirmed live that Cloudflare overwrites a client-supplied `CF-Connecting-IP` at the edge: a forged one came back 403 (rejected on the real address) rather than 401, which is what it would have returned had the forgery reached the signature check.
 Found only by testing against the real public URL — the ten-case local matrix in #58 passed because nothing fronts `localhost`.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/56
+Task: https://github.com/cfabric/fabric-pass/issues/56
 
 By: vzhuman · 2026-08-08
 
 ## [DONE] [vzhuman] IDEA-045 — Serialize deploys in the webhook instead of by hand
 Idea: IDEA-043's overlapping-deploy outage was closed with a human process ("verify one deploy landed before merging the next"), not code — `server.mjs` still starts a `docker compose pull` per request with no mutex. Guard it with an in-flight flag that coalesces (at most one queued follow-up, not one per request), so concurrent merges and GitHub's at-least-once webhook retries can't race the same droplet again.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/60 (merged as ec394ce). Verified live under the real failure shape rather than a simulated one — the #60 merge run and a manual dispatch delivered close enough together that the second landed mid-deploy, and the webhook log shows `deploy already in flight — coalescing into a single follow-up run` followed by two `deployed:` lines: one original plus one coalesced follow-up, where IDEA-043 had two racing pulls. `/`, `/tracks` and `/policies` all 200 afterwards.
+Result: PR https://github.com/cfabric/fabric-pass/pull/60 (merged as ec394ce). Verified live under the real failure shape rather than a simulated one — the #60 merge run and a manual dispatch delivered close enough together that the second landed mid-deploy, and the webhook log shows `deploy already in flight — coalescing into a single follow-up run` followed by two `deployed:` lines: one original plus one coalesced follow-up, where IDEA-043 had two racing pulls. `/`, `/tracks` and `/policies` all 200 afterwards.
 Coalescing rather than queueing, because every deploy pulls the same `:latest` — N deliveries mid-deploy need one follow-up, not N.
 Each `docker` step is also bounded. `done()` is what releases the lock, so a hanging pull would leave the runner permanently busy and silently stop every future deploy — worse than the race being prevented. Slight scope addition over this idea's literal text, included because the mutex isn't correct without it.
 The in-memory flag is only sufficient because the webhook is one Node process in one container; scaling it to more than one replica would need a real lock and would otherwise silently stop being a guard (noted in serialize.mjs's module doc).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/57
+Task: https://github.com/cfabric/fabric-pass/issues/57
 
 By: vzhuman · 2026-08-08
 
@@ -827,9 +827,9 @@ Notes:
 "Last updated" for Vision/Policies: today's sync is full-replace (delete-all + insert on every cf-internal push — migrations/013's own doc), so `updated_at` reflects "last time this file was synced," not a true per-document edit date. Stated plainly in the UI rather than implying more precision than the data supports.
 Depends on IDEA-005 (search), IDEA-006 (policies), IDEA-007 (tracks directory), IDEA-032 (artifact links).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/64 (merged as 9156f40). Live-verified in a browser against seeded data before merge — every tile clicked through, every zero-state checked, search confirmed still round-tripping from its new `/contributors` home — then confirmed in production: `/`, `/vision`, `/policies`, `/tracks`, `/contributors` all 200 after the automatic IDEA-044/045 webhook deploy.
+Result: PR https://github.com/cfabric/fabric-pass/pull/64 (merged as 9156f40). Live-verified in a browser against seeded data before merge — every tile clicked through, every zero-state checked, search confirmed still round-tripping from its new `/contributors` home — then confirmed in production: `/`, `/vision`, `/policies`, `/tracks`, `/contributors` all 200 after the automatic IDEA-044/045 webhook deploy.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/62
+Task: https://github.com/cfabric/fabric-pass/issues/62
 
 By: vzhuman · 2026-08-10
 
@@ -849,9 +849,9 @@ Notes:
 Storage: three new nullable columns/states on `contributors`, matching this codebase's established flat-column-per-fixed-signal convention (e.g. `github_org_invited_at`) rather than a generic key-value table — simple for exactly three items, at the cost that a future fourth checklist item needs a fourth column.
 Depends on IDEA-015 (the checklist itself) and IDEA-034 (profile completeness values).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/65 (merged as ea1a629). `/policies/visit` validates against the actual registry rather than redirecting blindly — an unrestricted `?url=` param on this app's own trusted domain would have been a real open-redirect vulnerability. Migration backfills the hidden state for whatever was already done under the old completeness-gated panel (verified against real production data post-deploy: every `ready`/`complete` contributor, 45 of 53, correctly starts with "complete profile" pre-hidden — nobody sees the checklist resurface for something they'd already finished). Full interactive loop — click-through tracking, instant hide, whole-panel disappearance surviving a real reload — live-verified in a browser before merge.
+Result: PR https://github.com/cfabric/fabric-pass/pull/65 (merged as ea1a629). `/policies/visit` validates against the actual registry rather than redirecting blindly — an unrestricted `?url=` param on this app's own trusted domain would have been a real open-redirect vulnerability. Migration backfills the hidden state for whatever was already done under the old completeness-gated panel (verified against real production data post-deploy: every `ready`/`complete` contributor, 45 of 53, correctly starts with "complete profile" pre-hidden — nobody sees the checklist resurface for something they'd already finished). Full interactive loop — click-through tracking, instant hide, whole-panel disappearance surviving a real reload — live-verified in a browser before merge.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/63
+Task: https://github.com/cfabric/fabric-pass/issues/63
 
 By: vzhuman · 2026-08-10
 
@@ -870,7 +870,7 @@ Depends on IDEA-014 (the screen itself) and IDEA-004 (the public profile being l
 
 Result: PR #112 — merged, verified in production (container restarted clean, no migration needed, `/tracks/admin` responds). Verified live before merge: a `confirmed` requester showed company + a working profile-link icon, a `draft` requester showed company but no link. CodeRabbit's review found nothing actionable; declined its one generic "docstring coverage" warning — this codebase deliberately uses inline WHY-comments, not formal per-function docstrings.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/106
+Task: https://github.com/cfabric/fabric-pass/issues/106
 By: vzhuman · 2026-08-14
 
 ## [DRAFT] [vzhuman] IDEA-049 — Track member roles: Contributor and Maintainer, as two separate flows
@@ -902,18 +902,18 @@ By: vzhuman · 2026-08-14
 ## [DONE] [SysoevAndrey] IDEA-050 — Adopt @gears-frontx/ui-kit: install and audit replaceable UI
 Idea: Install `@gears-frontx/ui-kit@0.3.0-alpha.2` and map every place in the app where hand-rolled UI can be replaced by a ui-kit component, producing an adoption plan for follow-up ideas.
 
-Result: Adoption audit published on the task issue — https://github.com/constructorfabric/fabric-pass/issues/69#issuecomment-5283292081 (component-by-component mapping plus suggested slices); the dependency itself landed with IDEA-051 (PR #76).
+Result: Adoption audit published on the task issue — https://github.com/cfabric/fabric-pass/issues/69#issuecomment-5283292081 (component-by-component mapping plus suggested slices); the dependency itself landed with IDEA-051 (PR #76).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/69
+Task: https://github.com/cfabric/fabric-pass/issues/69
 
 By: SysoevAndrey · 2026-08-13
 
 ## [DONE] [SysoevAndrey] IDEA-051 — ui-kit foundation: theme.css tokens + client re-export wrappers
 Idea: First adoption slice of IDEA-050's plan — land the `@gears-frontx/ui-kit` dependency, import `theme.css` pinned to the app's light theme (`data-theme="light"`), and add a `'use client'` re-export module so server components can render the kit's hook-using components. No visual change yet.
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/76 (merged as 4518087). The re-export wrapper also prompted an upstream fix — constructorfabric/gears-frontx#568 — so the kit now ships its own `'use client'` directives as of 0.3.0-alpha.3, making the wrapper removable (IDEA-052).
+Result: PR https://github.com/cfabric/fabric-pass/pull/76 (merged as 4518087). The re-export wrapper also prompted an upstream fix — constructorfabric/gears-frontx#568 — so the kit now ships its own `'use client'` directives as of 0.3.0-alpha.3, making the wrapper removable (IDEA-052).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/70
+Task: https://github.com/cfabric/fabric-pass/issues/70
 
 By: SysoevAndrey · 2026-08-13
 
@@ -930,7 +930,7 @@ Expected outcome:
 Notes:
 Out of scope because the kit has no equivalent (not because migration stops half-way): home link-tiles, post-redirect notice banners, header/footer, search-results list, and the touch-capable `Hint` (kit Tooltip is disabled on touch by design — replacing Hint would regress #68). Toast stays out too — swapping inline errors for toasts is a UX change, its own idea.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/77
+Task: https://github.com/cfabric/fabric-pass/issues/77
 
 By: SysoevAndrey · 2026-08-14
 
@@ -950,7 +950,7 @@ Deliberately left out of this pass: surfacing `githubContributorsTeamAddedAt` on
 
 Result: PR #80 — merged, migration `023_contributors_team_config.sql` applied and verified in production, `pass/config.yaml`'s `github_contributors_team: contributors` synced and confirmed present in production's `app_config` table.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/81
+Task: https://github.com/cfabric/fabric-pass/issues/81
 By: vzhuman · 2026-08-15
 
 ## [DONE] [vzhuman] IDEA-054 — Reconciliation report: org members/invitees missing from the default team
@@ -966,7 +966,7 @@ GitHub paginates all three list endpoints (100 rows/page) — a real org needs a
 Open question: report-only, or a one-click "add to team" action per row too? Read-only is the smaller, safer first cut; a fix-in-place action is a natural, cheap follow-up once the report itself is trustworthy.
 Depends on IDEA-053 — nothing to reconcile against until the default team is actually configured.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/82
+Task: https://github.com/cfabric/fabric-pass/issues/82
 Result: One-time need — confirmed with the user (2026-08-31) that the reconciliation was done directly against GitHub rather than as a standing in-app report; closing without a report screen.
 By: vzhuman · 2026-08-15
 
@@ -985,7 +985,7 @@ Feeds directly into IDEA-056 — the Gears/Gears BSS/Gears OSS merge needs this 
 
 Result: PR #83 — merged, migration `024_track_leaders.sql` applied and verified in production; confirmed every existing leader (Studio, Insight, Gears, Gears BSS, Gears OSS, Research) survived the backfill intact.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/85
+Task: https://github.com/cfabric/fabric-pass/issues/85
 By: vzhuman · 2026-08-18
 
 ## [DONE] [vzhuman] IDEA-056 — Merge Gears, Gears BSS, and Gears OSS into a single Gears track
@@ -1003,7 +1003,7 @@ One admin login from the source tracks (`perfguru87`) never resolved on this or 
 
 Result: PR #84 (app-side grouped-links rendering, merged and verified in production) + cf-internal commit f22a0c7 (merged `pass/tracks.yaml`/`pass/artifact-links.yaml`/`pass/track-page.md`, synced and verified). Stale `gears-bss`/`gears-oss` rows manually removed from production after confirming only harmless pending join requests depended on them — production now lists exactly 5 tracks (Gears, Governance, Insight, Research, Studio).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/86
+Task: https://github.com/cfabric/fabric-pass/issues/86
 By: vzhuman · 2026-08-18
 
 ## [DONE] [vzhuman] IDEA-057 — Gears track page: fix section order, item order, add Andreev as Architect, repositories as a table
@@ -1021,7 +1021,7 @@ Directly fixes discrepancies found in IDEA-056's shipped result, plus one straig
 
 Result: PR #87 — merged, migration `025_artifact_links_position.sql` applied and verified in production; cf-internal commit 2ed0328 (`pass/track-page.md` reordered, `Artifizer` added as Gears' third Architect) synced and verified — Gears now has 3 architects, template sections render Vision → Roadmap → Repositories → Documentation → Leaders.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/88
+Task: https://github.com/cfabric/fabric-pass/issues/88
 By: vzhuman · 2026-08-18
 
 ## [DONE] [vzhuman] IDEA-058 — Consistent, actionable re-auth prompts when the session is gone mid-action
@@ -1038,7 +1038,7 @@ No new session mechanism needed — iron-session's existing 5-day cookie (sessio
 
 Result: PR #89 — merged and verified in production (`curl https://pass.cfabric.org/profile?notice=sign-in-required` renders "Your session has ended. Please sign in with GitHub again."). Grigoriy can now sign in again and click Confirm to actually trigger the send.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/90
+Task: https://github.com/cfabric/fabric-pass/issues/90
 By: vzhuman · 2026-08-19
 
 ## [DONE] [vzhuman] IDEA-059 — Fix GitHub sign-in: "Linking github did not complete" for every user
@@ -1053,7 +1053,7 @@ Notes:
 Discord's provider config (`lib/providers/discord.ts`) has the same manual-issuer shape (`issuer: 'https://discord.com'`) and could in principle hit the same class of bug if Discord ever starts sending a mismatched `iss` too — not touched here since there's no evidence it's currently broken; flagged for awareness, not fixed preemptively.
 
 Result: PR #91
-Task: https://github.com/constructorfabric/fabric-pass/issues/220
+Task: https://github.com/cfabric/fabric-pass/issues/220
 By: vzhuman · 2026-08-20
 
 ## [DONE] [vzhuman] IDEA-060 — Track join approval: auto-create/join GitHub team, invite to org first if needed; per-track GitHub team names driven by a global pattern
@@ -1071,7 +1071,7 @@ Depends on IDEA-040 (`discord_guild_id`)/IDEA-042 (the grant flow and `discord_r
 
 Result: PR #92 — merged, migration `026_github_track_team_pattern.sql` applied and verified in production; cf-internal commit c5df259 (`discord_guild_id`, `github_track_team_pattern`, per-track `discord_role_id`) synced and verified. One-time moderator backfill executed against production's real Discord API (10 grants: Studio → ainetx/vasylcf, Insight → lobster40, Gears → MikeFalcon77/diffora/entropyshift/nonameffh, Research → sulasen, Governance → frontgeeks/lobster40), all 10 returned 204 and spot-checked against Discord's own member endpoint.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/93
+Task: https://github.com/cfabric/fabric-pass/issues/93
 By: vzhuman · 2026-08-20
 
 ## [DONE] [vzhuman] IDEA-061 — Rename Gears to Gears Rust; add Gears FrontX track
@@ -1089,7 +1089,7 @@ One-time operational follow-up, same pattern as IDEA-060's mod-role backfill: gr
 
 Result: cf-internal commit 93f81fc — synced and verified. Production's `gears` row was renamed in place first (`UPDATE tracks SET slug='gears-rust', name='Gears Rust' WHERE slug='gears'`), confirmed its two real approved members (capybutler, striped-zebra-dev) survived; `gears-frontx` track, leaders, admins, and its Vision link all confirmed live. Both `frontgeeks` and `GeraBart` granted `mod-gears-frontx` directly via the Discord API (204, spot-checked against Discord's own member endpoint).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/94
+Task: https://github.com/cfabric/fabric-pass/issues/94
 By: vzhuman · 2026-08-20
 
 ## [DONE] [vzhuman] IDEA-062 — Track Admin can remove an approved member
@@ -1107,7 +1107,7 @@ Confirmed with the user: a new `removed` status, not reusing `rejected` or delet
 
 Result: PR #95 — merged, migration `027_track_member_removal.sql` applied and verified in production. Verified live end-to-end before merge: Remove correctly computed the track's GitHub team slug and attempted both revokes (confirmed via logs), stamped `track_members.status = 'removed'` and the `admin_actions` audit row, and the removed contributor successfully requested to join again ("Removed" badge, not "Declined"). CodeRabbit's two other findings (migration constraint locking, missing fetch timeouts) were reviewed and not applied — the table has ~a dozen production rows so the lock concern doesn't apply, and the timeout gap is pre-existing and codebase-wide, not introduced here (flagged as a separate follow-up task instead).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/96
+Task: https://github.com/cfabric/fabric-pass/issues/96
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-063 — Contributor <-> Maintainer roles: promote/demote, a `<track>-maintainers` GitHub team
@@ -1126,7 +1126,7 @@ Depends on IDEA-060 (the `<track>-contributors` team + pattern mechanism this mi
 
 Result: PR #97 — merged, migration `028_track_member_role.sql` applied and verified in production (container restarted clean, migration confirmed via app boot log, `/tracks/admin` responds). Verified live end-to-end before merge: Promote correctly granted the computed `gears-maintainers` GitHub team (confirmed via logs), flipped the role badge/button, and logged the `promote_to_maintainer` audit row; Demote reversed all three. CodeRabbit stayed rate-limited on this PR for over an hour (5 PRs opened same day exhausted the free OSS review allotment) — merged on DCO + manual verification alone, with the user's explicit go-ahead.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/98
+Task: https://github.com/cfabric/fabric-pass/issues/98
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-064 — Track participation labels + avatar rank badge
@@ -1144,7 +1144,7 @@ Depends on IDEA-063 (the Contributor/Maintainer role this reads) and IDEA-011/ro
 
 Result: PR #105 — merged (after rebasing twice past real conflicts with IDEA-063's and IDEA-066's own changes landing on `main` first, both resolved by combining adjacent import/test additions), verified in production (container restarted clean, no migration to apply, `/profile`/`/admin`/`/contributors/*` all respond). Verified live before merge with a 4-contributor scenario spanning every rank (plain Contributor, Maintainer on one track, Track Admin of one track + Contributor on another): confirmed correct badge/icon per track and the avatar's single-highest-rank badge, via DOM inspection of each icon's actual path data rather than just visually. CodeRabbit's two Minor findings (a duplicate `adminTrackIds` query in layout.tsx, and the avatar badge's rank not reaching assistive tech since its icon is `aria-hidden`) were valid and fixed; its one Major finding (N+1 `listTrackParticipation` calls on the Admin page) was declined — matches this app's already-accepted per-row query pattern (tracks/admin/page.tsx does the same for its own per-track lookups) at this app's actual contributor-count scale.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/99
+Task: https://github.com/cfabric/fabric-pass/issues/99
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-065 — Tracks dashboard: replace leader/repo counts with a "View track" button
@@ -1152,7 +1152,7 @@ Idea: The Tracks dashboard (`/tracks`) shows each track's leader count and repos
 
 Result: PR #103 — merged, verified in production (container restarted clean, `/tracks` responds). CodeRabbit's one finding (each card's button read the same "View track" to screen-reader button navigation) was valid and fixed — `aria-label={`View ${track.name}`}` now names the specific track.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/101
+Task: https://github.com/cfabric/fabric-pass/issues/101
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-066 — Copy a semicolon-separated confirmed-contributor email list, for Admin and Track Admin
@@ -1169,7 +1169,7 @@ A track member's own `track_members` approval doesn't independently guarantee th
 
 Result: PR #104 — merged (after rebasing past a real conflict with IDEA-063's Promote/Demote UI landing on `main` first — same file, adjacent changes, resolved by combining both import blocks), verified in production (container restarted clean, `/admin` and `/tracks/admin` both respond). Verified live before merge with 5 contributors at different confirmation states: the Admin button correctly showed "(2)" and the Track Admin's per-track button correctly showed "(1)", each excluding the draft/blocked/unconfirmed-email cases. CodeRabbit stayed rate-limited through this PR's whole review window — merged on DCO + manual verification, per the user's standing go-ahead from IDEA-063.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/102
+Task: https://github.com/cfabric/fabric-pass/issues/102
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-067 — Unified profile label group: Stranger/Contributor, tracks, and profile readiness together
@@ -1187,7 +1187,7 @@ Depends on IDEA-064 (the track-label plumbing this extends) and IDEA-034 (profil
 
 Result: PR #114 — merged (after rebasing past IDEA-048's merge and reopening once GitHub auto-closed the original PR when that base branch was deleted), verified in production (container restarted clean, `/admin` and `/tracks/admin` both respond). Verified live before merge across all four surfaces with three contributors spanning every state (Stranger/incomplete, Contributor/ready+on-a-track, Contributor/complete+track-admin): confirmed the exact group and order everywhere, and confirmed the Track Admin list's own per-track role badge visually matches the new Contributor badge. CodeRabbit stayed rate-limited through this PR's review window — merged on DCO + manual verification.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/107
+Task: https://github.com/cfabric/fabric-pass/issues/107
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-068 — Close button on Vision, Policies, Tracks, and People
@@ -1198,7 +1198,7 @@ Expected outcome:
 
 Result: PR #115 — merged, verified in production (container restarted clean, `/tracks` responds). Verified live before merge: the close button renders in the same top-right spot on all four pages and navigates back to Home.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/108
+Task: https://github.com/cfabric/fabric-pass/issues/108
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-069 — Profile always opens to Edit; Save and Close both return Home; Save force-persists
@@ -1211,7 +1211,7 @@ Expected outcome:
 
 Result: PR #116 — merged (after rebasing past a real conflict with IDEA-067's own changes to this same file, resolved by keeping IDEA-067's `ProfileLabels`/`confirmed` prop and dropping the now-dead view-mode imports/doc comments), verified in production (container restarted clean, `/profile` responds). Verified live before merge: an already-complete profile opened editable (previously would have opened read-only); edited a field and clicked Save in the same tick as the edit (no wait for the 600ms autosave debounce) — queried the database directly afterward and the new value was there, confirming Save force-persists rather than racing autosave; confirmed Close also navigates home.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/109
+Task: https://github.com/cfabric/fabric-pass/issues/109
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-070 — Track Admin list: clearer button names, Promote first, Remove asks to confirm
@@ -1226,7 +1226,7 @@ Depends on IDEA-048 (same file/cards) and IDEA-067 (the Contributor-role badge's
 
 Result: PR #117 — merged, verified in production (container restarted clean, `/tracks/admin` responds). Verified live before merge: renamed/reordered buttons render correctly; the Remove dialog opens with the right copy, Cancel leaves the member untouched, confirming Remove closes the dialog, removes the member from the list, and persists `status = 'removed'` in the database.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/110
+Task: https://github.com/cfabric/fabric-pass/issues/110
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-071 — Admin page: Confirm/Ignore/Revoke, with a two-Admin-approval Revoke workflow
@@ -1243,225 +1243,225 @@ Confirmed with the user: the post-approval status is a new, distinct `revoked` (
 New `removeFromGitHubOrg` in `github-org.ts` (no existing "remove from the org entirely" call — `removeFromGitHubTeam`, IDEA-062, only ever removed from a team).
 Depends on IDEA-012 (Confirm/Block, being reworked here) and IDEA-062 (the removal-call shape this mirrors).
 
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/118 (merged as 5698633) — verified live (both browser click-through and direct DB/audit-log checks against a throwaway Postgres) and in production (container restarted clean, migration 029 applied, `contributors` table carries the new revoke columns and status values). CodeRabbit's review caught four real gaps beyond the original spec, all fixed before merge: `isAdmin()` didn't check status at all, so a revoked Admin kept full in-app Admin access even after GitHub removal (fixed — gated on `confirmed`/`revoke_pending`, not `revoked`; a live re-check of that fix itself then caught a second-order regression — gating on `confirmed` alone locked an Admin out the moment their own revoke was merely requested, before any approval — fixed by keeping `revoke_pending` admitted too); the self-approval guard had a TOCTOU window (fixed by moving it into the UPDATE's WHERE clause); a failed GitHub removal was silently discarded (fixed — now captured in the audit log and surfaced to the approving Admin); and the registry file could set `revoke_pending`/`revoked` directly, bypassing the two-Admin gate entirely (fixed — those two statuses are no longer registry-writable).
+Result: PR https://github.com/cfabric/fabric-pass/pull/118 (merged as 5698633) — verified live (both browser click-through and direct DB/audit-log checks against a throwaway Postgres) and in production (container restarted clean, migration 029 applied, `contributors` table carries the new revoke columns and status values). CodeRabbit's review caught four real gaps beyond the original spec, all fixed before merge: `isAdmin()` didn't check status at all, so a revoked Admin kept full in-app Admin access even after GitHub removal (fixed — gated on `confirmed`/`revoke_pending`, not `revoked`; a live re-check of that fix itself then caught a second-order regression — gating on `confirmed` alone locked an Admin out the moment their own revoke was merely requested, before any approval — fixed by keeping `revoke_pending` admitted too); the self-approval guard had a TOCTOU window (fixed by moving it into the UPDATE's WHERE clause); a failed GitHub removal was silently discarded (fixed — now captured in the audit log and surfaced to the approving Admin); and the registry file could set `revoke_pending`/`revoked` directly, bypassing the two-Admin gate entirely (fixed — those two statuses are no longer registry-writable).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/111
+Task: https://github.com/cfabric/fabric-pass/issues/111
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-072 — Home page: Numbers section linking to Insight/Insight Lite
 Idea: A new "Numbers" section on Home with two cards — Insight (https://insight.cfabric.org) and Insight Lite (https://insight-lite.cfabric.org) — each a short description and a link out, matching the Tracks page's own Card styling.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/122 (merged) — verified live via browser and in production (container restarted clean, `/` responds 200). CodeRabbit review clean, no findings.
-Task: https://github.com/constructorfabric/fabric-pass/issues/119
+Result: PR https://github.com/cfabric/fabric-pass/pull/122 (merged) — verified live via browser and in production (container restarted clean, `/` responds 200). CodeRabbit review clean, no findings.
+Task: https://github.com/cfabric/fabric-pass/issues/119
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-073 — Home page: Courses section mirroring constructorfabric.org/learn.html
 Idea: A new "Courses" section on Home listing the 5 courses from constructorfabric.org/learn.html verbatim (name, description, link, order) — static content, entered once, not fetched live.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/123 (merged) — verified live via browser (all 5 courses in order, correct links, the two "Coming Soon" courses show no button) and in production (container restarted clean). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/120
+Result: PR https://github.com/cfabric/fabric-pass/pull/123 (merged) — verified live via browser (all 5 courses in order, correct links, the two "Coming Soon" courses show no button) and in production (container restarted clean). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/120
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-074 — Global preferred track display order
 Idea: A global `app_config` value (an ordered list of track names) controlling display order everywhere tracks are listed — the Tracks page and per-contributor track-participation labels — falling back to alphabetical for any track not named in the list, and silently skipping any listed name with no matching track.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/124 (merged) — verified live via browser (Tracks page and a multi-track contributor's labels both reorder correctly, unlisted track falls back to alphabetical last) and in production, including the actual value: cf-internal commit 0747264 added `preferred_track_order: [Studio, Insight, "Gears Rust", "Gears FrontX", "Gears Csharp", "Gears Mobile", Research, Governance]` to `pass/config.yaml`, synced automatically, confirmed present in production `app_config` via direct query. CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/121
+Result: PR https://github.com/cfabric/fabric-pass/pull/124 (merged) — verified live via browser (Tracks page and a multi-track contributor's labels both reorder correctly, unlisted track falls back to alphabetical last) and in production, including the actual value: cf-internal commit 0747264 added `preferred_track_order: [Studio, Insight, "Gears Rust", "Gears FrontX", "Gears Csharp", "Gears Mobile", Research, Governance]` to `pass/config.yaml`, synced automatically, confirmed present in production `app_config` via direct query. CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/121
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-075 — Rework Numbers into a Home tile + its own page
 Idea: IDEA-072's Numbers section shouldn't be inline on Home — it should be a same-style tile (like Vision/Policies/Tracks/People) linking to a new `/numbers` page carrying the two Insight/Insight Lite cards.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/127 (merged) — verified live (Home tile + `/numbers` page) and in production (container restarted clean, `/numbers` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/125
+Result: PR https://github.com/cfabric/fabric-pass/pull/127 (merged) — verified live (Home tile + `/numbers` page) and in production (container restarted clean, `/numbers` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/125
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-076 — Rework Courses into a Home tile + its own page, tile shows ready-course count
 Idea: IDEA-073's Courses section shouldn't be inline on Home — it should be a same-style tile linking to a new `/courses` page carrying the 5 course cards; the tile's stat is the count of courses that are actually enrollable (excluding "Coming Soon" ones).
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/128 (merged) — verified live (Home tile reading "3 courses", `/courses` page listing all 5) and in production (container restarted clean, `/courses` responds 200); also confirmed the combined Home page shows all 6 same-style tiles (Vision/Policies/Tracks/People/Numbers/Courses) together. CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/126
+Result: PR https://github.com/cfabric/fabric-pass/pull/128 (merged) — verified live (Home tile reading "3 courses", `/courses` page listing all 5) and in production (container restarted clean, `/courses` responds 200); also confirmed the combined Home page shows all 6 same-style tiles (Vision/Policies/Tracks/People/Numbers/Courses) together. CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/126
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-077 — Track membership review card polish
 Idea: On the Track Admin review screen's member card (IDEA-070/063/067): drop the redundant right-side Contributor/Maintainer role badge (already conveyed by the matching track badge's icon in the label group), make every button's capitalization consistent ("Add to Track"/"Re-add to Track", matching "Promote to Maintainer"), and restyle the GitHub-team/Discord-role grant status from a plain log-style sentence into two small status badges with a checkmark and a short date.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/130 (merged) — verified live (granted, not-granted, and pending states all checked) and in production (container restarted clean, `/tracks/admin` responds 200). CodeRabbit caught a real hydration-mismatch risk (unpinned locale/time zone in a server-rendered client component) — fixed before merge; declined its other finding (per-channel grant accuracy in the optimistic client update) as pre-existing IDEA-042/070 behavior out of this card-polish PR's scope, flagged as a follow-up task instead.
-Task: https://github.com/constructorfabric/fabric-pass/issues/129
+Result: PR https://github.com/cfabric/fabric-pass/pull/130 (merged) — verified live (granted, not-granted, and pending states all checked) and in production (container restarted clean, `/tracks/admin` responds 200). CodeRabbit caught a real hydration-mismatch risk (unpinned locale/time zone in a server-rendered client component) — fixed before merge; declined its other finding (per-channel grant accuracy in the optimistic client update) as pre-existing IDEA-042/070 behavior out of this card-polish PR's scope, flagged as a follow-up task instead.
+Task: https://github.com/cfabric/fabric-pass/issues/129
 By: vzhuman · 2026-08-21
 
 ## [DONE] [vzhuman] IDEA-078 — Fix Track membership review card layout regression
 Idea: IDEA-077 crammed the company property, ProfileLabels, and the new GitHub-team/Discord-role badges directly into the Track Admin review card's `CardHeader`, which lays out its children as flex columns rather than stacked rows — the card rendered as narrow, jumbled vertical columns instead of full-width rows. Fix: move that content into `CardContent className="admin-tile-content"`, the same pattern `admin-contributor-table.tsx` already uses correctly.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/132 (merged) — verified live at 1280px, 1280x1200px, and mobile (375px) widths (both pending-request and approved-member cards render as clean full-width rows) and in production (container restarted clean, `/tracks/admin` responds 200). CodeRabbit review clean, no findings.
-Task: https://github.com/constructorfabric/fabric-pass/issues/131
+Result: PR https://github.com/cfabric/fabric-pass/pull/132 (merged) — verified live at 1280px, 1280x1200px, and mobile (375px) widths (both pending-request and approved-member cards render as clean full-width rows) and in production (container restarted clean, `/tracks/admin` responds 200). CodeRabbit review clean, no findings.
+Task: https://github.com/cfabric/fabric-pass/issues/131
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-079 — Track rank label icons: size, not shape
 Idea: On the per-track rank badges (IDEA-064/067), swap the triple-star Maintainer icon and single-star Contributor icon for the same single star drawn at two sizes — small for Contributor, big for Maintainer — instead of one star vs. three.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/134 (merged) — verified live via DOM inspection (rendered SVG sizes exactly 9/16/12 for Contributor/Maintainer/Admin) and in production (container restarted clean, `/admin` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/133
+Result: PR https://github.com/cfabric/fabric-pass/pull/134 (merged) — verified live via DOM inspection (rendered SVG sizes exactly 9/16/12 for Contributor/Maintainer/Admin) and in production (container restarted clean, `/admin` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/133
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-080 — Admin table: drop duplicate Confirmed badge
 Idea: On the Admin contributor table's card, the top-right status badge shows "Confirmed" for a `confirmed` row, duplicating ProfileLabels' own "Contributor" identity badge just below — hide the top-right badge for that one status only; every other status (Draft/Ignored/Pending Revoke/Revoked) keeps it, since those aren't redundant with the simplified Stranger/Contributor grouping.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/136 (merged) — verified live with one contributor seeded per status (Draft, Ignored, Confirmed x2, Pending Revoke, Revoked): the top-right badge disappears only for Confirmed rows, unchanged everywhere else; verified in production (container restarted clean, `/admin` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/135
+Result: PR https://github.com/cfabric/fabric-pass/pull/136 (merged) — verified live with one contributor seeded per status (Draft, Ignored, Confirmed x2, Pending Revoke, Revoked): the top-right badge disappears only for Confirmed rows, unchanged everywhere else; verified in production (container restarted clean, `/admin` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/135
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-081 — Admin table: unified card structure
 Idea: Restructure the Admin contributor table's card into a fixed order — name, an "open public profile" icon-button top right, company on its own line, a full contacts line (GitHub/Email/Discord/Telegram/LinkedIn), labels, invite status, then buttons — matching what IDEA-082 does for the Track Admin list.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/141 (merged) — new `listContributorProfileHashes()` feeds the public-profile link; CodeRabbit caught a real bug where the hash was gated to null by initial server-rendered status and went stale after an optimistic Confirm/Revoke, fixed by always passing the status-independent hash through and gating the button's render on live status instead — reproduced and re-verified the fix live. Verified in production (container restarted clean, `/admin` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/137
+Result: PR https://github.com/cfabric/fabric-pass/pull/141 (merged) — new `listContributorProfileHashes()` feeds the public-profile link; CodeRabbit caught a real bug where the hash was gated to null by initial server-rendered status and went stale after an optimistic Confirm/Revoke, fixed by always passing the status-independent hash through and gating the button's render on live status instead — reproduced and re-verified the fix live. Verified in production (container restarted clean, `/admin` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/137
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-082 — Track Admin list: unified card structure, drop identity/completeness badges
 Idea: Same card restructure as IDEA-081, applied to the Track Admin review screen's pending/approved cards (add the missing contacts line: GitHub/Email/Discord/Telegram/LinkedIn), plus drop the Stranger/Contributor and profile-completeness badges there — keep only the per-track rank badges.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/142 (merged) — `TrackBadges` exported from profile-labels.tsx for track-only surfaces; `track_members.ts`'s contributor join extended with email/discord/telegram/linkedin. Verified in production (container restarted clean, `/tracks/admin` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/138
+Result: PR https://github.com/cfabric/fabric-pass/pull/142 (merged) — `TrackBadges` exported from profile-labels.tsx for track-only surfaces; `track_members.ts`'s contributor join extended with email/discord/telegram/linkedin. Verified in production (container restarted clean, `/tracks/admin` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/138
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-083 — Close button on Admin and Track Admin pages
 Idea: Add the same top-right "X → Home" close button every other page already has (IDEA-068's `PageHeader`) to the Admin and Track Admin pages, extending `PageHeader` with an optional `actions` slot so `/admin` can keep its Copy-email-list button alongside it.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/143 (merged) — actions grouped with the Close button in a flex row so both stay right-aligned; the other 6 existing `PageHeader` callers, which pass no `actions`, are unaffected. Verified live: both pages show the Close button; clicking it on `/admin` navigates to `/`. Verified in production (container restarted clean, both pages respond 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/139
+Result: PR https://github.com/cfabric/fabric-pass/pull/143 (merged) — actions grouped with the Close button in a flex row so both stay right-aligned; the other 6 existing `PageHeader` callers, which pass no `actions`, are unaffected. Verified live: both pages show the Close button; clicking it on `/admin` navigates to `/`. Verified in production (container restarted clean, both pages respond 200).
+Task: https://github.com/cfabric/fabric-pass/issues/139
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-084 — Badge visibility: Public Profile and Profile Edit
 Idea: Drop the Stranger/Contributor identity badge and the profile-completeness badge from the Public Profile page (keep only per-track rank badges); drop just the identity badge from the Profile Edit page (keep the completeness badge and its "still needed" hint there, per user confirmation).
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/144 (merged) — `ProfileLabels` is now Admin-table-only; every other surface renders `TrackBadges` directly. Verified live: a confirmed contributor's Public Profile shows only their track-rank badge; the signed-in contributor's own Profile Edit shows the completeness badge + "still needed" hint but no identity badge. Verified in production (container restarted clean, `/profile` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification. This closes out the 4-idea unify-Admin/Track-Admin-layout plan (IDEA-081/082/083/084).
-Task: https://github.com/constructorfabric/fabric-pass/issues/140
+Result: PR https://github.com/cfabric/fabric-pass/pull/144 (merged) — `ProfileLabels` is now Admin-table-only; every other surface renders `TrackBadges` directly. Verified live: a confirmed contributor's Public Profile shows only their track-rank badge; the signed-in contributor's own Profile Edit shows the completeness badge + "still needed" hint but no identity badge. Verified in production (container restarted clean, `/profile` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification. This closes out the 4-idea unify-Admin/Track-Admin-layout plan (IDEA-081/082/083/084).
+Task: https://github.com/cfabric/fabric-pass/issues/140
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-085 — Add Studio and Insight vision links to the Vision page
 Idea: Add "Constructor Studio Vision" and "Constructor Insight Vision" to the community Vision page, right after "Constructor Fabric Vision" — a cf-internal `pass/artifact-links.yaml` data change (community-scope `vision` entries), no fabric-pass code change, same as IDEA-030.
 Result: no fabric-pass code change — cf-internal commit 0e2d70a (`pass/artifact-links.yaml`), synced via the existing artifact-links sync workflow. Verified live in production `artifact_links` table: Constructor Fabric Vision (position 0), Constructor Studio Vision (1), Constructor Insight Vision (2), all `scope=community, category=vision`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/145
+Task: https://github.com/cfabric/fabric-pass/issues/145
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-086 — Style the track page's Repositories table
 Idea: The Repository/Description table on a track's detail page (rendered from track-page-template.ts's markdown output) has no CSS at all today — bare browser-default borders and top-aligned cramped cells. Add light borders, header background, sensible padding, and middle vertical alignment.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/147 (merged) — global `table`/`th`/`td` styling (only markdown-rendered table in this app): light row-separator borders, `--panel` header background, generous padding, middle vertical alignment, rounded outer border via the corner-cell radius trick. Verified live seeding the exact repository list from the reported screenshot, at desktop, tall, and mobile (375px) widths. Verified in production (container restarted clean, `/tracks` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/146
+Result: PR https://github.com/cfabric/fabric-pass/pull/147 (merged) — global `table`/`th`/`td` styling (only markdown-rendered table in this app): light row-separator borders, `--panel` header background, generous padding, middle vertical alignment, rounded outer border via the corner-cell radius trick. Verified live seeding the exact repository list from the reported screenshot, at desktop, tall, and mobile (375px) widths. Verified in production (container restarted clean, `/tracks` responds 200). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/146
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-087 — Diamond icon for track Contributor, star for Maintainer only
 Idea: TrackBadges' per-track rank icons currently use the same star shape for both Contributor and Maintainer (sized apart, IDEA-079). Switch plain Contributor to a new DiamondMark, leaving the star meaning only Maintainer — a shape difference reads faster than a size difference.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/151 (merged) — new `DiamondMark` in marks.tsx; crown still marks Track Admin, unchanged. Verified live: a contributor on one track as Contributor and another as Maintainer showed a diamond and a star respectively, on both Admin and Track Admin cards. Verified in production (container restarted clean, `/admin` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/148
+Result: PR https://github.com/cfabric/fabric-pass/pull/151 (merged) — new `DiamondMark` in marks.tsx; crown still marks Track Admin, unchanged. Verified live: a contributor on one track as Contributor and another as Maintainer showed a diamond and a star respectively, on both Admin and Track Admin cards. Verified in production (container restarted clean, `/admin` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/148
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-088 — Tighten the title-to-company gap on Admin/Track Admin cards
 Idea: The Admin and Track Admin card's company line (right under the name) sits a full card-header-to-content gap (1rem) below the title, reading as loose for two lines naming the same person. Pull it closer.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/151 (merged) — `.admin-tile-content > .subtitle-with-icon:first-child { margin-top: -0.5rem }`, scoped to only the company line, leaving the gap before the properties row/footer untouched. Verified live on both pages; verified in production.
-Task: https://github.com/constructorfabric/fabric-pass/issues/149
+Result: PR https://github.com/cfabric/fabric-pass/pull/151 (merged) — `.admin-tile-content > .subtitle-with-icon:first-child { margin-top: -0.5rem }`, scoped to only the company line, leaving the gap before the properties row/footer untouched. Verified live on both pages; verified in production.
+Task: https://github.com/cfabric/fabric-pass/issues/149
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-089 — Unify the Admin page's invite-status style with Track Admin's grant-status badges
 Idea: The Admin card's "GitHub: invited ... · Discord: invited ..." line is a plain sentence; Track Admin's equivalent GitHub-team/Discord-role status is two badge pills with a checkmark and short date. Restyle Admin's to match.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/151 (merged) — same badge-pill shape (checkmark, `success`/`muted` variant, short date) as track-membership-review.tsx's own grant-status badges, including pinning the date to `en-US`/`UTC` (fixes a latent hydration-mismatch risk the old unpinned `toLocaleString()` call had). Verified live and in production.
-Task: https://github.com/constructorfabric/fabric-pass/issues/150
+Result: PR https://github.com/cfabric/fabric-pass/pull/151 (merged) — same badge-pill shape (checkmark, `success`/`muted` variant, short date) as track-membership-review.tsx's own grant-status badges, including pinning the date to `en-US`/`UTC` (fixes a latent hydration-mismatch risk the old unpinned `toLocaleString()` call had). Verified live and in production.
+Task: https://github.com/cfabric/fabric-pass/issues/150
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-090 — Remove the redundant Confirmed badge from People search results
 Idea: contributor-search.tsx's search results always show a "Confirmed" badge (searchContributorsAction only ever returns confirmed contributors), so it carries no information — remove it.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/153 (merged, CodeRabbit reviewed clean) — dropped the badge and its now-unused imports; simplified `.search-result-link`'s CSS for the single-child row. Verified live: a search result shows name + company only. Verified in production (container restarted clean, `/contributors` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/152
+Result: PR https://github.com/cfabric/fabric-pass/pull/153 (merged, CodeRabbit reviewed clean) — dropped the badge and its now-unused imports; simplified `.search-result-link`'s CSS for the single-child row. Verified live: a search result shows name + company only. Verified in production (container restarted clean, `/contributors` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/152
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-091 — Track role filter on the Track Admin page
 Idea: Add a role filter (Requestor, Track Contributor, Track Maintainer, Track Admin) to the Track Admin page's search bar, same kit Select/filter-chip style as the Admin page's Status/Completeness dropdowns.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/155 (merged, CodeRabbit reviewed clean) — filter bucket per member mirrors TrackBadges' crown-overrides-role rank logic, computed per-track since role/admin status vary by track. Verified live seeding one requestor, one maintainer, and one approved-contributor-who's-also-that-track's-admin: all four filter values (plus the "Role" reset) showed exactly the right member. Verified in production (container restarted clean, `/tracks/admin` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/154
+Result: PR https://github.com/cfabric/fabric-pass/pull/155 (merged, CodeRabbit reviewed clean) — filter bucket per member mirrors TrackBadges' crown-overrides-role rank logic, computed per-track since role/admin status vary by track. Verified live seeding one requestor, one maintainer, and one approved-contributor-who's-also-that-track's-admin: all four filter values (plus the "Role" reset) showed exactly the right member. Verified in production (container restarted clean, `/tracks/admin` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/154
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-092 — Add hello1101n as Insight track admin
 Idea: Add hello1101n to Insight's `admins` list in cf-internal's `pass/tracks.yaml` (alongside the existing lobster40), synced to the `track_admins` table — no fabric-pass code change, same as IDEA-030/085.
 Result: no fabric-pass code change — cf-internal commit d0b1ab0 (`pass/tracks.yaml`), synced via the existing tracks sync workflow. Verified live in production `track_admins`: Insight now lists both lobster40 and hello1101n.
-Task: https://github.com/constructorfabric/fabric-pass/issues/156
+Task: https://github.com/cfabric/fabric-pass/issues/156
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-093 — Fix: config-assigned Track Admins invisible on the Track Admin page
 Idea: `listTrackMembership` only ever returns rows from `track_members`, so a Track Admin assigned straight from `pass/tracks.yaml`'s `admins` list (no join request of their own — e.g. lobster40 on Insight/Gears Rust) never appears in the Track Admin page's member list at all, filter or no filter. Union in `track_admins`-only rows, same LEFT JOIN pattern `listTrackParticipation` already uses for the per-profile rank badge.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/159 (merged, CodeRabbit reviewed clean, no actionable comments) — `listTrackMembership` now FULL OUTER JOINs `track_admins`; a synthesized row carries `hasMembershipRow: false`, which gates Promote/Demote/Remove/Re-add (none have a real `track_members` row to act on). Verified live reproducing the exact bug, then fixed. Verified against production data: lobster40 now correctly resolves as Track Admin for Governance and Insight (both with no membership row), matching the reported scenario.
-Task: https://github.com/constructorfabric/fabric-pass/issues/157
+Result: PR https://github.com/cfabric/fabric-pass/pull/159 (merged, CodeRabbit reviewed clean, no actionable comments) — `listTrackMembership` now FULL OUTER JOINs `track_admins`; a synthesized row carries `hasMembershipRow: false`, which gates Promote/Demote/Remove/Re-add (none have a real `track_members` row to act on). Verified live reproducing the exact bug, then fixed. Verified against production data: lobster40 now correctly resolves as Track Admin for Governance and Insight (both with no membership row), matching the reported scenario.
+Task: https://github.com/cfabric/fabric-pass/issues/157
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-094 — Remove private-repository links from Tracks pages
 Idea: `pass/tracks.yaml` lists 5 repositories that are actually private on GitHub (construct, studio-experiments on Studio; cyberfabric-tutorials on Research; cyberfabric-marketing, cyberfabric-website on Governance) — remove them; a link to a private repo 404s/permission-denies for most viewers. cf-internal data change only, no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit d0b1ab0 (`pass/tracks.yaml`), synced via the existing tracks sync workflow. Verified live in production `tracks.repositories`: all 5 private repos gone from Studio/Research/Governance; every remaining repository confirmed public via `gh api repos/constructorfabric/<name>`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/158
+Task: https://github.com/cfabric/fabric-pass/issues/158
 By: vzhuman · 2026-08-22
 
 ## [DONE] [vzhuman] IDEA-095 — Add hello1101n as Insight's Developer leader
 Idea: hello1101n was added as Insight's Track Admin (IDEA-092) but never added to Insight's `leaders.developer` list in cf-internal's `pass/tracks.yaml`, so they don't show on the public Insight track page's Leaders section. Add the missing entry — no fabric-pass code change, same as IDEA-030/085/092/094.
 Result: no fabric-pass code change — the gap was a missing data entry, not a code bug (tracks/[slug]/page.tsx's leader-rendering path already handles every `TRACK_LEADER_ROLES` value generically, already proven working for Insight's existing architect/quality leaders). cf-internal commit 2047ff7 (`pass/tracks.yaml`), synced via the existing tracks sync workflow. Verified live in production `track_leaders`: Insight now lists architect (cyberantonz), developer (hello1101n), quality (ktursunov).
-Task: https://github.com/constructorfabric/fabric-pass/issues/160
+Task: https://github.com/cfabric/fabric-pass/issues/160
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-096 — Add insight-front and insight-lite to the Insight track
 Idea: Add https://github.com/constructorfabric/insight-front and https://github.com/constructorfabric/insight-lite to Insight's repository list in cf-internal's `pass/tracks.yaml` — no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit 57d2f26. Verified live in production `tracks.repositories`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/161
+Task: https://github.com/cfabric/fabric-pass/issues/161
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-097 — Remove studio-slidey from the Studio track
 Idea: Remove https://github.com/constructorfabric/studio-slidey from Studio's repository list in `pass/tracks.yaml` — no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit 57d2f26. Verified live in production `tracks.repositories`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/162
+Task: https://github.com/cfabric/fabric-pass/issues/162
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-098 — Reorder the Studio track's repository list
 Idea: Put studio-web first, then studio, then the rest in their existing order — `pass/tracks.yaml` data change, no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit 57d2f26. Verified live in production `tracks.repositories`, order matches.
-Task: https://github.com/constructorfabric/fabric-pass/issues/163
+Task: https://github.com/cfabric/fabric-pass/issues/163
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-099 — Trim the Gears Rust track's repository list to just gears-rust
 Idea: Keep only gears-rust; remove DNA, gears-csharp, gears-mobile (DNA stays linked separately via the community-scope artifact-links guide entry) — `pass/tracks.yaml` data change, no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit 57d2f26. Verified live in production `tracks.repositories`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/164
+Task: https://github.com/cfabric/fabric-pass/issues/164
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-100 — Trim the Research track's repository list to just benchmarks
 Idea: Replace ai-courses/constructorfabric-courses with https://github.com/constructorfabric/benchmarks — `pass/tracks.yaml` data change, no fabric-pass code change.
 Result: no fabric-pass code change — cf-internal commit 57d2f26. Verified live in production `tracks.repositories`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/165
+Task: https://github.com/cfabric/fabric-pass/issues/165
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-101 — Single-column link list on the Vision page
 Idea: The Vision page's list of vision-document links reuses `.footer-links` (flex-wrap, multi-column at wider widths) — shared with the site footer and the Policies page, so it can't just be edited in place. Add a scoped modifier class, Vision-page-only, forcing a single column.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/167 (merged, CodeRabbit reviewed clean) — new `.vision-links` modifier class, `flex-direction: column`. Verified live: Vision page one-link-per-line; site footer and Policies page unaffected. Verified in production (`/vision` responds 200; a transient 502 seen right at container-restart was a proxy race, resolved within seconds).
-Task: https://github.com/constructorfabric/fabric-pass/issues/166
+Result: PR https://github.com/cfabric/fabric-pass/pull/167 (merged, CodeRabbit reviewed clean) — new `.vision-links` modifier class, `flex-direction: column`. Verified live: Vision page one-link-per-line; site footer and Policies page unaffected. Verified in production (`/vision` responds 200; a transient 502 seen right at container-restart was a proxy race, resolved within seconds).
+Task: https://github.com/cfabric/fabric-pass/issues/166
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-102 — Publish org-wide policies and link them from the Policies page
 Idea: The public `governance` repo had no policy documents at all (just LICENSE/NOTICE), and the community-scope DNA link was tagged `guide` — a category no surface renders — so it never showed on the Policies page either. Scanned the constructorfabric GitHub org and constructorfabric.org, drafted CONTRIBUTING.md/DCO.md/SECURITY.md/CODE_REVIEW.md for the governance repo (reusing DNA's existing DCO 1.1 text and contribution-flow shape), fixed gears-rust's SECURITY.md (had an Acronis-specific contact instead of an org-wide one), and re-tagged DNA's link + added the four new ones as `category: policy` in `pass/artifact-links.yaml` so they show on `/policies`. No fabric-pass code change.
 Result: no fabric-pass code change. governance commit 74331b0 (CONTRIBUTING.md, DCO.md, SECURITY.md, CODE_REVIEW.md); gears-rust commit 31186d3 (SECURITY.md contact fix); cf-internal commit 57c2e2c (`pass/artifact-links.yaml`), synced via the existing artifact-links sync workflow. Verified live: all four new governance files return 200 on GitHub, and production `artifact_links` has all 5 community-scope `policy` entries (the 4 new docs + re-tagged DNA).
-Task: https://github.com/constructorfabric/fabric-pass/issues/168
+Task: https://github.com/cfabric/fabric-pass/issues/168
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-103 — Single-column link list on the Policies page
 Idea: Apply IDEA-101's Vision-page single-column treatment to the Policies page too — same `.footer-links` list, currently still flex-wrap.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/170 (merged) — renamed the modifier class `.vision-links` → `.document-links` now that it's shared by two pages; `.footer-links` itself stays flex-wrap for the site footer. Verified live on both pages; verified in production (a transient 502 right at container-restart resolved within seconds, same pattern as IDEA-101's deploy). CodeRabbit rate-limited — merged on DCO + full manual verification.
-Task: https://github.com/constructorfabric/fabric-pass/issues/169
+Result: PR https://github.com/cfabric/fabric-pass/pull/170 (merged) — renamed the modifier class `.vision-links` → `.document-links` now that it's shared by two pages; `.footer-links` itself stays flex-wrap for the site footer. Verified live on both pages; verified in production (a transient 502 right at container-restart resolved within seconds, same pattern as IDEA-101's deploy). CodeRabbit rate-limited — merged on DCO + full manual verification.
+Task: https://github.com/cfabric/fabric-pass/issues/169
 By: vzhuman · 2026-08-23
 
 ## [DONE] [vzhuman] IDEA-104 — Broader sign-in prompt copy
 Idea: SignInPrompt's subtitle ("Sign in with GitHub to add or update your profile.") undersells itself — it's the shared gate for every signed-out page (Main, Profile, Admin, Tracks, People, ...), not just profile editing. Reword to describe what signing in actually unlocks.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/172 (merged, CodeRabbit reviewed clean) — new copy, proposed then confirmed by the user: "Sign in with GitHub to join the Constructor Fabric contributors community, manage your profile, and get access to community resources." Verified live and in production (`/` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/171
+Result: PR https://github.com/cfabric/fabric-pass/pull/172 (merged, CodeRabbit reviewed clean) — new copy, proposed then confirmed by the user: "Sign in with GitHub to join the Constructor Fabric contributors community, manage your profile, and get access to community resources." Verified live and in production (`/` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/171
 By: vzhuman · 2026-08-24
 
 ## [DONE] [vzhuman] IDEA-105 — Rename "Admin" to "Members" and "Track membership" to "Track Members" in the account menu
 Idea: Small naming pass on the two account-menu items — "Admin" → "Members", "Track membership" → "Track Members". Labels only; routes/pages unchanged.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/175 (merged, CodeRabbit reviewed) — also renamed the matching `PageHeader` titles on `/admin` and `/tracks/admin` so the menu label and the page you land on agree. Verified live; verified in production (`/` responds 200).
-Task: https://github.com/constructorfabric/fabric-pass/issues/173
+Result: PR https://github.com/cfabric/fabric-pass/pull/175 (merged, CodeRabbit reviewed) — also renamed the matching `PageHeader` titles on `/admin` and `/tracks/admin` so the menu label and the page you land on agree. Verified live; verified in production (`/` responds 200).
+Task: https://github.com/cfabric/fabric-pass/issues/173
 By: vzhuman · 2026-08-24
 
 ## [DONE] [vzhuman] IDEA-106 — Fix the account-menu avatar rank badge
 Idea: The avatar's small rank badge (user-menu.tsx) is stale from before IDEA-087: it shows nothing at all for an org-wide Admin who isn't personally a Track Admin/member of any track (highestTrackRank only looks at track-level standing), uses the old triple-star icon for Maintainer, and has no state at all for "confirmed contributor, no tracks" or "not yet confirmed." Rebuild the hierarchy: Admin or Track Admin → crown, Track Maintainer → star, Track Contributor → filled diamond, confirmed with no track participation → outline diamond, not confirmed → question mark.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/175 (merged) — new merged `AccountRank` type computed in layout.tsx from org-wide isAdmin + highestTrackRank + confirmed status; new `DiamondOutlineMark`/`QuestionMark` icons, removed the now-dead `TripleStarMark`; CodeRabbit caught a real a11y gap (both contributor states shared one aria-label) — fixed to "Track Contributor"/"Confirmed Contributor". Verified live: seeded one contributor per all 6 states, confirmed each renders the correct icon and aria-label. Verified in production.
-Task: https://github.com/constructorfabric/fabric-pass/issues/174
+Result: PR https://github.com/cfabric/fabric-pass/pull/175 (merged) — new merged `AccountRank` type computed in layout.tsx from org-wide isAdmin + highestTrackRank + confirmed status; new `DiamondOutlineMark`/`QuestionMark` icons, removed the now-dead `TripleStarMark`; CodeRabbit caught a real a11y gap (both contributor states shared one aria-label) — fixed to "Track Contributor"/"Confirmed Contributor". Verified live: seeded one contributor per all 6 states, confirmed each renders the correct icon and aria-label. Verified in production.
+Task: https://github.com/cfabric/fabric-pass/issues/174
 By: vzhuman · 2026-08-24
 
 ## [DONE] [vzhuman] IDEA-107 — Admin Repositories screen
 Idea: A new Admin-only "Repositories" page (linked from the account menu) listing every constructorfabric GitHub repo with its `Type` and `Track` custom-property labels (already defined on GitHub, mostly unset), filterable by either label and searchable by name. Read-only — clicking a repo name opens its real GitHub settings page, where the properties are actually edited.
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/177 (merged; CodeRabbit rate-limited throughout, merged on DCO + a deliberate self-review pass that caught and fixed a real gap — added a 50-page safety cap to the new pagination loop) — three new `lib/github-org.ts` functions (`listOrgRepositories`/`listOrgRepositoryProperties`/`listOrgPropertySchema`), reading live from GitHub, no new DB table/migration. Verified live: Admin gating, the "not configured" fallback (GITHUB_ORG_TOKEN unset), and the menu item's visibility/position — all reproducible locally. Verified in production: deploy healthy, the new route responds 200, `GITHUB_ORG_TOKEN` confirmed present (existence only, value never read). **Not verified**: the actual rendered repository list, filters, and GitHub-settings links against real production data — that needs an authenticated Admin session (real GitHub OAuth sign-in), which isn't something available in this environment. Whoever signs in as an Admin should check `pass.cfabric.org/admin/repositories` directly once able.
-Task: https://github.com/constructorfabric/fabric-pass/issues/176
+Result: PR https://github.com/cfabric/fabric-pass/pull/177 (merged; CodeRabbit rate-limited throughout, merged on DCO + a deliberate self-review pass that caught and fixed a real gap — added a 50-page safety cap to the new pagination loop) — three new `lib/github-org.ts` functions (`listOrgRepositories`/`listOrgRepositoryProperties`/`listOrgPropertySchema`), reading live from GitHub, no new DB table/migration. Verified live: Admin gating, the "not configured" fallback (GITHUB_ORG_TOKEN unset), and the menu item's visibility/position — all reproducible locally. Verified in production: deploy healthy, the new route responds 200, `GITHUB_ORG_TOKEN` confirmed present (existence only, value never read). **Not verified**: the actual rendered repository list, filters, and GitHub-settings links against real production data — that needs an authenticated Admin session (real GitHub OAuth sign-in), which isn't something available in this environment. Whoever signs in as an Admin should check `pass.cfabric.org/admin/repositories` directly once able.
+Task: https://github.com/cfabric/fabric-pass/issues/176
 By: vzhuman · 2026-08-24
 
 ## [DRAFT] [lobster40] IDEA-108 — Masked email alias so the real address stays hidden
@@ -1478,7 +1478,7 @@ A navigation path renders below the title section (not above it) on every page, 
 Notes:
 Promoted from DRAFT and claimed by vzhuman (2026-08-31), with the above detail from the user. Style: use whatever separator/icon best signals "this is a navigation path, not a trail of visited pages" — checking industry convention before deciding chevron vs. a home icon vs. plain text.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/186
+Task: https://github.com/cfabric/fabric-pass/issues/186
 Result: PR #187
 By: lobster40 · 2026-08-30
 By: vzhuman · 2026-08-31
@@ -1493,7 +1493,7 @@ Every optional profile field — today Telegram and LinkedIn, and any optional f
 Notes:
 Refines the original Telegram-only wording into one per-field control covering every optional field. The four mandatory fields (Full Name, Email, Company, Discord — `lib/profile-completeness.ts`) are out of scope: they are what makes a profile complete and stay visible. "Admin" here is the org-wide `isAdmin` of `lib/roles.ts`, not IDEA-011's per-track Track Admin. The lock must be enforced server-side in `getPublicProfile` (`lib/contributors.ts`), not only by dropping the row in `public-profile-view.tsx` — a locked handle must never reach the browser of a viewer who may not see it. Owner visibility needs no special case on that page, since `contributors/[hash]/page.tsx` already redirects an owner to `/profile`; it matters for any other surface that renders someone else's contacts. Storage is one boolean per optional field next to the existing provider columns rather than a JSON blob — the field set is small and closed. `app/marks.tsx` has no padlock icon yet, so an open and a closed one need adding. Profile completeness is untouched: locking a field does not make it unfilled.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/227
+Task: https://github.com/cfabric/fabric-pass/issues/227
 Result: PR #228
 By: lobster40 · 2026-08-30
 
@@ -1504,7 +1504,7 @@ By: lobster40 · 2026-08-30
 ## [DONE] [vzhuman] IDEA-112 — Fix: track leaders are not shown
 Idea: The track page's leaders section renders empty even for tracks that have leaders configured (IDEA-055 / IDEA-095), so nobody can see who leads a track.
 Notes: Promoted from DRAFT and claimed by vzhuman (2026-09-01) as part of a related batch — see IDEA-115/116/117/118. `resolveLeaders`'s silent-skip is by design and `syncTracks` validates every leader login at write time, so this is investigated against real production data before any code change, not assumed to be a code bug.
-Task: https://github.com/constructorfabric/fabric-pass/issues/178
+Task: https://github.com/cfabric/fabric-pass/issues/178
 Result: No code bug found. Queried production `track_leaders` directly (2026-08-31): all 15 current rows across every track that has leaders configured resolve cleanly to a real `contributors` row — no dangling github_id, no orphaned reference. Governance's own empty leaders list is a correct rendering of zero leaders configured there today, not a bug — closes as "working as intended," pending a named reproduction if the symptom recurs.
 By: lobster40 · 2026-08-30
 By: vzhuman · 2026-09-01
@@ -1512,7 +1512,7 @@ By: vzhuman · 2026-09-01
 ## [DONE] [vzhuman] IDEA-113 — Fix: wrong role tag and rank icon on the profile right after approval
 Idea: Immediately after a contributor is approved, their profile shows the wrong role tag and the wrong rank icon — they come up as Contributor or Maintainer with no crown, instead of the rank they were actually granted under the IDEA-087 / IDEA-106 hierarchy.
 Notes: Promoted from DRAFT and claimed by vzhuman (2026-09-01) as part of a related batch — see IDEA-115/116/117/118. Confirmed real: `tracks/admin/track-membership-review.tsx`'s `decide()` only updates `status` optimistically after Accept, never `role`/`tracks` — same staleness class as IDEA-081's `profileHash` fix.
-Task: https://github.com/constructorfabric/fabric-pass/issues/179
+Task: https://github.com/cfabric/fabric-pass/issues/179
 Result: PR #185
 By: lobster40 · 2026-08-30
 By: vzhuman · 2026-09-01
@@ -1520,33 +1520,33 @@ By: vzhuman · 2026-09-01
 ## [DONE] [vzhuman] IDEA-114 — Fix: track approval does not grant access to the track's private repository
 Idea: Approving a contributor into a track completes the IDEA-042 / IDEA-060 grant flow but leaves them without access to `cf-internal` — reproduced with Nikita, approved into Governance and still unable to read the repository the track works in.
 Notes: Promoted from DRAFT and claimed by vzhuman (2026-09-01) as part of a related batch — see IDEA-115/116/117/118. Root cause confirmed: this app has never granted a GitHub team access to a repository — `grantTrackAccess` only does org invite + `{track}-contributors`/`{track}-maintainers` membership. The actual missing piece, `{track}-internal-readers` teams, already exists on GitHub with the right repos wired up (including `cf-internal` for Governance) — this app just never adds anyone to them. Closes via IDEA-115.
-Task: https://github.com/constructorfabric/fabric-pass/issues/180
+Task: https://github.com/cfabric/fabric-pass/issues/180
 Result: Closed structurally by PR #185 (IDEA-115 + IDEA-116) — no separate code.
 By: lobster40 · 2026-08-30
 By: vzhuman · 2026-09-01
 
 ## [DONE] [vzhuman] IDEA-115 — Grant `{track}-internal-readers` team membership as part of the standard access grant
 Idea: The GitHub org already has `{track}-internal-readers` teams (governance/insight/research/studio) wired up with the right private repos — including `cf-internal` for Governance — but `grantTrackAccess` never adds an approved member to them. Extend the grant flow to also add the internal-readers team, only when it already exists (never auto-create one with no repos wired up).
-Task: https://github.com/constructorfabric/fabric-pass/issues/181
+Task: https://github.com/cfabric/fabric-pass/issues/181
 Result: PR #185. Not verified: the actual GitHub team membership change against the real org (needs production `GITHUB_ORG_TOKEN`, not available in this environment) — needs a live spot-check once a real Track Admin is next approved/re-added in production.
 By: vzhuman · 2026-09-01
 
 ## [DONE] [vzhuman] IDEA-116 — Every Track Admin becomes an approved Governance-track contributor
 Idea: Whenever `track_admins` changes (any track), reconcile Governance's `track_members` so every Track Admin is an approved Governance contributor — combined with IDEA-115, this is what grants Track Admins read access to `cf-internal` and other org-internal repos.
-Task: https://github.com/constructorfabric/fabric-pass/issues/182
+Task: https://github.com/cfabric/fabric-pass/issues/182
 Result: PR #185. Verified end-to-end against a local throwaway DB (POST to /internal/tracks/sync with a Track Admin inserts an approved Governance track_members row) — not yet verified against a real production tracks.yaml sync, which needs cf-internal's pass/config.yaml populated with github_track_internal_reader_team_pattern first (IDEA-115's own gap) to exercise the full grant.
 By: vzhuman · 2026-09-01
 
 ## [DONE] [vzhuman] IDEA-117 — Per-track page templates + Governance's "managing your track" section
 Idea: `track_page_template` is a single shared row across every track — rework it to one row per track (schema + sync route + cf-internal workflow), so each Track Admin can edit only their own track's page content. Governance's own new page content additionally gets a top section explaining track management to Track Admins, linking to the Track Members page and naming the file to edit.
-Task: https://github.com/constructorfabric/fabric-pass/issues/183
-Result: PR #188 + constructorfabric/cf-internal@3f91d82 (pass/track-page.md split into pass/track-pages/<slug>.md, Governance's own file gets the new explainer). Verified end-to-end in production: migration backfilled all 6 tracks, then the cf-internal notify workflow re-ran successfully and Governance's row now carries the real explainer content (507 chars vs. 145 for every other track).
+Task: https://github.com/cfabric/fabric-pass/issues/183
+Result: PR #188 + cfabric/cf-internal@3f91d82 (pass/track-page.md split into pass/track-pages/<slug>.md, Governance's own file gets the new explainer). Verified end-to-end in production: migration backfilled all 6 tracks, then the cf-internal notify workflow re-ran successfully and Governance's row now carries the real explainer content (507 chars vs. 145 for every other track).
 By: vzhuman · 2026-09-01
 
 ## [DONE] [vzhuman] IDEA-118 — Derive `track_admins` from `track_leaders`
 Idea: `track_admins` and `track_leaders` are two independently-maintained lists in `pass/tracks.yaml` today, and 4 of 6 tracks currently mismatch. Make `track_admins` a deduped derivation of `track_leaders` at sync time — one source of truth, no way for the two lists to diverge. Ships last of this batch, once the leader-role mapping for currently-admin-only people is in hand.
-Task: https://github.com/constructorfabric/fabric-pass/issues/184
-Result: PR #189 + constructorfabric/cf-internal@51fee09 (every track's `admins:` key dropped; diffora added as Gears Rust's developer leader; lobster40/frontgeeks added as Governance's new `governance`-role leaders, lobster40 also on Insight; perfguru87 dropped — no longer a registered contributor). Verified end-to-end in production: `track_admins` now derives exactly as designed, including 6 people (Artifizer, Corw1n-of-Amber, vzsergeyg, cyberantonz, ktursunov, NRGGIT) who were already real leaders but not admins before — now correctly admins too.
+Task: https://github.com/cfabric/fabric-pass/issues/184
+Result: PR #189 + cfabric/cf-internal@51fee09 (every track's `admins:` key dropped; diffora added as Gears Rust's developer leader; lobster40/frontgeeks added as Governance's new `governance`-role leaders, lobster40 also on Insight; perfguru87 dropped — no longer a registered contributor). Verified end-to-end in production: `track_admins` now derives exactly as designed, including 6 people (Artifizer, Corw1n-of-Amber, vzsergeyg, cyberantonz, ktursunov, NRGGIT) who were already real leaders but not admins before — now correctly admins too.
 By: vzhuman · 2026-09-01
 
 ## [DONE] [vzhuman] IDEA-119 — Personal API key: generate, show once, regenerate
@@ -1561,7 +1561,7 @@ Expected outcome:
 Notes:
 Foundational piece for IDEA-120 (the API itself) and IDEA-121 (application keys — same generate/mask/regenerate mechanic, reused for a different scope model), so this one ships first. Claimed 2026-09-01 with the user's explicit go-ahead. Resolved design decisions: hashing is a fast SHA-256 (not a slow password KDF — a high-entropy random token isn't guessable the way a human-chosen password is, so bcrypt/argon2's deliberate slowness buys nothing here and would slow down every API call). No separate "Revoke" action beyond Regenerate — matches exactly what was asked for, not a broader key-lifecycle feature.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/190
+Task: https://github.com/cfabric/fabric-pass/issues/190
 Result: PR #191. Verified live: Generate shows the full key once with a working copy action; reloading (and a fresh page load generally) only ever shows the masked form + generation timestamp; Regenerate issues a genuinely different key and replaces the stored row in place, confirmed via direct DB check. CodeRabbit caught an unhandled-rejection gap (a DB failure during generation would throw instead of returning a clean error) — fixed before merge.
 By: vzhuman · 2026-09-01
 
@@ -1579,7 +1579,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously per the user's go-ahead. Resolved open questions: no pagination on the two list endpoints (this app's own contributor/track-member counts are small enough that every other listing screen already loads everything at once — same precedent); no new rate-limiting infrastructure (none exists anywhere in this app today, and adding it is disproportionate scope for this idea); a revoked/regenerated key fails closed on the very next request, for free — the auth check is a live hash lookup against the current row, so there's no cache to invalidate. "Same data-shaping function" is satisfied by calling the exact same lib functions the screens already call (`getPublicProfile`, `listTrackMembership`, `listContributorsForRegistry`) rather than a parallel query — a field later added to what those functions return is automatically available to both the screen and the API.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/192
+Task: https://github.com/cfabric/fabric-pass/issues/192
 Result: PR #196. CodeRabbit flagged a trivial N+1 query nitpick in `/api/members` (one `listTrackParticipation` call per contributor) — skipped: it mirrors the exact same, already-accepted pattern `admin/page.tsx` and `tracks/admin/page.tsx` already use at the same scale. Verified live via curl with real generated keys: `/api/me` returns the right shape, `/api/members` and `/api/tracks/<slug>/members` correctly 401/403/404/200 across every role combination.
 By: vzhuman · 2026-09-01
 
@@ -1594,7 +1594,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously. Resolved: "admin contact" is two free-text fields (a name and an email), not linked to any fabric-pass contributor account, per the user's own answer. Application scope whitelist: `GET /api/members` only (the same endpoint/shape IDEA-120 already gives a Fabric Admin's personal key) — the only one of IDEA-120's three endpoints that isn't inherently tied to a specific human (`/api/me`) or a specific track admin's own track (`/api/tracks/<slug>/members`); an application is a non-human integration, so the org-wide member directory is the one scope that actually makes sense for it without inventing new endpoints this idea never asked for.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/193
+Task: https://github.com/cfabric/fabric-pass/issues/193
 Result: PR #198 (originally #197, re-opened after its stacked base branch was deleted post-IDEA-120-merge — same commit, rebased onto main). Verified live: registered a real application through the form, generated its key, confirmed via curl the key authenticates against `/api/members` and returns the org's member list.
 By: vzhuman · 2026-09-01
 
@@ -1610,7 +1610,7 @@ Expected outcome:
 Notes:
 Independent of IDEA-119/120/121 — can ship on its own, in any order relative to them. "Make it simple" per the user's own framing: an append-only per-`(track, contributor)` history table is enough to satisfy both "current value" and "audit trail" without a separate current-value column to keep in sync. The Fabric-wide sum-across-tracks figure is a derived read, not something that needs its own stored column. Claimed 2026-09-01, proceeding autonomously.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/194
+Task: https://github.com/cfabric/fabric-pass/issues/194
 Result: PR #199. My first `setCapacity` implementation used a single writable-CTE statement, which Postgres doesn't guarantee runs in order when the CTE's own result rows are never read — the test suite caught it immediately (two calls in a row tripped the table's own unique index); fixed with an explicit transaction, same shape `artifact-links.ts`'s `syncArtifactLinks` already uses. Verified live: edited a member's capacity to 25% on the Track Admin screen, confirmed the DB row and that it survives a reload.
 By: vzhuman · 2026-09-01
 
@@ -1626,7 +1626,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01 alongside IDEA-120/121/122, at the user's explicit request ("make sure that saved contributors participation in tracks are reflected in cf-internal... same way as details for every track and contributor"). Scope: approved memberships only (a pending/rejected/removed row isn't "participation"). No new DB table — reads straight from `track_members`/`tracks`/`contributors`.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/195
+Task: https://github.com/cfabric/fabric-pass/issues/195
 Result: PR #200 + a same-day Dockerfile hotfix (PR #201 — missed adding the new required `TRACK_MEMBERS_EXPORT_SECRET` env var's build-time placeholder, which broke the very next deploy's build step before any image was pushed; production was never actually running broken code). Added the new secret to production's `.env` and as a GitHub Actions secret before shipping. Verified live via curl against a throwaway DB (including the config-assigned-admin case) and confirmed the deployed production route responds correctly.
 By: vzhuman · 2026-09-01
 
@@ -1641,7 +1641,7 @@ Expected outcome:
 Notes:
 Server-side `setCapacity`/`getCurrentCapacity` (IDEA-122) are unchanged — this is a client-side interaction change plus one more field on the existing cf-internal export (IDEA-123), no new DB writes or migration. Claimed 2026-09-01, proceeding autonomously at the user's direct implementation request.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/203
+Task: https://github.com/cfabric/fabric-pass/issues/203
 Result: PR #204. Verified live via `/dev-login` against a throwaway DB: pencil → edit → Set persists exactly one new `track_member_capacity` history row; pencil → edit → Cancel discards the draft with no DB write. Confirmed on production: the deployed export route and the re-triggered `export-track-members.yml` both show `capacity: 1` (default) and the edited ratio correctly in `pass/track-members.yaml`. Follow-up (PR #209, same day): Set/Cancel switched from labeled buttons to the same ghost icon-only style as Edit, per user feedback that they looked mismatched.
 By: vzhuman · 2026-09-01
 
@@ -1656,7 +1656,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously at the user's direct implementation request. No new API endpoint — the example uses `/api/me`/`/api/members`, both already shipped (IDEA-120/121).
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/205
+Task: https://github.com/cfabric/fabric-pass/issues/205
 Result: PR #208. Verified live via `/dev-login`: the API Key page and Applications page both show the panel at the bottom in every state (no key, generated key, empty application list, populated list), with a working example `curl` command for each page's own key scope. Confirmed on production after deploy: the page renders correctly (sign-in prompt, no crash) with the fresh container.
 By: vzhuman · 2026-09-01
 
@@ -1671,7 +1671,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously at the user's direct implementation request. No server-side change — `createApplicationAction`/`regenerateApplicationApiKeyAction` are untouched.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/206
+Task: https://github.com/cfabric/fabric-pass/issues/206
 Result: PR #208. Verified live via `/dev-login`: "Add new application" swaps the list out for a standalone form with Profile-matching field spacing; Cancel returns to the list untouched; Register creates the application and returns to the list showing the new row, with the list and the form never shown together.
 By: vzhuman · 2026-09-01
 
@@ -1685,7 +1685,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously at the user's direct implementation request. Purely a rendering-order change; `.breadcrumb`'s own CSS and `Breadcrumb`'s own component are otherwise untouched.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/207
+Task: https://github.com/cfabric/fabric-pass/issues/207
 Result: PR #208. Verified live via `/dev-login`: the API Key page and Applications page both show "Home" (and "Home › Members") small and greyish above the title. Confirmed on production after deploy — page renders correctly with the fresh container.
 By: vzhuman · 2026-09-01
 
@@ -1700,7 +1700,7 @@ Expected outcome:
 Notes:
 Claimed 2026-09-01, proceeding autonomously at the user's direct implementation request. Batches capacity lookups per distinct track (`listCurrentCapacities`, already built for exactly this "every current ratio for this track at once" shape) rather than one query per contributor-track pair, since this endpoint returns every contributor at once.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/210
+Task: https://github.com/cfabric/fabric-pass/issues/210
 Result: PR #211. Verified with two new tests (correct ratio, and default-1 with no capacity row) plus a live curl against a throwaway DB: a member with an explicitly-set 0.4 ratio showed `"capacity":0.4` in their track entry; a contributor with no track membership returned `"tracks":[]`. Confirmed on production after deploy — `GET /api/members` still 401s cleanly without auth.
 By: vzhuman · 2026-09-01
 
@@ -1779,7 +1779,7 @@ By: lobster40 · 2026-09-07
 ## [DROPPED] [lobster40] IDEA-143 — Seed contributor rows from GitHub org membership (registry alignment, step 1)
 Idea: A contributor row only exists once the person has signed in through GitHub OAuth, so the registry knew 74 people while the constructorfabric org had 130 members — 65 org members had no row at all. Seed a draft row for every org member straight from GitHub, carrying whatever the public profile offers, so the registry reflects who is actually in the org.
 Dropped: declined. Recorded here retroactively — the idea was only ever tracked as issue #225, opened 2026-09-14 and closed 2026-09-15, and never had an entry in this registry. IDEA-143 is retired with it and is not reused; the next idea took IDEA-144.
-Task: https://github.com/constructorfabric/fabric-pass/issues/225
+Task: https://github.com/cfabric/fabric-pass/issues/225
 By: lobster40 · 2026-09-14
 
 ## [DRAFT] [lobster40] IDEA-144 — Review-queue dashboard for the whole organization
@@ -1817,7 +1817,7 @@ Accepted trade-off: pass learns which GitHub logins a viewer is looking at. That
 The consumer side (Chromium-only extension, lazy per-page batches, three-day cache expiry configurable at build time) is planned outside this repository, in the gh_name_ext working copy's `PLAN-PASS.md`; it can be developed against a local pass before this lands.
 Shape to confirm before implementation: a new `listNamesByLogins` in `src/lib/contributors.ts` (one `WHERE lower(github_login) = ANY($1)` query) behind `src/app/api/names/route.ts`, with `tests/api-names-route.test.ts` alongside the existing `api-me` and `api-members` route tests.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/230
+Task: https://github.com/cfabric/fabric-pass/issues/230
 Result: PR #237 — merged. `GET /api/names` behind `getSession` + `findByGithubId`, with `listNamesByLogins` (one `lower(github_login) = ANY($1)` query selecting only the login and the name) in `src/lib/contributors.ts`; 11 route tests cover both 400s, both 401s, the 100-login ceiling, case and duplicate collapsing, `unknown` for non-confirmed and empty-name rows, and `no-store` on success and on error. 675 of 676 tests pass and `tsc --noEmit` is clean (the one failure, `src/lib/scaffold.test.ts`, asserts Node 24 on a machine running Node 26 and predates this change). Not yet verified live: that the session cookie reaches the endpoint from the extension's MV3 service worker — that check belongs to the consumer side in `gh_name_ext`, and a 401 there would mean a separate `SameSite=None; Secure` read-only cookie and a contract change.
 By: lobster40 · 2026-09-21
 
@@ -1838,22 +1838,22 @@ Scope: Full Name only. The other mandatory fields (`lib/profile-completeness.ts`
 No export work: `lib/contributors-registry.ts` already carries `name` out to cf-internal, so a corrected name reaches the registry on the next sync.
 Settled before approval: the contributor is not notified of the correction, and the change is visible only in the Admin-only audit log — their Profile page simply shows the new value and they can overwrite it themselves. Notifying the contributor, or surfacing the edit to them outside the audit log, would each be its own idea.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/238
+Task: https://github.com/cfabric/fabric-pass/issues/238
 
 Result:
-PR https://github.com/constructorfabric/fabric-pass/pull/239 — merged. Verified against a local dev server: an Admin corrects a name from the Members page, the card updates without a reload, an empty name is refused, and the audit log reads "Edited profile field · By @lobster40 · To @messy-name · Full Name: “anatoly bobrov” → “Anatoly Bobrov”". `tsc --noEmit` is clean and 681 of 682 tests pass — the one failure is `lib/scaffold.test.ts` asserting Node v24 on a machine running v26, untouched by this branch and failing the same way on `main`.
+PR https://github.com/cfabric/fabric-pass/pull/239 — merged. Verified against a local dev server: an Admin corrects a name from the Members page, the card updates without a reload, an empty name is refused, and the audit log reads "Edited profile field · By @lobster40 · To @messy-name · Full Name: “anatoly bobrov” → “Anatoly Bobrov”". `tsc --noEmit` is clean and 681 of 682 tests pass — the one failure is `lib/scaffold.test.ts` asserting Node v24 on a machine running v26, untouched by this branch and failing the same way on `main`.
 
 By: lobster40 · 2026-09-21
 
 ## [DONE] [vzhuman] IDEA-147 — Log Governance's automatic track-admin approval to the audit log, and backfill it
 Idea: IDEA-116's `ensureTrackAdminsAreGovernanceContributors` (lib/team-access.ts) silently approves every track admin into Governance on each `pass/tracks.yaml` sync — a real, repeatable decision with no `logAdminAction` call at all, so the audit log shows nothing for it (reported as unexplained Governance members with no audit trail). Log it with a short, clear reason ("track leader automatically added to Governance") and a null/system actor (`admin_actions.actor_github_id` needs to become nullable), and backfill `admin_actions` for the grants that already happened silently — every `track_members` row that's `approved` with `decided_by_github_id IS NULL` is, by construction, one this function already created.
-Task: https://github.com/constructorfabric/fabric-pass/issues/231
+Task: https://github.com/cfabric/fabric-pass/issues/231
 Result: PR #232 — merged. Verified live against a local throwaway Postgres: POSTed a real `pass/tracks.yaml` payload to `/internal/tracks/sync` making a contributor a track leader, confirmed `/admin/audit-log` shows "Auto-approved for Governance (track leader) · By System". 665 tests pass, `tsc --noEmit` clean.
 By: vzhuman · 2026-09-22
 
 ## [DONE] [vzhuman] IDEA-148 — Auto-revoke Governance access when a track admin stops leading every track
 Idea: IDEA-116's `ensureTrackAdminsAreGovernanceContributors` only ever grants Governance membership, never revokes it — a track leader removed from `pass/tracks.yaml` (and now leading no track at all) keeps their Governance seat, GitHub team memberships, and Discord role forever. Mirror the grant: when a system-granted (`decided_by_github_id IS NULL`) Governance member is no longer in `track_admins` for any track, remove them the same way a Track Admin's manual Remove does (`removeTrackMember` + `revokeTrackAccess`), logging a matching system audit entry. `decided_by_github_id IS NULL` is already the persistent marker for "this membership was auto-granted," restored for existing rows by IDEA-147's backfill — this reuses it rather than adding new storage.
-Task: https://github.com/constructorfabric/fabric-pass/issues/233
+Task: https://github.com/cfabric/fabric-pass/issues/233
 Result: PR #232 — merged (bundled with IDEA-147, same unmerged function). Verified live: synced `leader-login` out of every track's leaders after the grant above, confirmed `/admin/audit-log` shows "Auto-revoked from Governance (no longer a track leader) · By System" and the GitHub-team/Discord-role revoke calls fired. A one-off manual data correction (outside this migration) then marked lobster40 and Artifizer's existing Governance rows as human-decided at the user's request, since they're permanent Governance members regardless of track-leader status — see conversation, not tracked as a separate idea.
 By: vzhuman · 2026-09-22
 
@@ -1871,7 +1871,7 @@ Notes:
 This idea is the view and its warnings only — nomination is IDEA-018, the tile actions and decisions are IDEA-150.
 Leaders live in `track_leaders` (IDEA-055), keyed by (track, role, github_id), so "no leaders" means no rows for that track. Governance was the only track in that state at IDEA-112's last check, so the warning path has at least one real case to verify against.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/234
+Task: https://github.com/cfabric/fabric-pass/issues/234
 Result: PR #243 — merged. `/tracks/leaders` (global Admins see every track, Track Admins their own), `appointedLeadersByTrackId` in `src/lib/track-leaders.ts`, role constants shared via import-free `src/lib/track-leader-roles.ts`. Verified live against a seeded dev DB (two led tracks + leaderless Governance): red top-block with working scroll-to anchors, in-section warning with the exact wording, draft leader without a profile link. 687 tests pass, `tsc --noEmit` clean.
 By: vzhuman · 2026-09-22
 
@@ -1892,7 +1892,7 @@ Profiles are `TRACK_LEADER_ROLES` in `src/lib/tracks.ts`; Maintainer is a `track
 Appointing or demoting a leader writes `track_leaders`, which no in-app path writes today — it is filled by the `pass/tracks.yaml` sync. Two existing behaviours hang off it and need checking in both directions: IDEA-118 derives `track_admins` from it, and IDEA-116/147/148 auto-grant and auto-revoke Governance membership for track admins.
 The GitHub and Discord consequences of approve and demote are IDEA-151.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/235
+Task: https://github.com/cfabric/fabric-pass/issues/235
 Result: PR #245 — merged. Candidates with vote labels above each track's leaders on the Track Leaders page; one Make Decision form (Approve gated on a chosen profile / Decline / Cancel); leader tiles change profile or demote to an approved Maintainer membership; `appointTrackLeader`/`setTrackLeaderRole`/`demoteTrackLeader` are the first in-app `track_leaders` writers, maintaining IDEA-118's `track_admins` and re-running the IDEA-116/148 Governance sync; four new audit actions. Verified live end to end with DB row checks after each decision. 700 tests pass, `tsc --noEmit` clean.
 By: vzhuman · 2026-09-22
 
@@ -1916,20 +1916,20 @@ Needs a new per-track config field for the moderating role (`pass/tracks.yaml` k
 The role formerly called `mod-gears` was renamed to `mod-gears-rust` (2026-09-22) — same snowflake, since a Discord rename doesn't change the ID — so it belongs to the Gears Rust track. `mod-gears-frontx` comes from IDEA-061's one-time backfill, which granted it to frontgeeks and GeraBart by hand; this idea is what stops that being a manual step.
 One thing to settle before building: "Maintainer"/"User" on the GitHub side. This repo already has a Maintainer concept as a separate `<track>-maintainers` team (`promoteToMaintainer`/`demoteToContributor` in `src/lib/team-access.ts`, IDEA-063), which is a different axis from GitHub's own team roles, also named Maintainer and Member. Reusing IDEA-063's existing pair is the cheaper reading, and it keeps demotion landing on Maintainer the way IDEA-150's button promises.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/236
+Task: https://github.com/cfabric/fabric-pass/issues/236
 Result: PR #246 — merged, with the six role ids landing in cf-internal's pass/tracks.yaml via cf-internal#29 (also merged). Migration 040 adds `tracks.discord_moderator_role_id` (YAML key `discord_moderator_role_id`); `grantLeaderAccess`/`revokeLeaderAccess` reuse IDEA-063's promoteToMaintainer/demoteToContributor pair plus the mod-role grant/revoke, wired into IDEA-150's approve and demote actions. Verified live: synced a payload with mod roles through `/internal/tracks/sync`, then appointed and demoted through the UI — the server logged the maintainer-team ensure/remove and the mod-role grant/revoke with the exact governance snowflake (tokens unset locally, so the helpers logged the calls they would make); unit tests pin the mod role, not the membership role. 706 tests pass, `tsc --noEmit` clean.
 By: vzhuman · 2026-09-22
 
 ## [DONE] [lobster40] IDEA-152 — A `run` skill that launches the app and drives it in a browser
 Idea: README already explains how to start a local checkout and how `/dev-login` replaces OAuth, but it stops at "the app is at localhost:3000" — every agent that then has to *see* a change re-invents the browser step from scratch, and one that skips the README re-invents the setup too. A project `run` skill would carry the launch recipe by reference and the missing half outright: driving the running app over the Chrome DevTools Protocol to click through a page and capture screenshots.
-Task: https://github.com/constructorfabric/fabric-pass/issues/240
-Result: PR https://github.com/constructorfabric/fabric-pass/pull/241 — merged. `.claude/skills/run/` holds SKILL.md and a dependency-free cdp.mjs driver; the recipe was exercised against a live dev server (signed in through /dev-login, navigated to /admin, clicked Edit name, read the dialog back, captured screenshots).
+Task: https://github.com/cfabric/fabric-pass/issues/240
+Result: PR https://github.com/cfabric/fabric-pass/pull/241 — merged. `.claude/skills/run/` holds SKILL.md and a dependency-free cdp.mjs driver; the recipe was exercised against a live dev server (signed in through /dev-login, navigated to /admin, clicked Edit name, read the dialog back, captured screenshots).
 By: lobster40 · 2026-09-22
 
 ## [DONE] [lobster40] IDEA-153 — Move the GitHub Real Names browser extension into this repository
 Idea: The extension that replaces GitHub logins with real names lives in a personal repository while the mapping it reads now comes from pass itself over `GET /api/names` (IDEA-145), so the two halves of one feature sit in different repositories and can drift apart — and the extension's plan and handover documents are not in git at all. Move it in as `github-real-names-extension/`, its specs and handover notes under that directory's `docs/`, so an endpoint change and a change to its only consumer can land together.
 Result: PR #242 — merged as 41fb5cb. The extension is `github-real-names-extension/`, copied as a single commit (its own history stays in the personal repository it came from), with `HANDOVER.md`, `PLAN.md`, `PLAN-PASS.md` and `GHnameExt.md` — previously untracked — under its `docs/`. It stays independent of the server build: excluded from the root `tsconfig.json` and `.dockerignore`, added to the deploy workflow's `paths-ignore` so an extension-only change never redeploys pass, and keeping its own npm lockfile rather than joining the pnpm workspace. Its release workflow moved to `.github/workflows/extension-release.yml` (GitHub runs workflows only from the repository root) and triggers on the tag prefix `extension-v*`; `npm run release` in the extension directory bumps, checks, builds, commits and tags in one command. 429 extension tests pass from the new location and the root `tsc --noEmit` is clean.
-Task: https://github.com/constructorfabric/fabric-pass/issues/248
+Task: https://github.com/cfabric/fabric-pass/issues/248
 By: lobster40 · 2026-09-22
 
 ## [DRAFT] [lobster40] IDEA-154 — Several emails per contributor, one of them primary
@@ -1962,7 +1962,7 @@ Notes:
 Extends IDEA-153, which moved the extension into this repository.
 
 Result: PR #251 — merged as bf7b622. `pass-projection.ts` no longer runs the pass cache through `resolveRecords`: it builds its `Contributor`s directly and keeps the name exactly as pass records it, so `Sanjeev SOLANKI` against the login `SanjeevSolanki` is shown instead of being dropped by the `name_equals_login` filter. The hygiene rules in `resolve.ts` are untouched — they still apply to hand-written YAML/CSV imports, which are untrusted in a way pass is not. Schema migration 2 → 3 re-projects the existing cache on update, so every affected name comes back as soon as the new version starts, without waiting out the 24h TTL or fetching pass again. 444 extension tests pass, `tsc --noEmit` and `eslint` clean.
-Task: https://github.com/constructorfabric/fabric-pass/issues/250
+Task: https://github.com/cfabric/fabric-pass/issues/250
 By: lobster40 · 2026-09-24
 
 ## [TAKEN] [vzhuman] IDEA-156 — Labs: standalone research and prototyping repositories with their own leaders and maintainers
@@ -1978,7 +1978,7 @@ The data flows the other way from tracks: `pass/tracks.yaml` is hand-edited and 
 The export secret, `LABS_EXPORT_SECRET`, is optional: the app still boots without it and the route answers 503, so this can't repeat the PR #201 deploy break.
 "Initiatives", "Explorations" and "Incubator projects" were considered as names; "Labs" won as the shortest and the clearest signal of research work.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/252
+Task: https://github.com/cfabric/fabric-pass/issues/252
 By: vzhuman · 2026-10-13
 
 ## [TAKEN] [vzhuman] IDEA-157 — Labs: grant and revoke GitHub access for Lab leaders and maintainers
@@ -1989,7 +1989,7 @@ When IDEA-156 assigns someone to a Lab, give them the matching access on the Lab
 Notes:
 This follows the convention in the org repository-configuration template: leaders `maintain`, maintainers `write`, team grants only, no direct collaborators. Assigning someone first invites them to the org if needed, the same way `grantTrackAccess` does. Adding or removing a repository on a Lab grants or drops both teams' permission on that repository. Everything is best-effort and never throws, like the track grants; the in-app write has already succeeded by the time it runs. Depends on IDEA-156.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/253
+Task: https://github.com/cfabric/fabric-pass/issues/253
 By: vzhuman · 2026-10-13
 
 ## [DRAFT] [lobster40] IDEA-158 — Sign in with Google
@@ -2053,7 +2053,7 @@ By: lobster40 · 2026-10-14
 Idea: Show a short "Join Workshop in Sofia" banner across Pass, linking to the workshop agenda at https://talks.cfabric.org/cf-sofia-2026/talk/, so every visitor sees the invitation.
 
 Result: PR #257 — merged as f9a5f80. A dark strip above the header on every page links "Join Workshop in Sofia →" to the agenda; `src/app/workshop-banner.tsx`, rendered from `layout.tsx`.
-Task: https://github.com/constructorfabric/fabric-pass/issues/256
+Task: https://github.com/cfabric/fabric-pass/issues/256
 By: vzhuman · 2026-10-15
 
 ## [DONE] [vzhuman] IDEA-162 — Link PPT styles and templates from the Policies page
@@ -2061,7 +2061,7 @@ By: vzhuman · 2026-10-15
 Idea: Add https://ppt.constructor.rocks/ — the community's PowerPoint styles and templates — as a community-scope policy link in cf-internal's `pass/artifact-links.yaml`, so it shows on /policies next to the other community rules.
 
 Result: cf-internal da1f02b — "PPT Styles & Templates" (https://ppt.constructor.rocks/) added as a community-scope policy link right after DNA; the artifact-links sync workflow delivered it to Pass successfully. Data-only change, no fabric-pass code.
-Task: https://github.com/constructorfabric/fabric-pass/issues/258
+Task: https://github.com/cfabric/fabric-pass/issues/258
 By: vzhuman · 2026-10-15
 
 ## [TAKEN] [vzhuman] IDEA-163 — Fix: a track page lists only the repositories in tracks.yaml, ignoring the Track custom property
@@ -2076,7 +2076,7 @@ Notes:
 `Track` is the source of truth for which repositories belong to a track (docs/repo-config/01-research.md, decision of 2026-10-02); `pass/tracks.yaml` keeps the per-repository metadata. At the time of writing 21 public tagged repositories appear on no track page: `frontx-showcase` (Gears FrontX), four under Gears Rust, nine under Governance and seven under Studio.
 Rows already in `pass/tracks.yaml` keep showing even when GitHub is unreachable, so a GitHub outage never empties a page.
 
-Task: https://github.com/constructorfabric/fabric-pass/issues/259
+Task: https://github.com/cfabric/fabric-pass/issues/259
 By: vzhuman · 2026-10-15
 
 ## [DONE] [vzhuman] IDEA-164 — Remove the Sofia workshop banner
@@ -2084,7 +2084,7 @@ By: vzhuman · 2026-10-15
 Idea: The Sofia workshop is over, so take down IDEA-161's "Join Workshop in Sofia →" strip above the header on every page of Pass.
 
 Result: PR #262 — merged as 41682fa. Deleted `src/app/workshop-banner.tsx`, its render in `layout.tsx` and its `.workshop-banner` styles.
-Task: https://github.com/constructorfabric/fabric-pass/issues/261
+Task: https://github.com/cfabric/fabric-pass/issues/261
 By: vzhuman · 2026-11-04
 
 ## [DONE] [vzhuman] IDEA-165 — Events section on Home, for confirmed contributors only
@@ -2099,7 +2099,7 @@ Notes:
 The recording links carry Zoom passcodes and fabric-pass is a public repository, so the event data lives in cf-internal: an `events:` list in `pass/artifact-links.yaml`, synced by the existing `/internal/artifact-links/sync` route — no new secret or shim workflow. The parser already ignores unknown top-level keys, so the cf-internal edit is safe before or after the deploy; it only shows up once synced after the deploy.
 
 Result: PR #264 — merged as e84afb0. Event data in cf-internal 6b52b73 (Workshop #2 with agenda and 7 recordings), synced to production: 1 event, 0 skipped.
-Task: https://github.com/constructorfabric/fabric-pass/issues/263
+Task: https://github.com/cfabric/fabric-pass/issues/263
 By: vzhuman · 2026-11-04
 
 ## [DONE] [vzhuman] IDEA-166 — Create the Model track
@@ -2107,7 +2107,7 @@ By: vzhuman · 2026-11-04
 Idea: Add a Model track: a `model` entry in cf-internal's `pass/tracks.yaml` with its leaders and two Discord roles (`model-contributors`, `mod-model`, with access to the Model category's private channels), "Model" in `preferred_track_order` and as a `Track` custom property value, the `model-leaders`/`-maintainers`/`-contributors` GitHub teams, and its leaders and maintainers approved as Model maintainers. No fabric-pass code change.
 
 Result: no fabric-pass code change — cf-internal 690d1e8 (`pass/tracks.yaml` Model track, `pass/config.yaml` order) and 54b27d9 (DevOps leader, after IDEA-167), synced to production: 5 leaders, 5 track admins. `Model` added to the `Track` property; teams `model-leaders` (maintain), `model-maintainers` (write), `model-contributors` (triage) created and granted on the track's repository; Discord roles `model-contributors` and `mod-model` created with access to the Model category's private channels; the 9 leaders and maintainers recorded as approved Model maintainers.
-Task: https://github.com/constructorfabric/fabric-pass/issues/265
+Task: https://github.com/cfabric/fabric-pass/issues/265
 By: vzhuman · 2026-11-11
 
 ## [DONE] [vzhuman] IDEA-167 — DevOps track leader role
@@ -2115,7 +2115,7 @@ By: vzhuman · 2026-11-11
 Idea: Add DevOps as a seventh track leader role, next to Product Manager, Architect, Developer, Quality, Researcher and Governance — a `devops` key under `leaders` in `pass/tracks.yaml`, accepted by the database and shown on the track page and the Track Leaders page. The Model track (IDEA-166) has a DevOps leader.
 
 Result: PR #267 — merged as 2774bab. `devops` in `TRACK_LEADER_ROLES` (between Developer and Quality), the `devops:` key in `pass/tracks.yaml`, migration `041_track_leaders_devops_role.sql`. Its number duplicates `041_events.sql`; the runner keys on the full filename, so both applied in production.
-Task: https://github.com/constructorfabric/fabric-pass/issues/266
+Task: https://github.com/cfabric/fabric-pass/issues/266
 By: vzhuman · 2026-11-11
 
 ## [DONE] [vzhuman] IDEA-168 — Invite new contributors as outside collaborators, never as org members
@@ -2129,5 +2129,5 @@ Confirming a contributor in Pass sends repo-collaborator invitations (outside co
 Notes:
 Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborator invitation, so the invite is per-repository (`PUT /repos/{org}/{repo}/collaborators/{user}`) over a new configured repo list. Result:
 PR #269 — merged as 16d5c08. `inviteToGitHubOrg` (the org-member invitation) deleted; Confirm now sends per-repo collaboration invitations from the new `github_collaborator_repos` config key; every team grant gated on a fail-closed `isOrgMember`; revoke strips membership and collaborator standing in one `removeGitHubAccess`. Deployed by patching the droplet directly (GitHub Actions was unavailable; `docker save | ssh`, `/opt/fabric-pass`), migration 042 applied at container start, the one pending member invitation (dev-graf) cancelled and their Pass invite stamps reset. cf-internal's config.yaml still needs the `github_collaborator_repos` key added when automation is back — until then the list is empty and Confirm's GitHub half no-ops by design.
-Task: https://github.com/constructorfabric/fabric-pass/issues/268
+Task: https://github.com/cfabric/fabric-pass/issues/268
 By: vzhuman · 2026-11-19

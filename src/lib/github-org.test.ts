@@ -35,7 +35,7 @@ test('inviteAsOutsideCollaborator calls the repo collaborator endpoint with the 
 
   expect(result).toBe(true)
   expect(fetchMock).toHaveBeenCalledWith(
-    'https://api.github.com/repos/constructorfabric/fabric-pass/collaborators/octocat',
+    'https://api.github.com/repos/cfabric/fabric-pass/collaborators/octocat',
     expect.objectContaining({
       method: 'PUT',
       headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
@@ -51,7 +51,7 @@ test('inviteAsOutsideCollaborator defaults to pull permission', async () => {
 
   await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(true)
   expect(fetchMock).toHaveBeenCalledWith(
-    'https://api.github.com/repos/constructorfabric/fabric-pass/collaborators/octocat',
+    'https://api.github.com/repos/cfabric/fabric-pass/collaborators/octocat',
     expect.objectContaining({ body: JSON.stringify({ permission: 'pull' }) }),
   )
 })
@@ -379,14 +379,14 @@ test('listOrgRepositories returns an empty array without throwing when GITHUB_OR
 test('listOrgRepositories maps the GitHub response shape and requests per_page=100', async () => {
   fakeEnv.GITHUB_ORG_TOKEN = 'test-token'
   const fetchMock = vi.fn(async () =>
-    Response.json([{ name: 'fabric-pass', html_url: 'https://github.com/constructorfabric/fabric-pass', archived: false, private: false }]),
+    Response.json([{ name: 'fabric-pass', html_url: 'https://github.com/cfabric/fabric-pass', archived: false, private: false }]),
   )
   vi.stubGlobal('fetch', fetchMock)
 
   const result = await listOrgRepositories('constructorfabric')
 
   expect(result).toEqual([
-    { name: 'fabric-pass', htmlUrl: 'https://github.com/constructorfabric/fabric-pass', archived: false, private: false },
+    { name: 'fabric-pass', htmlUrl: 'https://github.com/cfabric/fabric-pass', archived: false, private: false },
   ])
   expect(fetchMock).toHaveBeenCalledWith(
     'https://api.github.com/orgs/constructorfabric/repos?per_page=100&page=1',

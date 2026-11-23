@@ -23,7 +23,7 @@ nothing else is supported.
 
 ### 1. Download
 
-**[→ Extension releases](https://github.com/constructorfabric/fabric-pass/releases?q=extension-v&expanded=true)**
+**[→ Extension releases](https://github.com/cfabric/fabric-pass/releases?q=extension-v&expanded=true)**
 
 That link lists only the extension's releases — they are tagged `extension-v0.3.0` and so on.
 Releases in this repository whose tag has no `extension-` prefix belong to the Fabric Pass

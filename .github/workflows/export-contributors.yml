@@ -12,7 +12,7 @@ jobs:
       - name: Checkout cf-internal
         uses: actions/checkout@v4
         with:
-          repository: constructorfabric/cf-internal
+          repository: cfabric/cf-internal
           token: ${{ secrets.CF_INTERNAL_PAT }}
           path: cf-internal
 

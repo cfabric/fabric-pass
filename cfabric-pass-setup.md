@@ -45,8 +45,8 @@ documentation-safe placeholder where it is (IP address).
 | `<SSH_HOST_ALIAS>` | `fabric-pass` | Local `~/.ssh/config` `Host` alias for this server |
 | `<SSH_KEY>` | `~/.ssh/id_ed25519` | Local SSH key used to reach the server |
 | `<DROPLET_IP>` | `203.0.113.10` | The server's public IP (yours will differ — this is a documentation-only example address) |
-| `<GITHUB_REPO>` | `constructorfabric/fabric-pass` | The repo this is deployed from |
-| `<GHCR_IMAGE>` | `ghcr.io/constructorfabric/fabric-pass` | Where CI publishes images |
+| `<GITHUB_REPO>` | `cfabric/fabric-pass` | The repo this is deployed from |
+| `<GHCR_IMAGE>` | `ghcr.io/cfabric/fabric-pass` | Where CI publishes images |
 | `<RESEND_DOMAIN>` | `cfabric.org` | The domain you verify in Resend and send confirmation emails from |
 
 ## Step 1 — Provision the server
