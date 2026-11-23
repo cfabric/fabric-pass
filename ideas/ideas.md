@@ -2131,3 +2131,13 @@ Urgent operator request of 2026-11-19. GitHub has no org-wide outside-collaborat
 PR #269 — merged as 16d5c08. `inviteToGitHubOrg` (the org-member invitation) deleted; Confirm now sends per-repo collaboration invitations from the new `github_collaborator_repos` config key; every team grant gated on a fail-closed `isOrgMember`; revoke strips membership and collaborator standing in one `removeGitHubAccess`. Deployed by patching the droplet directly (GitHub Actions was unavailable; `docker save | ssh`, `/opt/fabric-pass`), migration 042 applied at container start, the one pending member invitation (dev-graf) cancelled and their Pass invite stamps reset. cf-internal's config.yaml still needs the `github_collaborator_repos` key added when automation is back — until then the list is empty and Confirm's GitHub half no-ops by design.
 Task: https://github.com/cfabric/fabric-pass/issues/268
 By: vzhuman · 2026-11-19
+
+## [TAKEN] [vzhuman] IDEA-169 — GitLab on the contributor profile
+
+Idea:
+Add GitLab as a linked account on the contributor profile, the same way Discord, Telegram and LinkedIn are linked (OAuth, so the account is proven, not typed), shown as the last field of the Profile form.
+
+Notes:
+gitlab.com only, `read_user` scope; stores the GitLab user id, username and display name. Optional on a deploy the way LinkedIn is: hidden until GITLAB_CLIENT_ID/GITLAB_CLIENT_SECRET are both set. An optional field with its own padlock (IDEA-110). Not counted toward profile completeness, so no existing Full Profile drops back to Ready. Registering the OAuth application on gitlab.com and putting its credentials into the deploy env is a companion step for the operator.
+
+By: vzhuman · 2026-11-24
