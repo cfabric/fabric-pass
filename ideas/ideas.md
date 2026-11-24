@@ -2161,4 +2161,5 @@ By: vzhuman · 2026-11-24
 Idea:
 The account menu shows API Key to everyone signed in, and the API Key page, its Generate/Regenerate action and API-key authentication check only for a session or a known key, so a Stranger or a contributor the Admin table shows as Incomplete Profile (claudedigon) can get and use a personal API key. Gate all of it on an approved contributor (confirmed, or revoke_pending) whose profile isn't Incomplete.
 
+Task: https://github.com/cfabric/fabric-pass/issues/275
 By: vzhuman · 2026-11-24
