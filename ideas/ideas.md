@@ -2132,7 +2132,7 @@ PR #269 — merged as 16d5c08. `inviteToGitHubOrg` (the org-member invitation) d
 Task: https://github.com/cfabric/fabric-pass/issues/268
 By: vzhuman · 2026-11-19
 
-## [TAKEN] [vzhuman] IDEA-169 — GitLab on the contributor profile
+## [DONE] [vzhuman] IDEA-169 — GitLab on the contributor profile
 
 Idea:
 Add GitLab as a linked account on the contributor profile, the same way Discord, Telegram and LinkedIn are linked (OAuth, so the account is proven, not typed), shown as the last field of the Profile form.
@@ -2140,5 +2140,6 @@ Add GitLab as a linked account on the contributor profile, the same way Discord,
 Notes:
 gitlab.com only, `read_user` scope; stores the GitLab user id, username and display name. Optional on a deploy the way LinkedIn is: hidden until GITLAB_CLIENT_ID/GITLAB_CLIENT_SECRET are both set. An optional field with its own padlock (IDEA-110). Not counted toward profile completeness, so no existing Full Profile drops back to Ready. Registering the OAuth application on gitlab.com and putting its credentials into the deploy env is a companion step for the operator.
 
+Result: PR #271 — merged as 6912478. GitLab is linked through OAuth (gitlab.com, `read_user` scope; the email that scope exposes is never read) and is the last field of the Profile form, with its own Admins-only padlock; not part of profile completeness. Migration 043 applied in production at container start. The GitLab OAuth application is registered (redirect `https://pass.cfabric.org/auth/gitlab/callback`) and GITLAB_CLIENT_ID/GITLAB_CLIENT_SECRET are in the server `.env`, so the row is live.
 Task: https://github.com/cfabric/fabric-pass/issues/270
 By: vzhuman · 2026-11-24
