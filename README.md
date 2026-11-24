@@ -15,7 +15,8 @@ The `contributors` table (`migrations/001_contributors.sql`, reshaped by `migrat
 | `github_name`, `github_email` | From GitHub's own public profile, refreshed on every sign-in — not what's typed into the form below. `github_email` is specifically whichever address (if any) the account holder has chosen to make public; GitHub exposes nothing more without asking for an additional scope, so this is often null |
 | `telegram_id`, `telegram_username`, `telegram_phone`, `telegram_name` | Telegram's ID (unique) — stored as text, since it isn't bounded to 64 bits the way a `bigint` is (`discord_id` below was already text for the same reason); current `@username`, or a phone number when the account has none; `telegram_name` from the account's own profile |
 | `discord_id`, `discord_username`, `discord_name` | Discord's snowflake ID (unique), current username, and current display name (`global_name`) |
-| `linkedin_id`, `linkedin_name` | LinkedIn's ID (unique, stored as text — same reasoning as `telegram_id`) and current display name. No `linkedin_username`: LinkedIn's OIDC profile has no username or vanity-URL claim, so `linkedin_name` is the only label there is. This app's only *optional* provider — see [Environment variables](#environment-variables) |
+| `gitlab_id`, `gitlab_username`, `gitlab_name` | IDEA-169 — GitLab's numeric user ID (unique, stored as text), current username, and current display name, read from gitlab.com's `/api/v4/user` with the `read_user` scope; the account's email, which that scope also exposes, is never read or stored. Optional, like LinkedIn, and not part of `profile_completeness` |
+| `linkedin_id`, `linkedin_name` | LinkedIn's ID (unique, stored as text — same reasoning as `telegram_id`) and current display name. No `linkedin_username`: LinkedIn's OIDC profile has no username or vanity-URL claim, so `linkedin_name` is the only label there is. An *optional* provider, like GitLab — see [Environment variables](#environment-variables) |
 | `name`, `company` | Entered directly in the form, one field at a time as it autosaves; both optional — a blank value clears the column |
 | `email` | Entered directly in the form, same as `name`/`company` — but see [Email confirmation](#email-confirmation): saving a new value here has side effects beyond this one column |
 | `email_confirmed_at` | Set the moment `email` is confirmed; `null` until then. Owned by this app, not the registry sync — exported for visibility, never imported back (see [Email confirmation](#email-confirmation)) |
@@ -44,13 +45,13 @@ Both read the same message, `REAUTH_REQUIRED_MESSAGE` in `src/app/auth/notice.ts
 
 ## Finding other contributors
 
-Main's search box (`src/app/contributor-search.tsx`, `searchContributors` in `src/lib/contributors.ts`) matches name, email, GitHub username/email, Discord username, Telegram username, and LinkedIn name — case-insensitively, against `confirmed` contributors only, once 3 or more characters are typed. Up to 5 results, a match at the start of a field ranked above one only containing the query somewhere inside it.
+Main's search box (`src/app/contributor-search.tsx`, `searchContributors` in `src/lib/contributors.ts`) matches name, email, GitHub username/email, Discord username, Telegram username, LinkedIn name, and GitLab username — case-insensitively, against `confirmed` contributors only, once 3 or more characters are typed. Up to 5 results, a match at the start of a field ranked above one only containing the query somewhere inside it.
 
 Selecting a result opens `/contributors/[hash]` (`src/app/contributors/[hash]/page.tsx`), a read-only public profile — signed-in contributors only, same as the rest of the app. `hash` is `md5(id)`, computed at query time rather than stored: short and stable, with no migration or backfill needed. A hash that doesn't resolve to a `confirmed` contributor reads as "not found," whether that's because it's malformed, points at a `draft` signup, or never existed at all; opening your own profile link redirects to the editable `/profile` instead of showing the same page read-only a second time.
 
 The profile merges in everything recorded across the contributor's whole alias cluster (`resolveProfileCluster`), not just the specific row the link points at — opening an alias's page shows the primary's Discord, and opening the primary's page shows an alias's Telegram, wherever each was actually linked. Email only appears when the contributing row's address is confirmed; LinkedIn never gets a clickable link at all, since its OIDC profile carries no username or vanity-URL claim to build one from — see [Data collected](#data-collected).
 
-IDEA-110 — a contributor can lock either of the two optional fields, Telegram or LinkedIn, to Admins only, via a padlock button next to it on `/profile`; the four mandatory fields can't be locked. This is enforced in `getPublicProfile` itself (`src/lib/contributors.ts`), not in `PublicProfileView` — a restricted handle is never sent to a viewer who may not see it, rather than sent and merely not rendered. A locked field is also not matchable by `searchContributors` for a viewer who may not see it: typing someone's hidden Telegram username and getting them back as a search hit would itself confirm the handle belongs to them. "Admin" here always means the org-wide role (`lib/roles.ts`'s `isAdmin`), never a per-track Track Admin. The lock only governs what other *contributors* see — every Admin-authenticated surface (the Admin page, `/api/members`, the cf-internal registry export, and the per-track member APIs) is deliberately unchanged, since those exist for the organization's own operators and exports, not for one contributor browsing another's profile.
+IDEA-110 — a contributor can lock any of the optional fields — Telegram, LinkedIn, or GitLab (IDEA-169) — to Admins only, via a padlock button next to it on `/profile`; the four mandatory fields can't be locked. This is enforced in `getPublicProfile` itself (`src/lib/contributors.ts`), not in `PublicProfileView` — a restricted handle is never sent to a viewer who may not see it, rather than sent and merely not rendered. A locked field is also not matchable by `searchContributors` for a viewer who may not see it: typing someone's hidden Telegram username and getting them back as a search hit would itself confirm the handle belongs to them. "Admin" here always means the org-wide role (`lib/roles.ts`'s `isAdmin`), never a per-track Track Admin. The lock only governs what other *contributors* see — every Admin-authenticated surface (the Admin page, `/api/members`, the cf-internal registry export, and the per-track member APIs) is deliberately unchanged, since those exist for the organization's own operators and exports, not for one contributor browsing another's profile.
 
 ## Local setup
 
@@ -126,17 +127,18 @@ The test suite runs against `contributor_registry_test`, using the credentials a
 | `CONFIG_SYNC_SECRET` | Shared secret guarding `/internal/config/sync` (see [App config](#app-config)) |
 | `TRACK_MEMBERS_EXPORT_SECRET` | Shared secret guarding `/internal/track-members/export` — the export direction only, one-way (DB → cf-internal's `pass/track-members.yaml`), same shape as `CONTRIBUTORS_EXPORT_SECRET` above |
 | `RESEND_API_KEY`, `RESEND_FROM_ADDRESS` | **Optional** — see [Email confirmation](#email-confirmation). With `RESEND_API_KEY` unset, a confirmation email is logged instead of sent, so the app still boots and runs with neither of these set |
-| `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET` | **Optional** — from the LinkedIn application, see [LinkedIn](#linkedin) below. This app's only optional *provider*: with both unset, the app still boots and runs, the LinkedIn row is left off the profile form, and `/auth/linkedin` (and its callback) respond 404 — setting just one of the two fails env validation at boot |
+| `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET` | **Optional** — from the LinkedIn application, see [LinkedIn](#linkedin) below. An optional *provider* (GitLab below is the other): with both unset, the app still boots and runs, the LinkedIn row is left off the profile form, and `/auth/linkedin` (and its callback) respond 404 — setting just one of the two fails env validation at boot |
+| `GITLAB_CLIENT_ID`, `GITLAB_CLIENT_SECRET` | **Optional** — from the GitLab application, see [GitLab](#gitlab) below. Same posture as LinkedIn: with both unset the GitLab row is left off the profile form and `/auth/gitlab` (and its callback) respond 404 — setting just one of the two fails env validation at boot |
 | `ROOT_GITHUB_ID` | **Optional** — the numeric GitHub id of this app's single root user; unset means no root user at all. Always an Admin, on top of whatever `is_admin` says — see [Roles & Admin](#roles--admin) |
 | `DO_API_TOKEN`, `DO_DROPLET_ID` | **Optional** — a read-only DigitalOcean API token and the production droplet's numeric id, see [Droplet status](#droplet-status). With both unset, the Admin-only footer status section doesn't render at all — setting just one of the two fails env validation at boot |
 | `GITHUB_ORG_TOKEN` | **Optional**, independent of `DISCORD_BOT_TOKEN` below — an `admin:org`-scoped GitHub token, see [Auto-invite and track access](#auto-invite-and-track-access). With it unset, GitHub org invites and team adds silently no-op and log why |
 | `DISCORD_BOT_TOKEN` | **Optional**, independent of `GITHUB_ORG_TOKEN` above — a Discord bot token with `Manage Roles` in the target guild, see [Auto-invite and track access](#auto-invite-and-track-access). With it unset, Discord role grants silently no-op and log why |
 
-The fourteen above `RESEND_*` are required, not just for running the app: `src/lib/env.ts` validates the whole environment at import, and `next build` imports every route module while collecting page data, so `pnpm build` fails before it reaches any provider if even one variable is unset. Placeholder values satisfy this — the build never contacts a provider. `RESEND_*`, `LINKEDIN_CLIENT_ID`/`LINKEDIN_CLIENT_SECRET`, `ROOT_GITHUB_ID`, `DO_API_TOKEN`/`DO_DROPLET_ID`, and `GITHUB_ORG_TOKEN`/`DISCORD_BOT_TOKEN` are the exceptions, deliberately: this app needs to keep booting in an environment where email, LinkedIn, a root user, droplet monitoring, or the auto-invite feature hasn't been configured yet.
+The fourteen above `RESEND_*` are required, not just for running the app: `src/lib/env.ts` validates the whole environment at import, and `next build` imports every route module while collecting page data, so `pnpm build` fails before it reaches any provider if even one variable is unset. Placeholder values satisfy this — the build never contacts a provider. `RESEND_*`, `LINKEDIN_CLIENT_ID`/`LINKEDIN_CLIENT_SECRET`, `GITLAB_CLIENT_ID`/`GITLAB_CLIENT_SECRET`, `ROOT_GITHUB_ID`, `DO_API_TOKEN`/`DO_DROPLET_ID`, and `GITHUB_ORG_TOKEN`/`DISCORD_BOT_TOKEN` are the exceptions, deliberately: this app needs to keep booting in an environment where email, LinkedIn, GitLab, a root user, droplet monitoring, or the auto-invite feature hasn't been configured yet.
 
 ## Registering the OAuth applications
 
-Each redirect URI must match the app's `APP_URL` exactly, so **every environment (local, staging, production) needs its own registration at all three required providers** — a local run and a deployed one cannot share credentials. LinkedIn is optional (see [LinkedIn](#linkedin) below) — an environment can skip registering it entirely.
+Each redirect URI must match the app's `APP_URL` exactly, so **every environment (local, staging, production) needs its own registration at all three required providers** — a local run and a deployed one cannot share credentials. LinkedIn and GitLab are optional (see [LinkedIn](#linkedin) and [GitLab](#gitlab) below) — an environment can skip registering either one entirely.
 
 ### GitHub
 
@@ -163,11 +165,24 @@ Put the bot's client ID and secret into `TELEGRAM_CLIENT_ID` / `TELEGRAM_CLIENT_
 
 ### LinkedIn
 
-**Optional** — the only provider here an environment can skip entirely; see [Environment variables](#environment-variables) above for what happens with it unset.
+**Optional** — one of the two providers here (with GitLab) an environment can skip entirely; see [Environment variables](#environment-variables) above for what happens with it unset.
 
 At [linkedin.com/developers/apps](https://www.linkedin.com/developers/apps) → Create app (requires an existing LinkedIn Company Page to attach it to) → Products tab → request "Sign In with LinkedIn using OpenID Connect" → Auth tab → Authorized redirect URLs → add `{APP_URL}/auth/linkedin/callback`.
 
 Put the client ID and secret into `LINKEDIN_CLIENT_ID` / `LINKEDIN_CLIENT_SECRET`.
+
+### GitLab
+
+**Optional**, same as LinkedIn (IDEA-169); see [Environment variables](#environment-variables) above for what happens with it unset.
+
+At [gitlab.com/-/user_settings/applications](https://gitlab.com/-/user_settings/applications) (or a GitLab group's Settings → Applications, so the app isn't tied to one person's account) → Add new application:
+
+- Name: anything recognizable, e.g. "Constructor Fabric Pass"
+- Redirect URI: `{APP_URL}/auth/gitlab/callback`
+- Confidential: checked
+- Scopes: `read_user` only
+
+Put the Application ID and Secret into `GITLAB_CLIENT_ID` / `GITLAB_CLIENT_SECRET`. gitlab.com only — a self-managed GitLab instance isn't supported.
 
 ## Reading the data
 

@@ -45,6 +45,7 @@ export interface TrackMember {
   telegramUsername?: string
   telegramPhone?: string
   linkedinName?: string
+  gitlabUsername?: string
   /** IDEA-048/067 — the contributor's own org-wide standing (Stranger vs.
    * Contributor, IDEA-067) and profile-readiness, independent of this row's
    * own `status` (approval state on *this* track). `profileHash` is always
@@ -82,6 +83,7 @@ interface TrackMemberRow {
   telegram_username: string | null
   telegram_phone: string | null
   linkedin_name: string | null
+  gitlab_username: string | null
   contributor_status: ContributorStatus
   profile_completeness: ProfileCompleteness
   profile_hash: string
@@ -107,6 +109,7 @@ function toTrackMember(row: TrackMemberRow): TrackMember {
     telegramUsername: row.telegram_username ?? undefined,
     telegramPhone: row.telegram_phone ?? undefined,
     linkedinName: row.linkedin_name ?? undefined,
+    gitlabUsername: row.gitlab_username ?? undefined,
     contributorStatus: row.contributor_status,
     profileCompleteness: row.profile_completeness,
     profileHash: row.profile_hash,
@@ -117,7 +120,7 @@ function toTrackMember(row: TrackMemberRow): TrackMember {
 const SELECT_WITH_CONTRIBUTOR = `
   SELECT tm.track_id, tm.github_id, c.github_login, c.name, tm.status, tm.role, tm.requested_at, tm.decided_at,
          tm.decided_by_github_id, tm.github_team_added_at, tm.discord_role_added_at,
-         c.company, c.email, c.discord_username, c.telegram_username, c.telegram_phone, c.linkedin_name,
+         c.company, c.email, c.discord_username, c.telegram_username, c.telegram_phone, c.linkedin_name, c.gitlab_username,
          c.status AS contributor_status, c.profile_completeness, md5(c.id::text) AS profile_hash,
          true AS has_membership_row
     FROM track_members tm
@@ -150,7 +153,7 @@ export async function listTrackMembership(trackId: string): Promise<TrackMember[
             c.github_login, c.name, COALESCE(tm.status, 'approved') AS status, COALESCE(tm.role, 'contributor') AS role,
             tm.requested_at, tm.decided_at, tm.decided_by_github_id,
             tm.github_team_added_at, tm.discord_role_added_at,
-            c.company, c.email, c.discord_username, c.telegram_username, c.telegram_phone, c.linkedin_name,
+            c.company, c.email, c.discord_username, c.telegram_username, c.telegram_phone, c.linkedin_name, c.gitlab_username,
             c.status AS contributor_status, c.profile_completeness, md5(c.id::text) AS profile_hash,
             (tm.github_id IS NOT NULL) AS has_membership_row
        FROM (SELECT * FROM track_members WHERE track_id = $1) tm

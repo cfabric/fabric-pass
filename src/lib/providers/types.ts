@@ -1,4 +1,4 @@
-export type ProviderName = 'github' | 'discord' | 'telegram' | 'linkedin'
+export type ProviderName = 'github' | 'discord' | 'telegram' | 'linkedin' | 'gitlab'
 
 /** Everything we are willing to take from a provider. */
 export interface Identity {

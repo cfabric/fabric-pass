@@ -41,7 +41,7 @@ import {
   setContributorStatusAction,
 } from './actions'
 import { ActionMessage } from '../action-message'
-import { CheckMark, CompanyMark, DiscordMark, EmailMark, ExternalLinkMark, GitHubMark, LinkedInMark, PencilMark, StatusMark, TelegramMark } from '../marks'
+import { CheckMark, CompanyMark, DiscordMark, EmailMark, ExternalLinkMark, GitHubMark, GitLabMark, LinkedInMark, PencilMark, StatusMark, TelegramMark } from '../marks'
 import { ProfileLabels, type TrackLabel } from '../profile-labels'
 
 /** Matches tracks/admin/track-membership-review.tsx's own
@@ -67,6 +67,7 @@ interface AdminContributorRow {
   telegramUsername: string | null
   telegramPhone: string | null
   linkedinName: string | null
+  gitlabUsername: string | null
   status: ContributorStatus
   profileCompleteness: ProfileCompleteness
   /** IDEA-081 — `md5(id::text)`, always present (status-independent).
@@ -597,6 +598,12 @@ export function AdminContributorTable({
                     <span className="admin-tile-property" title="LinkedIn">
                       <LinkedInMark size={14} />
                       {row.linkedinName}
+                    </span>
+                  ) : null}
+                  {row.gitlabUsername ? (
+                    <span className="admin-tile-property" title="GitLab">
+                      <GitLabMark size={14} />
+                      @{row.gitlabUsername}
                     </span>
                   ) : null}
                 </div>

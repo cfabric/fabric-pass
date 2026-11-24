@@ -39,6 +39,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       telegramUsername: member.telegramUsername,
       telegramPhone: member.telegramPhone,
       linkedinName: member.linkedinName,
+      gitlabUsername: member.gitlabUsername,
       role: member.role,
       tracks: await listTrackParticipation(member.githubId),
     })),

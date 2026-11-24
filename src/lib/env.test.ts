@@ -40,6 +40,20 @@ test('rejects LINKEDIN_CLIENT_SECRET set without LINKEDIN_CLIENT_ID', () => {
   expect(() => envSchema.parse({ ...baseEnv, LINKEDIN_CLIENT_SECRET: 'linkedin-secret' })).toThrow()
 })
 
+test('parses with both GitLab credentials set', () => {
+  expect(() =>
+    envSchema.parse({ ...baseEnv, GITLAB_CLIENT_ID: 'gitlab-id', GITLAB_CLIENT_SECRET: 'gitlab-secret' }),
+  ).not.toThrow()
+})
+
+test('rejects GITLAB_CLIENT_ID set without GITLAB_CLIENT_SECRET', () => {
+  expect(() => envSchema.parse({ ...baseEnv, GITLAB_CLIENT_ID: 'gitlab-id' })).toThrow()
+})
+
+test('rejects GITLAB_CLIENT_SECRET set without GITLAB_CLIENT_ID', () => {
+  expect(() => envSchema.parse({ ...baseEnv, GITLAB_CLIENT_SECRET: 'gitlab-secret' })).toThrow()
+})
+
 test('parses with ROOT_GITHUB_ID unset', () => {
   expect(() => envSchema.parse(baseEnv)).not.toThrow()
 })

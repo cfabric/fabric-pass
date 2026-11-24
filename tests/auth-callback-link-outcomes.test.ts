@@ -10,13 +10,13 @@ import { beforeEach, expect, test, vi } from 'vitest'
 // providers, and the contributors module are replaced with in-memory
 // doubles, the same seam tests/auth-oauth-concurrent-transactions.test.ts
 // and tests/auth-callback-github-guard.test.ts use.
-const { fakeSession, discordCallbackResult, telegramCallbackResult, linkedinCallbackResult, contributorsState } =
+const { fakeSession, discordCallbackResult, telegramCallbackResult, linkedinCallbackResult, gitlabCallbackResult, contributorsState } =
   vi.hoisted(() => ({
     fakeSession: {
       oauth: undefined as
         | Partial<
             Record<
-              'github' | 'discord' | 'telegram' | 'linkedin',
+              'github' | 'discord' | 'telegram' | 'linkedin' | 'gitlab',
               { codeVerifier: string; state: string; variant?: 'phone'; githubId?: string }
             >
           >
@@ -31,6 +31,7 @@ const { fakeSession, discordCallbackResult, telegramCallbackResult, linkedinCall
       phone?: string
     } },
     linkedinCallbackResult: { current: { providerId: 'li-id-1', name: 'Ada Lovelace' } },
+    gitlabCallbackResult: { current: { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' } },
     contributorsState: {
       linkCalls: [] as { githubId: string; provider: string; identity: unknown }[],
       linkShouldThrow: undefined as 'generic' | 'not-found' | undefined,
@@ -59,7 +60,7 @@ vi.mock('@/lib/contributors', async () => {
 
 vi.mock('@/lib/providers', () => ({
   isProviderName: (value: string) =>
-    value === 'github' || value === 'discord' || value === 'telegram' || value === 'linkedin',
+    value === 'github' || value === 'discord' || value === 'telegram' || value === 'linkedin' || value === 'gitlab',
   providers: {
     github: {
       name: 'github',
@@ -91,6 +92,13 @@ vi.mock('@/lib/providers', () => ({
       },
       callback: async () => linkedinCallbackResult.current,
     },
+    gitlab: {
+      name: 'gitlab',
+      authRequest: async () => {
+        throw new Error('not used in this test')
+      },
+      callback: async () => gitlabCallbackResult.current,
+    },
   },
 }))
 
@@ -106,10 +114,12 @@ beforeEach(() => {
     discord: { codeVerifier: 'discord-verifier', state: 'discord-state', githubId: '1001' },
     telegram: { codeVerifier: 'telegram-verifier', state: 'telegram-state', githubId: '1001' },
     linkedin: { codeVerifier: 'linkedin-verifier', state: 'linkedin-state', githubId: '1001' },
+    gitlab: { codeVerifier: 'gitlab-verifier', state: 'gitlab-state', githubId: '1001' },
   }
   discordCallbackResult.current = { providerId: 'discord-id-1', username: 'discordfan' }
   telegramCallbackResult.current = { providerId: 'tg-id-1', username: 'ada_tg' }
   linkedinCallbackResult.current = { providerId: 'li-id-1', name: 'Ada Lovelace' }
+  gitlabCallbackResult.current = { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' }
   contributorsState.linkCalls = []
   contributorsState.linkShouldThrow = undefined
 })
@@ -186,4 +196,35 @@ test('a linkedin callback that fails generically is refused with the link-failed
 
   const location = response.headers.get('location')
   expect(location).toBe('http://localhost:3000/profile?notice=link-failed&provider=linkedin')
+})
+
+// IDEA-169 — GitLab links through the same block as Discord and LinkedIn.
+
+test('a successful gitlab callback links the account and redirects to Profile with no notice', async () => {
+  const request = new Request('http://localhost:3000/auth/gitlab/callback?code=abc&state=gitlab-state')
+
+  const response = await GET(request, { params: Promise.resolve({ provider: 'gitlab' }) })
+
+  expect(response.headers.get('location')).toBe('http://localhost:3000/profile')
+  expect(contributorsState.linkCalls).toEqual([
+    { githubId: '1001', provider: 'gitlab', identity: { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' } },
+  ])
+})
+
+test('a gitlab callback whose contributor row is gone is refused with the reauth-required notice, not link-failed', async () => {
+  contributorsState.linkShouldThrow = 'not-found'
+  const request = new Request('http://localhost:3000/auth/gitlab/callback?code=abc&state=gitlab-state')
+
+  const response = await GET(request, { params: Promise.resolve({ provider: 'gitlab' }) })
+
+  expect(response.headers.get('location')).toBe('http://localhost:3000/profile?notice=reauth-required')
+})
+
+test('a gitlab callback that fails generically is refused with the link-failed notice', async () => {
+  contributorsState.linkShouldThrow = 'generic'
+  const request = new Request('http://localhost:3000/auth/gitlab/callback?code=abc&state=gitlab-state')
+
+  const response = await GET(request, { params: Promise.resolve({ provider: 'gitlab' }) })
+
+  expect(response.headers.get('location')).toBe('http://localhost:3000/profile?notice=link-failed&provider=gitlab')
 })

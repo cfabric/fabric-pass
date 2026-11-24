@@ -8,7 +8,7 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   if (!isProviderName(name)) return new NextResponse('Unknown provider', { status: 404 })
 
   const provider = providers[name]
-  // LinkedIn is this app's only provider that can be a known name
+  // LinkedIn and GitLab are the providers that can be a known name
   // (isProviderName above) yet still have nothing to hand back — see
   // lib/providers/index.ts. Refused the same way an unknown name is: there's
   // no meaningful distinction to surface to a client hitting either case.

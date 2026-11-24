@@ -48,6 +48,7 @@ test('applies pending migrations and records them', async () => {
   expect(columns).toContain('telegram_phone')
   expect(columns).toContain('discord_username')
   expect(columns).toContain('linkedin_id')
+  expect(columns).toContain('gitlab_id')
 })
 
 test('is idempotent — a second run applies nothing', async () => {
@@ -135,6 +136,7 @@ test('the name backfill combines first and last name, and leaves both-blank as N
     '041_events.sql',
     '041_track_leaders_devops_role.sql',
     '042_github_collaborator_repos.sql',
+    '043_gitlab_fields.sql',
   ])
 
   const { rows } = await pool.query('SELECT github_login, name FROM contributors ORDER BY github_login')
@@ -219,6 +221,7 @@ test('the telegram_id migration carries an existing value across to text and acc
     '041_events.sql',
     '041_track_leaders_devops_role.sql',
     '042_github_collaborator_repos.sql',
+    '043_gitlab_fields.sql',
   ])
 
   const { rows: columnRows } = await pool.query(

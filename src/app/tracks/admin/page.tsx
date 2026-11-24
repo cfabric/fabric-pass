@@ -74,6 +74,7 @@ export default async function TrackAdminPage() {
             telegramUsername: member.telegramUsername ?? null,
             telegramPhone: member.telegramPhone ?? null,
             linkedinName: member.linkedinName ?? null,
+            gitlabUsername: member.gitlabUsername ?? null,
             // IDEA-048 — a public profile only ever resolves for a `confirmed`
             // contributor (getPublicProfile's own gate), so a non-confirmed
             // requester's hash is dropped here rather than linking to a page

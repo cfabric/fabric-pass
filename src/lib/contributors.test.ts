@@ -258,6 +258,61 @@ test('linking a linkedin account already linked elsewhere succeeds and records t
   expect((await findByGithubId('1001'))?.linkedinId).toBe('li-888')
 })
 
+// IDEA-169 — GitLab stores the same id/username/name triple Discord does.
+test('linking gitlab stores id, username, and name', async () => {
+  await ensureContributor('1001', 'octocat')
+
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' })
+
+  const found = await findByGithubId('1001')
+  expect(found?.gitlabId).toBe('1234567')
+  expect(found?.gitlabUsername).toBe('ada')
+  expect(found?.gitlabName).toBe('Ada Lovelace')
+})
+
+test('re-linking a different gitlab account replaces the whole identity, leaving no stale name behind', async () => {
+  await ensureContributor('1001', 'octocat')
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' })
+
+  await linkProvider('1001', 'gitlab', { providerId: '7654321', username: 'ada-work' })
+
+  const found = await findByGithubId('1001')
+  expect(found?.gitlabId).toBe('7654321')
+  expect(found?.gitlabUsername).toBe('ada-work')
+  expect(found?.gitlabName).toBeUndefined()
+})
+
+test('linking a gitlab account already linked elsewhere succeeds and records the newer row as an alias', async () => {
+  await ensureContributor('1001', 'octocat')
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada' })
+  await ensureContributor('1002', 'grace')
+
+  await expect(linkProvider('1002', 'gitlab', { providerId: '1234567', username: 'ada' })).resolves.toBeUndefined()
+
+  const newer = await findByGithubId('1002')
+  expect(newer?.aliasOfGithubId).toBe('1001')
+  expect(newer?.gitlabId).toBeUndefined()
+  expect((await findByGithubId('1001'))?.gitlabId).toBe('1234567')
+})
+
+// GitLab is not part of IDEA-034's completeness rule — linking it must not
+// move a Ready profile to Full, and leaving it unlinked must not hold one back.
+test('linking gitlab does not change profileCompleteness', async () => {
+  await ensureContributor('1001', 'octocat')
+  await saveField('1001', 'name', 'Ada Lovelace')
+  await saveField('1001', 'email', 'ada@example.com')
+  await saveField('1001', 'company', 'Acronis')
+  await linkProvider('1001', 'discord', { providerId: '555', username: 'ada-discord' })
+  await resendConfirmationEmail('1001')
+  await confirmEmail((await confirmationToken('1001'))!)
+  const before = (await findByGithubId('1001'))?.profileCompleteness
+
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada' })
+
+  expect(before).toBe('ready')
+  expect((await findByGithubId('1001'))?.profileCompleteness).toBe(before)
+})
+
 test('a shared-identity alias never overwrites an alias already set to someone else', async () => {
   await ensureContributor('1001', 'octocat')
   await linkProvider('1001', 'discord', { providerId: '888', username: 'ada' })
@@ -514,6 +569,16 @@ test('resolveProviderLabels inherits an alias target\'s linkedin name when the r
   const labels = await resolveProviderLabels((await findByGithubId('1002'))!)
 
   expect(labels.linkedinLabel).toBe('Ada Lovelace')
+})
+
+test('resolveProviderLabels shows a contributor their own gitlab username, and inherits an alias target\'s', async () => {
+  await ensureContributor('1001', 'octocat')
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada', name: 'Ada Lovelace' })
+  await ensureContributor('1002', 'grace')
+  await linkProvider('1002', 'gitlab', { providerId: '1234567', username: 'ada' }) // sets 1002's alias to 1001
+
+  expect((await resolveProviderLabels((await findByGithubId('1001'))!)).gitlabLabel).toBe('@ada')
+  expect((await resolveProviderLabels((await findByGithubId('1002'))!)).gitlabLabel).toBe('@ada')
 })
 
 test('resolveProviderLabels inherits an alias target\'s link when the row has none of its own', async () => {
@@ -868,12 +933,13 @@ test('getPublicProfile only shows email once confirmed', async () => {
 // IDEA-110 — migrations/037_optional_field_visibility.sql's NOT NULL DEFAULT
 // false: every existing row keeps exactly today's "visible to all
 // contributors" behavior until its owner locks a field.
-test('a new contributor starts with both lockable fields unlocked', async () => {
+test('a new contributor starts with every lockable field unlocked', async () => {
   await ensureContributor('1001', 'octocat')
 
   const found = await findByGithubId('1001')
   expect(found?.telegramAdminsOnly).toBe(false)
   expect(found?.linkedinAdminsOnly).toBe(false)
+  expect(found?.gitlabAdminsOnly).toBe(false)
 })
 
 test('setOptionalFieldVisibility locks and then unlocks a field', async () => {
@@ -958,6 +1024,40 @@ test('searchContributors no longer matches a locked Telegram username for a stra
   await expect(searchContributors('ada-tg', { isAdmin: true })).resolves.toHaveLength(1)
   await expect(searchContributors('ada-tg', { githubId: '1001', isAdmin: false })).resolves.toHaveLength(1)
   await expect(searchContributors('Ada L.', { isAdmin: false })).resolves.toHaveLength(1)
+})
+
+test('getPublicProfile shows an unlocked GitLab username to anyone, and a locked one only to an Admin or the owner', async () => {
+  await ensureContributor('1001', 'octocat')
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'ada' })
+  await confirm('1001')
+  const { rows } = await pool.query<{ hash: string }>("SELECT md5(id::text) AS hash FROM contributors WHERE github_id = '1001'")
+
+  expect((await getPublicProfile(rows[0].hash, { isAdmin: false }))?.gitlabUsername).toBe('ada')
+
+  await setOptionalFieldVisibility('1001', 'gitlab', true)
+
+  const stranger = await getPublicProfile(rows[0].hash, { isAdmin: false })
+  expect(stranger?.gitlabUsername).toBeUndefined()
+  expect(stranger?.adminsOnlyFields).toEqual([])
+  const admin = await getPublicProfile(rows[0].hash, { isAdmin: true })
+  expect(admin?.gitlabUsername).toBe('ada')
+  expect(admin?.adminsOnlyFields).toEqual(['gitlab'])
+  expect((await getPublicProfile(rows[0].hash, { githubId: '1001', isAdmin: false }))?.gitlabUsername).toBe('ada')
+})
+
+test('searchContributors matches a GitLab username, but not a locked one for a stranger', async () => {
+  await ensureContributor('1001', 'octocat')
+  await saveField('1001', 'name', 'Ada Lovelace')
+  await linkProvider('1001', 'gitlab', { providerId: '1234567', username: 'tanuki-ada' })
+  await confirm('1001')
+
+  await expect(searchContributors('tanuki', { isAdmin: false })).resolves.toHaveLength(1)
+
+  await setOptionalFieldVisibility('1001', 'gitlab', true)
+
+  await expect(searchContributors('tanuki', { isAdmin: false })).resolves.toEqual([])
+  await expect(searchContributors('tanuki', { isAdmin: true })).resolves.toHaveLength(1)
+  await expect(searchContributors('tanuki', { githubId: '1001', isAdmin: false })).resolves.toHaveLength(1)
 })
 
 // IDEA-110's own wording puts the choice "at registration or when editing

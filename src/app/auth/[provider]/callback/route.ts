@@ -14,7 +14,8 @@ export async function GET(request: Request, context: { params: Promise<{ provide
 
   const provider = providers[name]
   // Same guard as the start route (see auth/[provider]/route.ts) — LinkedIn
-  // is a known name that can still have nothing configured behind it.
+  // and GitLab are known names that can still have nothing configured
+  // behind them.
   if (!provider) return new NextResponse('Unknown provider', { status: 404 })
 
   const session = await getSession()
@@ -128,30 +129,18 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   }
   const githubId = session.github.id
 
-  if (name === 'discord') {
+  // Discord, LinkedIn, and GitLab (IDEA-169) link identically — the
+  // provider's identity goes straight onto the row, with no second pass the
+  // way Telegram's phone fallback below needs.
+  if (name === 'discord' || name === 'linkedin' || name === 'gitlab') {
     try {
-      await linkProvider(githubId, 'discord', identity)
+      await linkProvider(githubId, name, identity)
     } catch (error) {
       await session.save()
       // The session cookie names a row that's gone — nothing about retrying
       // this same link can ever succeed, only signing in again can.
       if (error instanceof ContributorNotFoundError) return NextResponse.redirect(withNotice(profile, 'reauth-required'))
-      console.error('discord callback: failed to save the link:', error)
-      return NextResponse.redirect(withNotice(profile, 'link-failed', name))
-    }
-    await session.save()
-    return NextResponse.redirect(profile)
-  }
-
-  if (name === 'linkedin') {
-    try {
-      await linkProvider(githubId, 'linkedin', identity)
-    } catch (error) {
-      await session.save()
-      // The session cookie names a row that's gone — nothing about retrying
-      // this same link can ever succeed, only signing in again can.
-      if (error instanceof ContributorNotFoundError) return NextResponse.redirect(withNotice(profile, 'reauth-required'))
-      console.error('linkedin callback: failed to save the link:', error)
+      console.error(`${name} callback: failed to save the link:`, error)
       return NextResponse.redirect(withNotice(profile, 'link-failed', name))
     }
     await session.save()

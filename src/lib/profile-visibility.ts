@@ -6,7 +6,7 @@
  * OPTIONAL_PROFILE_FIELDS's type and VISIBILITY_LABELS directly, the same
  * constraint profile-completeness.ts documents for its own module.
  */
-export const OPTIONAL_PROFILE_FIELDS = ['telegram', 'linkedin'] as const
+export const OPTIONAL_PROFILE_FIELDS = ['telegram', 'linkedin', 'gitlab'] as const
 export type OptionalProfileField = (typeof OPTIONAL_PROFILE_FIELDS)[number]
 
 /**

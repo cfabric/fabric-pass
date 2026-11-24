@@ -36,6 +36,7 @@ import {
   EmailMark,
   ExternalLinkMark,
   GitHubMark,
+  GitLabMark,
   LinkedInMark,
   PencilMark,
   TelegramMark,
@@ -75,6 +76,7 @@ interface MemberRow {
   telegramUsername: string | null
   telegramPhone: string | null
   linkedinName: string | null
+  gitlabUsername: string | null
   /** IDEA-064's per-track rank badges — this member's participation across
    * every track (not just this one). IDEA-082 drops the org-wide
    * Stranger/Contributor identity and profile-completeness badges this
@@ -531,6 +533,12 @@ export function TrackMembershipReview({ sections: initialSections }: { sections:
                                 {member.linkedinName}
                               </span>
                             ) : null}
+                            {member.gitlabUsername ? (
+                              <span className="admin-tile-property" title="GitLab">
+                                <GitLabMark size={14} />
+                                @{member.gitlabUsername}
+                              </span>
+                            ) : null}
                           </div>
 
                           <div className="profile-labels">
@@ -628,6 +636,12 @@ export function TrackMembershipReview({ sections: initialSections }: { sections:
                               <span className="admin-tile-property" title="LinkedIn">
                                 <LinkedInMark size={14} />
                                 {member.linkedinName}
+                              </span>
+                            ) : null}
+                            {member.gitlabUsername ? (
+                              <span className="admin-tile-property" title="GitLab">
+                                <GitLabMark size={14} />
+                                @{member.gitlabUsername}
                               </span>
                             ) : null}
                           </div>
