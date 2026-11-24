@@ -1,15 +1,17 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { COMMUNITY_SCOPE, listArtifactLinks } from '@/lib/artifact-links'
-import { countConfirmedContributors, findByGithubId } from '@/lib/contributors'
+import { countConfirmedContributors, findByGithubId, resolveProviderLabels } from '@/lib/contributors'
 import { listEvents } from '@/lib/events'
 import { isProfileComplete } from '@/lib/profile-completeness'
+import { isProviderConfigured } from '@/lib/providers'
 import { getSession } from '@/lib/session'
 import { anyMembershipSummary } from '@/lib/track-members'
 import { listTracks } from '@/lib/tracks'
 import { noticeKind, noticeMessage, REAUTH_REQUIRED_MESSAGE, type Notice } from './auth/notice'
 import { READY_COURSE_COUNT } from './courses-data'
 import { EventsSection } from './events-section'
+import { GitLabLinkWarning } from './gitlab-link-warning'
 import { SearchMark } from './marks'
 import { OnboardingChecklist, type ChecklistItemData } from './onboarding-checklist'
 import { SignInPrompt } from './sign-in-prompt'
@@ -111,6 +113,15 @@ export default async function Page({ searchParams }: PageProps) {
   // queried for them, so their recording links never reach a Stranger's page.
   const isConfirmed = existing.status === 'confirmed' || existing.status === 'revoke_pending'
 
+  // IDEA-170 — the "link your GitLab" warning, for every contributor who
+  // reaches Home, while GitLab is configured on this deploy (the same
+  // condition that shows the Profile form's GitLab row, so the button never
+  // leads to a provider that isn't there) and the profile shows no GitLab
+  // account. "Shows" is the Profile form's own label, so an account
+  // inherited through an alias counts as linked here exactly as it does
+  // there; that lookup only queries again for a row that is an alias.
+  const gitlabLinkNeeded = isProviderConfigured('gitlab') && !(await resolveProviderLabels(existing)).gitlabLabel
+
   const [communityLinks, tracks, contributorCount, events] = await Promise.all([
     listArtifactLinks(COMMUNITY_SCOPE),
     listTracks(),
@@ -145,6 +156,7 @@ export default async function Page({ searchParams }: PageProps) {
     <>
       <h2>Home</h2>
       {notice ? <p className={notice.kind}>{notice.message}</p> : null}
+      {gitlabLinkNeeded ? <GitLabLinkWarning /> : null}
       <OnboardingChecklist items={checklistItems} />
       <div className="home-tiles">
         {tiles.map((tile) => (

@@ -1110,6 +1110,31 @@ main {
   margin-bottom: 1rem;
 }
 
+/* IDEA-170 — Home's "link your GitLab" warning. The kit's own warning tokens
+   (--warning, --warning-soft), so it follows the light/dark theme with the
+   rest of the kit; the callout shape of .track-leaders-warning, but amber
+   rather than red, since nothing is broken, just still to do. The text keeps
+   the page's own color: amber text on the soft amber fill is too faint to
+   read comfortably. Text and button share one row and the button wraps
+   under the text on a narrow screen. */
+.home-warning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+}
+
+.home-warning p {
+  flex: 1 1 20rem;
+  margin: 0;
+}
+
 /* IDEA-015's Main-page checklist — a kit Card now; only its distance from
    the content above is the page's own business. */
 .onboarding-checklist {

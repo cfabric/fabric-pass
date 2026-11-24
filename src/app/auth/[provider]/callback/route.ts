@@ -26,7 +26,10 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   // notice with nobody signed in yet belongs there — but Discord/Telegram/
   // LinkedIn linking, and every notice this route can raise about it, is only
   // ever started from Profile's edit mode (see form.tsx's ProviderField), now
-  // that the form itself lives there (IDEA-001).
+  // that the form itself lives there (IDEA-001). GitLab can also be started
+  // from Home's warning (IDEA-170, gitlab-link-warning.tsx); its outcome
+  // still lands on Profile, where the linked row is, or the Link button to
+  // retry after a failure.
   const noticeTarget = name === 'github' ? home : profile
 
   // A callback with no matching transaction for *this* provider is a replay
