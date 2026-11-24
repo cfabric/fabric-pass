@@ -2152,4 +2152,5 @@ Show a warning on Home to every signed-in contributor whose profile has no GitLa
 Notes:
 Shown only while GitLab is configured on the deploy (the same condition that shows the Profile row), and gone as soon as a GitLab account is linked — including one inherited through an alias, the same way the Profile form counts it.
 
+Task: https://github.com/cfabric/fabric-pass/issues/273
 By: vzhuman · 2026-11-24
