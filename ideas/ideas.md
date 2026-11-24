@@ -2143,3 +2143,13 @@ gitlab.com only, `read_user` scope; stores the GitLab user id, username and disp
 Result: PR #271 — merged as 6912478. GitLab is linked through OAuth (gitlab.com, `read_user` scope; the email that scope exposes is never read) and is the last field of the Profile form, with its own Admins-only padlock; not part of profile completeness. Migration 043 applied in production at container start. The GitLab OAuth application is registered (redirect `https://pass.cfabric.org/auth/gitlab/callback`) and GITLAB_CLIENT_ID/GITLAB_CLIENT_SECRET are in the server `.env`, so the row is live.
 Task: https://github.com/cfabric/fabric-pass/issues/270
 By: vzhuman · 2026-11-24
+
+## [TAKEN] [vzhuman] IDEA-170 — Home warning to link GitLab
+
+Idea:
+Show a warning on Home to every signed-in contributor whose profile has no GitLab account linked: it says so, asks them to link it now so access to GitLab repositories can be shared with them, and has a Link GitLab button in the same GitLab color as the Profile form's button — a shortcut to get more profiles linked to GitLab (IDEA-169).
+
+Notes:
+Shown only while GitLab is configured on the deploy (the same condition that shows the Profile row), and gone as soon as a GitLab account is linked — including one inherited through an alias, the same way the Profile form counts it.
+
+By: vzhuman · 2026-11-24
