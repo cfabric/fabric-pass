@@ -2156,10 +2156,11 @@ Result: PR #274 — merged as ab6054c, deployed. Home shows an amber warning wit
 Task: https://github.com/cfabric/fabric-pass/issues/273
 By: vzhuman · 2026-11-24
 
-## [TAKEN] [vzhuman] IDEA-171 — Fix: API Key is offered to people who aren't approved contributors with a complete profile
+## [DONE] [vzhuman] IDEA-171 — Fix: API Key is offered to people who aren't approved contributors with a complete profile
 
 Idea:
 The account menu shows API Key to everyone signed in, and the API Key page, its Generate/Regenerate action and API-key authentication check only for a session or a known key, so a Stranger or a contributor the Admin table shows as Incomplete Profile (claudedigon) can get and use a personal API key. Gate all of it on an approved contributor (confirmed, or revoke_pending) whose profile isn't Incomplete.
 
+Result: PR #276 — merged as 1fba076, deployed. One rule in `api-keys.ts` (status confirmed or revoke_pending, and `profile_completeness` not Incomplete — the field the Admin badge reads, which also requires a confirmed email) now drives the account-menu item, the API Key page, the Generate/Regenerate action and `authenticateApiKey`, so `/api/me`, `/api/members` and `/api/tracks/<slug>/members` answer 401 for a non-qualifying owner's key. Such a key stays stored and works again if its owner qualifies again. At deploy all 3 personal keys belonged to confirmed contributors with a Full Profile.
 Task: https://github.com/cfabric/fabric-pass/issues/275
 By: vzhuman · 2026-11-24
