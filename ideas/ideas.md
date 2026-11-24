@@ -2144,7 +2144,7 @@ Result: PR #271 — merged as 6912478. GitLab is linked through OAuth (gitlab.co
 Task: https://github.com/cfabric/fabric-pass/issues/270
 By: vzhuman · 2026-11-24
 
-## [TAKEN] [vzhuman] IDEA-170 — Home warning to link GitLab
+## [DONE] [vzhuman] IDEA-170 — Home warning to link GitLab
 
 Idea:
 Show a warning on Home to every signed-in contributor whose profile has no GitLab account linked: it says so, asks them to link it now so access to GitLab repositories can be shared with them, and has a Link GitLab button in the same GitLab color as the Profile form's button — a shortcut to get more profiles linked to GitLab (IDEA-169).
@@ -2152,5 +2152,6 @@ Show a warning on Home to every signed-in contributor whose profile has no GitLa
 Notes:
 Shown only while GitLab is configured on the deploy (the same condition that shows the Profile row), and gone as soon as a GitLab account is linked — including one inherited through an alias, the same way the Profile form counts it.
 
+Result: PR #274 — merged as ab6054c, deployed. Home shows an amber warning with a Link GitLab button (the Profile form's `button-brand-gitlab`, same `/auth/gitlab` flow, landing back on Profile) while GitLab is configured and the profile shows no GitLab account, its own or an alias target's. At deploy 2 contributors had GitLab linked.
 Task: https://github.com/cfabric/fabric-pass/issues/273
 By: vzhuman · 2026-11-24
