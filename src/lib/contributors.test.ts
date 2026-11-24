@@ -581,6 +581,20 @@ test('resolveProviderLabels shows a contributor their own gitlab username, and i
   expect((await resolveProviderLabels((await findByGithubId('1002'))!)).gitlabLabel).toBe('@ada')
 })
 
+// IDEA-170 — Home's "link your GitLab" warning shows exactly while this label
+// is null, so an alias must not count as linked just for being an alias: only
+// a target that really has GitLab lends it one (the test above).
+test('resolveProviderLabels leaves gitlab unlinked when neither the row nor its alias target has one', async () => {
+  await ensureContributor('1001', 'octocat')
+  await linkProvider('1001', 'telegram', { providerId: '555', username: 'ada' })
+  await ensureContributor('1002', 'grace')
+  await linkProvider('1002', 'telegram', { providerId: '555', username: 'ada' }) // sets 1002's alias to 1001
+
+  expect((await findByGithubId('1002'))?.aliasOfGithubId).toBe('1001')
+  expect((await resolveProviderLabels((await findByGithubId('1001'))!)).gitlabLabel).toBeNull()
+  expect((await resolveProviderLabels((await findByGithubId('1002'))!)).gitlabLabel).toBeNull()
+})
+
 test('resolveProviderLabels inherits an alias target\'s link when the row has none of its own', async () => {
   await ensureContributor('1001', 'octocat')
   await linkProvider('1001', 'telegram', { providerId: '555', username: 'ada' })
