@@ -54,6 +54,7 @@ export default async function AdminPage() {
       telegramUsername: c.telegramUsername ?? null,
       telegramPhone: c.telegramPhone ?? null,
       linkedinName: c.linkedinName ?? null,
+      gitlabUsername: c.gitlabUsername ?? null,
       status: c.status,
       profileCompleteness: c.profileCompleteness,
       githubOrgInvitedAt: c.githubOrgInvitedAt?.toISOString() ?? null,

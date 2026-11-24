@@ -419,6 +419,12 @@ main {
   --button-fg: #fff;
 }
 
+.button-brand-gitlab {
+  --button-bg: #e24329;
+  --button-bg-hover: #c4361e;
+  --button-fg: #fff;
+}
+
 .button-brand-email {
   --button-bg: #d97706;
   --button-bg-hover: #b45309;
@@ -463,7 +469,7 @@ main {
   flex: 1;
 }
 
-/* Telegram/Discord/LinkedIn's row: a kit Label over a field-shaped box the
+/* Telegram/Discord/LinkedIn/GitLab's row: a kit Label over a field-shaped box the
    kit has no part for — a static value with an action button is not a form
    control, so no kit Field/Input here. The box matches the kit Input's
    shape well enough to read as one consistent list of fields. The internal
@@ -841,6 +847,10 @@ main {
 
 .contact-icon-linkedin {
   color: #0a66c2;
+}
+
+.contact-icon-gitlab {
+  color: #e24329;
 }
 
 .contact-identifier {

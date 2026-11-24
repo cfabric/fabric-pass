@@ -39,14 +39,19 @@ export const envSchema = z
     // all — see lib/email.ts, which logs instead of sending when unset.
     RESEND_API_KEY: z.string().min(1).optional(),
     RESEND_FROM_ADDRESS: z.string().min(1).optional(),
-    // This app's only optional *provider* — unlike GitHub/Discord/Telegram
-    // above, LinkedIn must be possible to leave unconfigured and still have
+    // An optional *provider* (GitLab below is the other) — unlike
+    // GitHub/Discord/Telegram above, LinkedIn must be possible to leave unconfigured and still have
     // the app boot and run. See lib/providers/index.ts, which admits
     // 'linkedin' into its providers map only when both of these are set, and
     // form.tsx, which hides the LinkedIn row unless the page resolved a
     // provider for it.
     LINKEDIN_CLIENT_ID: z.string().min(1).optional(),
     LINKEDIN_CLIENT_SECRET: z.string().min(1).optional(),
+    // IDEA-169 — GitLab is optional the same way LinkedIn is: with both
+    // unset the app boots, lib/providers/index.ts leaves 'gitlab' out of its
+    // providers map, and form.tsx hides the GitLab row.
+    GITLAB_CLIENT_ID: z.string().min(1).optional(),
+    GITLAB_CLIENT_SECRET: z.string().min(1).optional(),
     // Optional — this app's single root user, identified by GitHub's numeric
     // id (stored as digit-only text elsewhere in this app; see
     // contributors.ts's Row#github_id). Unset means no root user at all.
@@ -89,6 +94,11 @@ export const envSchema = z
     // presence test, instead of it having to guess which half-set case means.
     message: 'LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET must both be set, or both left unset',
     path: ['LINKEDIN_CLIENT_ID'],
+  })
+  .refine((data) => Boolean(data.GITLAB_CLIENT_ID) === Boolean(data.GITLAB_CLIENT_SECRET), {
+    // Same reasoning as the LinkedIn pair above.
+    message: 'GITLAB_CLIENT_ID and GITLAB_CLIENT_SECRET must both be set, or both left unset',
+    path: ['GITLAB_CLIENT_ID'],
   })
   .refine((data) => Boolean(data.DO_API_TOKEN) === Boolean(data.DO_DROPLET_ID), {
     message: 'DO_API_TOKEN and DO_DROPLET_ID must both be set, or both left unset',

@@ -66,7 +66,12 @@ export interface Contributor {
    * `linkedinName` is the only label there is. */
   linkedinId?: string
   linkedinName?: string
-  /** IDEA-110 — this row's own lock on its Telegram/LinkedIn handle,
+  /** IDEA-169 — same shape as Discord's: GitLab's numeric user id (as
+   * text), current username, and current display name. */
+  gitlabId?: string
+  gitlabUsername?: string
+  gitlabName?: string
+  /** IDEA-110 — this row's own lock on its Telegram/LinkedIn/GitLab handle,
    * `false` by default (see migrations/037_optional_field_visibility.sql):
    * a filled optional field is visible to every contributor until its owner
    * locks it. Plain `boolean`, not optional, same as `isAgent`/`isAdmin`
@@ -75,6 +80,7 @@ export interface Contributor {
    * written only by setOptionalFieldVisibility. */
   telegramAdminsOnly: boolean
   linkedinAdminsOnly: boolean
+  gitlabAdminsOnly: boolean
   name?: string
   email?: string
   /** Set the moment `email` is confirmed — by clicking the emailed link for
@@ -183,8 +189,12 @@ interface Row {
   discord_name: string | null
   linkedin_id: string | null
   linkedin_name: string | null
+  gitlab_id: string | null
+  gitlab_username: string | null
+  gitlab_name: string | null
   telegram_admins_only: boolean
   linkedin_admins_only: boolean
+  gitlab_admins_only: boolean
   name: string | null
   email: string | null
   email_confirmed_at: Date | null
@@ -226,8 +236,12 @@ function toContributor(row: Row): Contributor {
     discordName: row.discord_name ?? undefined,
     linkedinId: row.linkedin_id ?? undefined,
     linkedinName: row.linkedin_name ?? undefined,
+    gitlabId: row.gitlab_id ?? undefined,
+    gitlabUsername: row.gitlab_username ?? undefined,
+    gitlabName: row.gitlab_name ?? undefined,
     telegramAdminsOnly: row.telegram_admins_only,
     linkedinAdminsOnly: row.linkedin_admins_only,
+    gitlabAdminsOnly: row.gitlab_admins_only,
     name: row.name ?? undefined,
     email: row.email ?? undefined,
     emailConfirmedAt: row.email_confirmed_at ?? undefined,
@@ -340,6 +354,13 @@ const PROVIDER_LINK_QUERIES: Record<
           WHERE github_id = $1`,
     params: (identity) => [identity.providerId, identity.name ?? null],
   },
+  gitlab: {
+    idColumn: 'gitlab_id',
+    sql: `UPDATE contributors
+            SET gitlab_id = $2, gitlab_username = $3, gitlab_name = $4, updated_at = now()
+          WHERE github_id = $1`,
+    params: (identity) => [identity.providerId, identity.username ?? null, identity.name ?? null],
+  },
 }
 
 /**
@@ -387,7 +408,8 @@ export async function linkProvider(
   }
   if (result.rowCount === 0) throw new ContributorNotFoundError(githubId)
   // Discord/Telegram/LinkedIn all factor into completeness (mandatory for
-  // Discord, optional for the other two) — not run in the alias-conflict
+  // Discord, optional for the other two; GitLab doesn't count, but
+  // recomputing after it costs one cheap query) — not run in the alias-conflict
   // branch above, since that path never touches this row's own provider
   // columns, only alias_of_github_id (see missingForCompleteness's doc
   // comment on why alias-inherited links don't count here, matching the
@@ -471,6 +493,21 @@ async function recordAliasFromSharedIdentity(
 const ADMINS_ONLY_COLUMNS: Record<OptionalProfileField, string> = {
   telegram: 'telegram_admins_only',
   linkedin: 'linkedin_admins_only',
+  gitlab: 'gitlab_admins_only',
+}
+
+/** Whether `contributor`'s own row holds a value for an optional field —
+ * the one definition resolveOptionalFieldOwner and resolveProviderLabels
+ * below both read "has its own handle" from. */
+function hasOwnOptionalField(contributor: Contributor, field: OptionalProfileField): boolean {
+  switch (field) {
+    case 'telegram':
+      return Boolean(contributor.telegramUsername || contributor.telegramPhone)
+    case 'linkedin':
+      return Boolean(contributor.linkedinName)
+    case 'gitlab':
+      return Boolean(contributor.gitlabUsername)
+  }
 }
 
 /**
@@ -487,19 +524,10 @@ const ADMINS_ONLY_COLUMNS: Record<OptionalProfileField, string> = {
  * — the one actually shown everywhere — unlocked.
  */
 async function resolveOptionalFieldOwner(contributor: Contributor, field: OptionalProfileField): Promise<Contributor> {
-  const hasOwnValue =
-    field === 'telegram'
-      ? Boolean(contributor.telegramUsername || contributor.telegramPhone)
-      : Boolean(contributor.linkedinName)
-  if (hasOwnValue) return contributor
+  if (hasOwnOptionalField(contributor, field)) return contributor
 
   const aliasTarget = contributor.aliasOfGithubId ? await findByGithubId(contributor.aliasOfGithubId) : null
-  const aliasHasValue = aliasTarget
-    ? field === 'telegram'
-      ? Boolean(aliasTarget.telegramUsername || aliasTarget.telegramPhone)
-      : Boolean(aliasTarget.linkedinName)
-    : false
-  return aliasHasValue ? aliasTarget! : contributor
+  return aliasTarget && hasOwnOptionalField(aliasTarget, field) ? aliasTarget : contributor
 }
 
 /**
@@ -535,7 +563,7 @@ export async function setOptionalFieldVisibility(
 }
 
 /**
- * The label to show for a contributor's Telegram/Discord/LinkedIn link on
+ * The label to show for a contributor's Telegram/Discord/LinkedIn/GitLab link on
  * their own profile page. A contributor with no direct link of their own,
  * but who is an alias of another row that does have one, inherits that link
  * for display — set by recordAliasFromSharedIdentity precisely because a
@@ -545,24 +573,27 @@ export async function resolveProviderLabels(contributor: Contributor): Promise<{
   telegramLabel: string | null
   discordLabel: string | null
   linkedinLabel: string | null
+  gitlabLabel: string | null
   /** IDEA-110 — the lock state of each optional field, taken from the same
-   * source row the label itself comes from (telegramSource/linkedinSource
+   * source row the label itself comes from (telegramSource/linkedinSource/gitlabSource
    * below) — an alias's inherited handle is locked or not exactly as its
    * owning row says, never independently by the alias's own row. */
   adminsOnly: Record<OptionalProfileField, boolean>
 }> {
-  const hasOwnTelegram = Boolean(contributor.telegramUsername || contributor.telegramPhone)
+  const hasOwnTelegram = hasOwnOptionalField(contributor, 'telegram')
   const hasOwnDiscord = Boolean(contributor.discordUsername)
-  const hasOwnLinkedin = Boolean(contributor.linkedinName)
+  const hasOwnLinkedin = hasOwnOptionalField(contributor, 'linkedin')
+  const hasOwnGitlab = hasOwnOptionalField(contributor, 'gitlab')
 
   const aliasTarget =
-    contributor.aliasOfGithubId && (!hasOwnTelegram || !hasOwnDiscord || !hasOwnLinkedin)
+    contributor.aliasOfGithubId && (!hasOwnTelegram || !hasOwnDiscord || !hasOwnLinkedin || !hasOwnGitlab)
       ? await findByGithubId(contributor.aliasOfGithubId)
       : null
 
   const telegramSource = hasOwnTelegram ? contributor : (aliasTarget ?? contributor)
   const discordSource = hasOwnDiscord ? contributor : (aliasTarget ?? contributor)
   const linkedinSource = hasOwnLinkedin ? contributor : (aliasTarget ?? contributor)
+  const gitlabSource = hasOwnGitlab ? contributor : (aliasTarget ?? contributor)
 
   return {
     telegramLabel: telegramSource.telegramUsername
@@ -570,9 +601,11 @@ export async function resolveProviderLabels(contributor: Contributor): Promise<{
       : (telegramSource.telegramPhone ?? null),
     discordLabel: discordSource.discordUsername ?? null,
     linkedinLabel: linkedinSource.linkedinName ?? null,
+    gitlabLabel: gitlabSource.gitlabUsername ? `@${gitlabSource.gitlabUsername}` : null,
     adminsOnly: {
       telegram: telegramSource.telegramAdminsOnly,
       linkedin: linkedinSource.linkedinAdminsOnly,
+      gitlab: gitlabSource.gitlabAdminsOnly,
     },
   }
 }
@@ -628,6 +661,9 @@ export interface PublicProfile {
   /** Name only — LinkedIn's OIDC profile carries no username or vanity-URL
    * claim (see providers/linkedin.ts), so there's nothing to link to. */
   linkedinLabel?: string
+  /** IDEA-169 — the GitLab username, which is also the gitlab.com profile
+   * path, so unlike LinkedIn this one gets an "open" link. */
+  gitlabUsername?: string
   /** IDEA-110 — which of the fields included above are restricted to Admins,
    * so a viewer allowed to see one can tell it isn't public. Always empty for
    * a viewer who can't see restricted fields: telling them *that* a locked
@@ -644,7 +680,7 @@ export interface PublicProfile {
  * public page yet, matching how the registry sync already treats
  * `confirmed` as the "real directory entry" status.
  *
- * IDEA-110 — `viewer` decides whether a locked Telegram/LinkedIn is even in
+ * IDEA-110 — `viewer` decides whether a locked Telegram/LinkedIn/GitLab is even in
  * the returned object at all. Enforced here, not in the view: the point is
  * that a restricted handle never reaches the browser of a viewer who may
  * not see it, rather than reaching the browser and merely not being
@@ -677,15 +713,19 @@ export async function getPublicProfile(hash: string, viewer: ProfileViewer): Pro
   const discordSource = candidates.find((c) => c.discordUsername)
   const telegramSource = candidates.find((c) => c.telegramUsername || c.telegramPhone)
   const linkedinSource = candidates.find((c) => c.linkedinName)
+  const gitlabSource = candidates.find((c) => c.gitlabUsername)
 
   const telegramRestricted = Boolean(telegramSource?.telegramAdminsOnly)
   const linkedinRestricted = Boolean(linkedinSource?.linkedinAdminsOnly)
+  const gitlabRestricted = Boolean(gitlabSource?.gitlabAdminsOnly)
   const showTelegram = telegramSource && (canSeeRestricted || !telegramRestricted)
   const showLinkedin = linkedinSource && (canSeeRestricted || !linkedinRestricted)
+  const showGitlab = gitlabSource && (canSeeRestricted || !gitlabRestricted)
 
   const adminsOnlyFields: OptionalProfileField[] = []
   if (canSeeRestricted && showTelegram && telegramRestricted) adminsOnlyFields.push('telegram')
   if (canSeeRestricted && showLinkedin && linkedinRestricted) adminsOnlyFields.push('linkedin')
+  if (canSeeRestricted && showGitlab && gitlabRestricted) adminsOnlyFields.push('gitlab')
 
   return {
     hash,
@@ -699,6 +739,7 @@ export async function getPublicProfile(hash: string, viewer: ProfileViewer): Pro
     telegramUsername: showTelegram ? telegramSource?.telegramUsername : undefined,
     telegramPhone: showTelegram ? telegramSource?.telegramPhone : undefined,
     linkedinLabel: showLinkedin ? linkedinSource?.linkedinName : undefined,
+    gitlabUsername: showGitlab ? gitlabSource?.gitlabUsername : undefined,
     adminsOnlyFields,
   }
 }
@@ -717,8 +758,8 @@ export interface ContributorSearchResult {
  * full results page. Below `MIN_QUERY_LENGTH` characters this returns
  * nothing rather than the whole (small but growing) contributor table.
  *
- * IDEA-110 — `viewer` guards the two lockable columns, Telegram and
- * LinkedIn, so a locked field isn't *matchable* either, not just absent
+ * IDEA-110 — `viewer` guards the lockable columns — Telegram, LinkedIn,
+ * and GitLab (IDEA-169) — so a locked field isn't *matchable* either, not just absent
  * from the result row: `ContributorSearchResult` never carries a
  * handle, only hash/name/company, but typing someone's hidden Telegram
  * username and getting them back as a hit is itself a probe that confirms
@@ -745,6 +786,8 @@ export async function searchContributors(query: string, viewer: ProfileViewer): 
   const telegramStartsWith = `telegram_username ILIKE $2${lockGuard('telegram_admins_only')}`
   const linkedinContains = `linkedin_name ILIKE $1${lockGuard('linkedin_admins_only')}`
   const linkedinStartsWith = `linkedin_name ILIKE $2${lockGuard('linkedin_admins_only')}`
+  const gitlabContains = `gitlab_username ILIKE $1${lockGuard('gitlab_admins_only')}`
+  const gitlabStartsWith = `gitlab_username ILIKE $2${lockGuard('gitlab_admins_only')}`
 
   const contains = `%${trimmed}%`
   const startsWith = `${trimmed}%`
@@ -753,10 +796,10 @@ export async function searchContributors(query: string, viewer: ProfileViewer): 
        FROM contributors
       WHERE status = 'confirmed'
         AND (name ILIKE $1 OR email ILIKE $1 OR github_login ILIKE $1 OR github_email ILIKE $1
-             OR discord_username ILIKE $1 OR (${telegramContains}) OR (${linkedinContains}))
+             OR discord_username ILIKE $1 OR (${telegramContains}) OR (${linkedinContains}) OR (${gitlabContains}))
       ORDER BY
         CASE WHEN name ILIKE $2 OR email ILIKE $2 OR github_login ILIKE $2 OR github_email ILIKE $2
-                  OR discord_username ILIKE $2 OR (${telegramStartsWith}) OR (${linkedinStartsWith})
+                  OR discord_username ILIKE $2 OR (${telegramStartsWith}) OR (${linkedinStartsWith}) OR (${gitlabStartsWith})
              THEN 0 ELSE 1 END,
         COALESCE(name, github_login)
       LIMIT 5`,

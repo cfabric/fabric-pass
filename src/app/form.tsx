@@ -18,17 +18,21 @@ import {
 } from '@/lib/profile-completeness'
 import { VISIBILITY_LABELS, type OptionalProfileField } from '@/lib/profile-visibility'
 import { Hint } from './hint'
-import { DiscordMark, InfoMark, LinkedInMark, LockClosedMark, LockOpenMark, TelegramMark } from './marks'
+import { DiscordMark, GitLabMark, InfoMark, LinkedInMark, LockClosedMark, LockOpenMark, TelegramMark } from './marks'
 import { TrackBadges, type TrackLabel } from './profile-labels'
 
 interface Props {
   telegramLabel: string | null
   discordLabel: string | null
   linkedinLabel: string | null
-  /** LinkedIn is this app's only optional provider (see lib/env.ts) — the
+  /** LinkedIn is an optional provider (see lib/env.ts) — the
    * row is left out of the form entirely, not shown disabled, when it isn't
    * configured for this environment. */
   linkedinEnabled: boolean
+  gitlabLabel: string | null
+  /** IDEA-169 — optional the same way LinkedIn is: the row is left out
+   * entirely when GitLab isn't configured for this environment. */
+  gitlabEnabled: boolean
   /** IDEA-110 — the current Admins-only state of each optional field, keyed
    * the same way OPTIONAL_PROFILE_FIELDS names them. */
   adminsOnly: Record<OptionalProfileField, boolean>
@@ -57,7 +61,7 @@ function ProviderField({
   label: string
   value: string | null
   href: string
-  brand: 'telegram' | 'discord' | 'linkedin'
+  brand: 'telegram' | 'discord' | 'linkedin' | 'gitlab'
   mark: ReactNode
   lock?: ReactNode
 }) {
@@ -129,6 +133,8 @@ export function ContributorForm({
   discordLabel,
   linkedinLabel,
   linkedinEnabled,
+  gitlabLabel,
+  gitlabEnabled,
   adminsOnly,
   defaults,
   emailConfirmedAt,
@@ -247,7 +253,7 @@ export function ContributorForm({
         />
         <CompanyField defaultValue={defaults.company} onValueChange={setCompany} />
         <ProviderField label="Discord" value={discordLabel} href="/auth/discord" brand="discord" mark={<DiscordMark size={16} />} />
-        {/* IDEA-110 — only the two optional providers get a lock; Discord is
+        {/* IDEA-110 — only the optional providers get a lock; Discord is
             mandatory and never gets one at all. The lock shows even while the
             field still reads "Not linked": IDEA-110 asks for the choice to be
             available "at registration or when editing the profile," and at
@@ -274,6 +280,19 @@ export function ContributorForm({
             brand="linkedin"
             mark={<LinkedInMark size={16} />}
             lock={<VisibilityLock field="linkedin" initial={adminsOnly.linkedin} />}
+          />
+        ) : null}
+        {/* IDEA-169 — the last field on the form, by request. Optional with
+            its own lock, like Telegram/LinkedIn above, but not part of
+            profile completeness (see profile-completeness.ts). */}
+        {gitlabEnabled ? (
+          <ProviderField
+            label="GitLab"
+            value={gitlabLabel}
+            href="/auth/gitlab"
+            brand="gitlab"
+            mark={<GitLabMark size={16} />}
+            lock={<VisibilityLock field="gitlab" initial={adminsOnly.gitlab} />}
           />
         ) : null}
       </form>

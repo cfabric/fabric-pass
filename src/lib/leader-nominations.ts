@@ -27,7 +27,7 @@ const MIN_SEARCH_QUERY_LENGTH = 3
  * login), not a profile hash: the picker nominates a person, it doesn't
  * link to their profile.
  *
- * IDEA-110's lock guard applies unchanged — a locked Telegram/LinkedIn
+ * IDEA-110's lock guard applies unchanged — a locked Telegram/LinkedIn/GitLab
  * must not be *matchable* for anyone but an Admin or the handle's own
  * owner, exactly as in searchContributors; see that function's doc comment
  * for the reasoning.
@@ -51,6 +51,8 @@ export async function searchNominatableMembers(
   const telegramStartsWith = `telegram_username ILIKE $2${lockGuard('telegram_admins_only')}`
   const linkedinContains = `linkedin_name ILIKE $1${lockGuard('linkedin_admins_only')}`
   const linkedinStartsWith = `linkedin_name ILIKE $2${lockGuard('linkedin_admins_only')}`
+  const gitlabContains = `gitlab_username ILIKE $1${lockGuard('gitlab_admins_only')}`
+  const gitlabStartsWith = `gitlab_username ILIKE $2${lockGuard('gitlab_admins_only')}`
 
   const contains = `%${trimmed}%`
   const startsWith = `${trimmed}%`
@@ -62,10 +64,10 @@ export async function searchNominatableMembers(
         AND tm.status = 'approved'
         AND c.status = 'confirmed'
         AND (c.name ILIKE $1 OR c.email ILIKE $1 OR c.github_login ILIKE $1 OR c.github_email ILIKE $1
-             OR c.discord_username ILIKE $1 OR (${telegramContains}) OR (${linkedinContains}))
+             OR c.discord_username ILIKE $1 OR (${telegramContains}) OR (${linkedinContains}) OR (${gitlabContains}))
       ORDER BY
         CASE WHEN c.name ILIKE $2 OR c.email ILIKE $2 OR c.github_login ILIKE $2 OR c.github_email ILIKE $2
-                  OR c.discord_username ILIKE $2 OR (${telegramStartsWith}) OR (${linkedinStartsWith})
+                  OR c.discord_username ILIKE $2 OR (${telegramStartsWith}) OR (${linkedinStartsWith}) OR (${gitlabStartsWith})
              THEN 0 ELSE 1 END,
         COALESCE(c.name, c.github_login)
       LIMIT 5`,

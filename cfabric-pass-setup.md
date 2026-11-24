@@ -337,9 +337,8 @@ different `<DOMAIN>` values.
 the bot, then its Mini App (not the chat commands) → Bot Settings → Web
 Login → add `https://<DOMAIN>/auth/telegram/callback` as an allowed URL.
 
-**LinkedIn** (optional — this app's only optional provider; leave both
-values unset below to skip it entirely, see the main README's LinkedIn
-section) — via
+**LinkedIn** (optional — leave both values unset below to skip it
+entirely, see the main README's LinkedIn section) — via
 [linkedin.com/developers/apps](https://www.linkedin.com/developers/apps) →
 Create app:
 - Requires an existing LinkedIn Company Page to attach the app to.
@@ -348,6 +347,16 @@ Create app:
 - Auth tab → Authorized redirect URLs → add
   `https://<DOMAIN>/auth/linkedin/callback`.
 - Note the Client ID and Client Secret from the same tab.
+
+**GitLab** (optional, same as LinkedIn — leave both values unset below to
+skip it, see the main README's GitLab section) — at
+[gitlab.com/-/user_settings/applications](https://gitlab.com/-/user_settings/applications),
+or a GitLab group's Settings → Applications so the app isn't tied to one
+person's account → Add new application:
+- Redirect URI: `https://<DOMAIN>/auth/gitlab/callback`
+- Confidential: checked
+- Scopes: `read_user` only
+- Note the Application ID and Secret.
 
 Note each provider's client ID and secret — they go into the server's
 `.env` in [Step 11](#step-11--write-the-servers-env-file).
@@ -411,11 +420,14 @@ RESEND_FROM_ADDRESS=
 CONTRIBUTORS_EXPORT_SECRET=
 CONTRIBUTORS_SYNC_SECRET=
 TRACKS_SYNC_SECRET=<from Step 8>
-# Optional — from Step 9. This app's only optional provider: leave both
-# unset to skip LinkedIn entirely (no row on the profile form, /auth/linkedin
-# 404s)
+# Optional — from Step 9. Leave both unset to skip LinkedIn entirely (no
+# row on the profile form, /auth/linkedin 404s)
 LINKEDIN_CLIENT_ID=
 LINKEDIN_CLIENT_SECRET=
+# Optional — from Step 9. Leave both unset to skip GitLab entirely (no row
+# on the profile form, /auth/gitlab 404s)
+GITLAB_CLIENT_ID=
+GITLAB_CLIENT_SECRET=
 # Optional — the numeric GitHub id of this deployment's single root user;
 # unset means no root user at all. Staged ahead of IDEA-011's roles work.
 ROOT_GITHUB_ID=

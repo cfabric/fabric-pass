@@ -8,6 +8,7 @@ import {
   EmailMark,
   ExternalLinkMark,
   GitHubMark,
+  GitLabMark,
   LinkedInMark,
   LockClosedMark,
   TelegramMark,
@@ -160,6 +161,21 @@ export function PublicProfileView({
       copyValue: profile.linkedinLabel,
       copyLabel: 'Copy LinkedIn name',
       restricted: profile.adminsOnlyFields.includes('linkedin'),
+    })
+  }
+
+  if (profile.gitlabUsername) {
+    rows.push({
+      key: 'gitlab',
+      icon: <GitLabMark size={18} />,
+      iconClassName: 'contact-icon-gitlab',
+      identifier: `@${profile.gitlabUsername}`,
+      copyValue: profile.gitlabUsername,
+      copyLabel: 'Copy GitLab username',
+      openHref: `https://gitlab.com/${encodeURIComponent(profile.gitlabUsername)}`,
+      openLabel: 'Open on GitLab',
+      openExternal: true,
+      restricted: profile.adminsOnlyFields.includes('gitlab'),
     })
   }
 

@@ -12,6 +12,7 @@ function contributor(overrides: Partial<Contributor> = {}): Contributor {
     isAdmin: false,
     telegramAdminsOnly: false,
     linkedinAdminsOnly: false,
+    gitlabAdminsOnly: false,
     profileCompleteness: 'incomplete',
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),

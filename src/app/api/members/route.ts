@@ -36,6 +36,7 @@ async function listMemberRows() {
     telegramUsername: contributor.telegramUsername,
     telegramPhone: contributor.telegramPhone,
     linkedinName: contributor.linkedinName,
+    gitlabUsername: contributor.gitlabUsername,
     status: contributor.status,
     tracks: participationByContributor[index].map((track) => ({
       ...track,

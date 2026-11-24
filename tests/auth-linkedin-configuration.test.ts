@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-// LinkedIn is this app's only optional provider (see lib/env.ts) — .env.test
+// LinkedIn is an optional provider (see lib/env.ts) — .env.test
 // deliberately leaves LINKEDIN_CLIENT_ID/LINKEDIN_CLIENT_SECRET unset, so the
 // default test environment already exercises the "unconfigured" state these
 // tests check, with no mocking of '@/lib/providers' or '@/lib/session'
