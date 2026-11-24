@@ -1,4 +1,4 @@
-import { findContributorGithubIdByApiKey } from '@/lib/api-keys'
+import { canUseApiKey, findContributorGithubIdByApiKey } from '@/lib/api-keys'
 import { findApplicationByApiKey } from '@/lib/applications'
 import { findByGithubId, type Contributor } from '@/lib/contributors'
 
@@ -17,6 +17,14 @@ function extractBearerToken(request: Request): string | null {
  * independent of the session-cookie auth every other page in this app
  * uses — an API key is its own credential, not a proxy for a browser
  * session.
+ *
+ * IDEA-171 — also `null` for a real key whose owner may not hold one right
+ * now (api-keys.ts's canUseApiKey: not an approved contributor, or an
+ * Incomplete profile). Decided here, once, on every request, so every
+ * `/api/*` route that takes a personal key refuses it the same way without
+ * a check of its own, and a key stops working on the very next request
+ * after its owner stops qualifying — the same no-cached-decision rule
+ * IDEA-120 already applies to a demoted Track Admin.
  */
 export async function authenticateApiKey(request: Request): Promise<Contributor | null> {
   const token = extractBearerToken(request)
@@ -25,7 +33,8 @@ export async function authenticateApiKey(request: Request): Promise<Contributor 
   const githubId = await findContributorGithubIdByApiKey(token)
   if (!githubId) return null
 
-  return findByGithubId(githubId)
+  const contributor = await findByGithubId(githubId)
+  return contributor && canUseApiKey(contributor) ? contributor : null
 }
 
 /** IDEA-121 — the same Bearer check as `authenticateApiKey` above, against

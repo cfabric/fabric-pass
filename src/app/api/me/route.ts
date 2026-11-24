@@ -14,7 +14,9 @@ import { listTrackParticipation } from '@/lib/track-members'
  *
  * 404s (not an empty 200) when the contributor's own profile hasn't
  * resolved yet — `getPublicProfile` only ever resolves a `confirmed`
- * contributor, the same gate the public profile page itself has.
+ * contributor, the same gate the public profile page itself has. Since
+ * IDEA-171 a key reaches this only once its owner is approved (see
+ * authenticateApiKey), so in practice that's a `revoke_pending` owner.
  *
  * IDEA-110 — passes the authenticated `contributor` itself as the viewer,
  * not a stranger's `{ isAdmin: false }`: this endpoint only ever returns

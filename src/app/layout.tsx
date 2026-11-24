@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { canUseApiKey } from '@/lib/api-keys'
 import { findByGithubId } from '@/lib/contributors'
 import { isAdmin } from '@/lib/roles'
 import { getSession } from '@/lib/session'
@@ -56,6 +57,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           name: contributor.name ?? null,
           isAdmin: admin,
           isTrackAdmin: admin || isTrackAdmin,
+          // IDEA-171 — the API Key item only for someone the page itself
+          // would serve (api-keys.ts's canUseApiKey).
+          canUseApiKey: canUseApiKey(contributor),
           rank,
         }
       : null

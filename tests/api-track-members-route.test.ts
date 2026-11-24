@@ -29,7 +29,7 @@ test('401s without a valid API key', async () => {
 })
 
 test('404s for an unknown track slug', async () => {
-  await pool.query("INSERT INTO contributors (github_id, github_login, is_admin, status) VALUES ('1001', 'admin', true, 'confirmed')")
+  await pool.query("INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'admin', true, 'confirmed', 'ready')")
   const { key } = await regenerateApiKey('1001')
 
   const response = await trackMembersRoute(requestWithKey(key), { params: Promise.resolve({ slug: 'no-such-track' }) })
@@ -39,7 +39,7 @@ test('404s for an unknown track slug', async () => {
 
 test('403s a contributor who is neither this track\'s admin nor a Fabric Admin', async () => {
   await seedTrack()
-  await pool.query("INSERT INTO contributors (github_id, github_login, status) VALUES ('1001', 'octocat', 'confirmed')")
+  await pool.query("INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'confirmed', 'ready')")
   const { key } = await regenerateApiKey('1001')
 
   const response = await trackMembersRoute(requestWithKey(key), { params: Promise.resolve({ slug: 'studio' }) })
@@ -50,7 +50,7 @@ test('403s a contributor who is neither this track\'s admin nor a Fabric Admin',
 test('a Track Admin of this track can list its approved members, excluding pending requests', async () => {
   const trackId = await seedTrack()
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, name, status) VALUES ('1001', 'trackadmin', 'Track Admin', 'confirmed'), ('2002', 'approved-member', 'Approved Member', 'confirmed'), ('3003', 'pending-member', 'Pending Member', 'confirmed')",
+    "INSERT INTO contributors (github_id, github_login, name, status, profile_completeness) VALUES ('1001', 'trackadmin', 'Track Admin', 'confirmed', 'ready'), ('2002', 'approved-member', 'Approved Member', 'confirmed', 'ready'), ('3003', 'pending-member', 'Pending Member', 'confirmed', 'ready')",
   )
   await pool.query('INSERT INTO track_admins (track_id, github_id) VALUES ($1, $2)', [trackId, '1001'])
   await pool.query("INSERT INTO track_members (track_id, github_id, status, role) VALUES ($1, '2002', 'approved', 'maintainer')", [
@@ -80,7 +80,7 @@ test('a Track Admin of this track can list its approved members, excluding pendi
 test('a Fabric Admin can list any track\'s members even without being that track\'s admin', async () => {
   const trackId = await seedTrack()
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, is_admin, status) VALUES ('1001', 'fabric-admin', true, 'confirmed'), ('2002', 'approved-member', false, 'confirmed')",
+    "INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'fabric-admin', true, 'confirmed', 'ready'), ('2002', 'approved-member', false, 'confirmed', 'ready')",
   )
   await pool.query("INSERT INTO track_members (track_id, github_id, status) VALUES ($1, '2002', 'approved')", [trackId])
   const { key } = await regenerateApiKey('1001')

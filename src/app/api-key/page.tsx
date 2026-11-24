@@ -1,4 +1,5 @@
-import { getApiKey } from '@/lib/api-keys'
+import Link from 'next/link'
+import { API_KEY_INELIGIBILITY_MESSAGES, apiKeyIneligibility, getApiKey } from '@/lib/api-keys'
 import { findByGithubId } from '@/lib/contributors'
 import { env } from '@/lib/env'
 import { getSession } from '@/lib/session'
@@ -15,6 +16,11 @@ import { ApiKeyView } from './api-key-view'
  * same way every other page here renders its own data — the one-time full
  * reveal after Generate/Regenerate lives entirely in ApiKeyView's client
  * state, never in anything this page fetches or re-fetches.
+ *
+ * IDEA-171 — only for someone who may hold a personal key (api-keys.ts's
+ * apiKeyIneligibility); anyone else gets the reason instead, and neither
+ * the Generate button nor an existing key's masked form — the key isn't
+ * even read for them.
  */
 export default async function ApiKeyPage() {
   const session = await getSession()
@@ -22,6 +28,21 @@ export default async function ApiKeyPage() {
 
   const contributor = await findByGithubId(session.github.id)
   if (!contributor) return <SignInPrompt />
+
+  const ineligibility = apiKeyIneligibility(contributor)
+  if (ineligibility) {
+    return (
+      <>
+        <PageHeader title="API Key" breadcrumb={[HOME_BREADCRUMB]} />
+        <p className="subtitle">{API_KEY_INELIGIBILITY_MESSAGES[ineligibility]}</p>
+        {ineligibility === 'incomplete-profile' ? (
+          <p>
+            <Link href="/profile">Complete your profile</Link>
+          </p>
+        ) : null}
+      </>
+    )
+  }
 
   const apiKey = await getApiKey(contributor.githubId)
 

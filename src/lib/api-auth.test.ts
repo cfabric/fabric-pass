@@ -6,8 +6,17 @@ import { pool } from './db.ts'
 
 beforeEach(async () => {
   await pool.query('TRUNCATE contributor_api_keys, contributors, application_api_keys, applications CASCADE')
-  await pool.query("INSERT INTO contributors (github_id, github_login) VALUES ('1001', 'octocat')")
+  await pool.query(
+    "INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'confirmed', 'ready')",
+  )
 })
+
+async function setOwner(status: string, profileCompleteness: string): Promise<void> {
+  await pool.query("UPDATE contributors SET status = $1, profile_completeness = $2 WHERE github_id = '1001'", [
+    status,
+    profileCompleteness,
+  ])
+}
 
 afterAll(async () => {
   await pool.end()
@@ -36,6 +45,40 @@ test('resolves a real key to its owning contributor', async () => {
 
   expect(contributor?.githubId).toBe('1001')
   expect(contributor?.githubLogin).toBe('octocat')
+})
+
+// IDEA-171 — a real key whose owner doesn't qualify right now reads as no
+// key at all, for every route that takes a personal key.
+test.each([
+  ['draft', 'ready'],
+  ['blocked', 'complete'],
+  ['revoked', 'complete'],
+  ['confirmed', 'incomplete'],
+])('returns null for a real key whose owner is %s with a %s profile', async (status, profileCompleteness) => {
+  const { key } = await regenerateApiKey('1001')
+  await setOwner(status, profileCompleteness)
+
+  expect(await authenticateApiKey(requestWithAuth(`Bearer ${key}`))).toBeNull()
+})
+
+test('a pending revoke still authenticates — nothing has been pulled yet', async () => {
+  const { key } = await regenerateApiKey('1001')
+  await setOwner('revoke_pending', 'ready')
+
+  expect((await authenticateApiKey(requestWithAuth(`Bearer ${key}`)))?.githubId).toBe('1001')
+})
+
+// Decided per request, never cached; the stored key itself isn't deleted,
+// so the same key works again once its owner qualifies again.
+test('a key stops working the moment its owner stops qualifying, and works again once they do', async () => {
+  const { key } = await regenerateApiKey('1001')
+  expect(await authenticateApiKey(requestWithAuth(`Bearer ${key}`))).not.toBeNull()
+
+  await setOwner('confirmed', 'incomplete')
+  expect(await authenticateApiKey(requestWithAuth(`Bearer ${key}`))).toBeNull()
+
+  await setOwner('confirmed', 'complete')
+  expect((await authenticateApiKey(requestWithAuth(`Bearer ${key}`)))?.githubId).toBe('1001')
 })
 
 test('a regenerated key\'s old value no longer authenticates', async () => {

@@ -1,5 +1,6 @@
 import { afterAll, beforeEach, expect, test } from 'vitest'
-import { findContributorGithubIdByApiKey, getApiKey, regenerateApiKey } from './api-keys.ts'
+import { apiKeyIneligibility, canUseApiKey, findContributorGithubIdByApiKey, getApiKey, regenerateApiKey } from './api-keys.ts'
+import { CONTRIBUTOR_STATUSES } from './contributors.ts'
 import { pool } from './db.ts'
 
 beforeEach(async () => {
@@ -96,4 +97,30 @@ test('findContributorGithubIdByApiKey returns null for a key that was since rege
   await regenerateApiKey(githubId)
 
   expect(await findContributorGithubIdByApiKey(oldKey)).toBeNull()
+})
+
+// IDEA-171 — every status × completeness combination, so a status added
+// later has to be placed on one side of the gate on purpose.
+test('only an approved contributor (confirmed or revoke_pending) whose profile is not Incomplete may use a key', () => {
+  const allowed: string[] = []
+  for (const status of CONTRIBUTOR_STATUSES) {
+    for (const profileCompleteness of ['incomplete', 'ready', 'complete'] as const) {
+      if (canUseApiKey({ status, profileCompleteness })) allowed.push(`${status}/${profileCompleteness}`)
+    }
+  }
+
+  expect(allowed.sort()).toEqual([
+    'confirmed/complete',
+    'confirmed/ready',
+    'revoke_pending/complete',
+    'revoke_pending/ready',
+  ])
+})
+
+test('apiKeyIneligibility names approval before completeness', () => {
+  expect(apiKeyIneligibility({ status: 'draft', profileCompleteness: 'incomplete' })).toBe('not-approved')
+  expect(apiKeyIneligibility({ status: 'revoked', profileCompleteness: 'complete' })).toBe('not-approved')
+  expect(apiKeyIneligibility({ status: 'blocked', profileCompleteness: 'ready' })).toBe('not-approved')
+  expect(apiKeyIneligibility({ status: 'confirmed', profileCompleteness: 'incomplete' })).toBe('incomplete-profile')
+  expect(apiKeyIneligibility({ status: 'confirmed', profileCompleteness: 'ready' })).toBeNull()
 })
