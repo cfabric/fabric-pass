@@ -25,7 +25,7 @@ test('401s without a valid API key', async () => {
 })
 
 test('403s a contributor who is not a Fabric Admin', async () => {
-  await pool.query("INSERT INTO contributors (github_id, github_login, status) VALUES ('1001', 'octocat', 'confirmed')")
+  await pool.query("INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'confirmed', 'ready')")
   const { key } = await regenerateApiKey('1001')
 
   const response = await membersRoute(requestWithKey(key))
@@ -33,9 +33,21 @@ test('403s a contributor who is not a Fabric Admin', async () => {
   expect(response.status).toBe(403)
 })
 
+// IDEA-171 — being an Admin doesn't exempt a personal key from the gate.
+test('401s a Fabric Admin whose own profile is Incomplete', async () => {
+  await pool.query(
+    "INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'fabric-admin', true, 'confirmed', 'incomplete')",
+  )
+  const { key } = await regenerateApiKey('1001')
+
+  const response = await membersRoute(requestWithKey(key))
+
+  expect(response.status).toBe(401)
+})
+
 test('a Fabric Admin gets every contributor, across every status', async () => {
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, is_admin, status) VALUES ('1001', 'fabric-admin', true, 'confirmed'), ('2002', 'draft-signup', false, 'draft')",
+    "INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'fabric-admin', true, 'confirmed', 'ready'), ('2002', 'draft-signup', false, 'draft', 'ready')",
   )
   const { key } = await regenerateApiKey('1001')
 
@@ -66,7 +78,7 @@ test('each track entry includes its capacity ratio', async () => {
     rows: [{ id: trackId }],
   } = await pool.query<{ id: string }>(`INSERT INTO tracks (slug, name) VALUES ('studio', 'Studio') RETURNING id`)
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, is_admin, status) VALUES ('1001', 'fabric-admin', true, 'confirmed'), ('2002', 'member', false, 'confirmed')",
+    "INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'fabric-admin', true, 'confirmed', 'ready'), ('2002', 'member', false, 'confirmed', 'ready')",
   )
   await pool.query(
     `INSERT INTO track_members (track_id, github_id, status, requested_at, decided_at, decided_by_github_id)
@@ -89,7 +101,7 @@ test('a track with no capacity row of its own defaults to 1', async () => {
     rows: [{ id: trackId }],
   } = await pool.query<{ id: string }>(`INSERT INTO tracks (slug, name) VALUES ('studio', 'Studio') RETURNING id`)
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, is_admin, status) VALUES ('1001', 'fabric-admin', true, 'confirmed'), ('2002', 'member', false, 'confirmed')",
+    "INSERT INTO contributors (github_id, github_login, is_admin, status, profile_completeness) VALUES ('1001', 'fabric-admin', true, 'confirmed', 'ready'), ('2002', 'member', false, 'confirmed', 'ready')",
   )
   await pool.query(
     `INSERT INTO track_members (track_id, github_id, status, requested_at, decided_at, decided_by_github_id)

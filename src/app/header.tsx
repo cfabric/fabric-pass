@@ -6,6 +6,7 @@ interface Props {
     name: string | null
     isAdmin: boolean
     isTrackAdmin: boolean
+    canUseApiKey: boolean
     rank: AccountRank
   } | null
 }
@@ -38,6 +39,7 @@ export function Header({ user }: Props) {
             name={user.name}
             isAdmin={user.isAdmin}
             isTrackAdmin={user.isTrackAdmin}
+            canUseApiKey={user.canUseApiKey}
             rank={user.rank}
           />
         ) : null}

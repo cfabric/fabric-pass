@@ -64,12 +64,16 @@ export function UserMenu({
   name,
   isAdmin,
   isTrackAdmin,
+  canUseApiKey,
   rank,
 }: {
   login: string
   name: string | null
   isAdmin: boolean
   isTrackAdmin: boolean
+  /** IDEA-171 — an approved contributor whose profile isn't Incomplete
+   * (api-keys.ts's canUseApiKey), computed in layout.tsx. */
+  canUseApiKey: boolean
   rank: AccountRank
 }) {
   const displayName = name || `@${login}`
@@ -96,9 +100,11 @@ export function UserMenu({
           <DropdownMenuItem className="user-menu-item" render={<a href="/profile" />}>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem className="user-menu-item" render={<a href="/api-key" />}>
-            API Key
-          </DropdownMenuItem>
+          {canUseApiKey ? (
+            <DropdownMenuItem className="user-menu-item" render={<a href="/api-key" />}>
+              API Key
+            </DropdownMenuItem>
+          ) : null}
           {isTrackAdmin ? (
             <DropdownMenuItem className="user-menu-item" render={<a href="/tracks/admin" />}>
               Track Members

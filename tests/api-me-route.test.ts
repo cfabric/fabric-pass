@@ -25,8 +25,36 @@ test('401s for an unknown key', async () => {
   expect(response.status).toBe(401)
 })
 
-test('404s when the key owner is not a confirmed contributor', async () => {
-  await pool.query("INSERT INTO contributors (github_id, github_login, status) VALUES ('1001', 'octocat', 'draft')")
+// IDEA-171 — a key whose owner isn't an approved contributor with a
+// complete profile doesn't authenticate at all (see api-auth.ts).
+test('401s a key whose owner is not an approved contributor', async () => {
+  await pool.query(
+    "INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'draft', 'ready')",
+  )
+  const { key } = await regenerateApiKey('1001')
+
+  const response = await meRoute(requestWithKey(key))
+
+  expect(response.status).toBe(401)
+})
+
+test('401s a key whose owner is confirmed but has an Incomplete profile', async () => {
+  await pool.query(
+    "INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'confirmed', 'incomplete')",
+  )
+  const { key } = await regenerateApiKey('1001')
+
+  const response = await meRoute(requestWithKey(key))
+
+  expect(response.status).toBe(401)
+})
+
+// revoke_pending still counts as approved (nothing pulled yet), so the key
+// authenticates, but getPublicProfile only resolves a `confirmed` row.
+test('404s when the key owner is pending revoke, so has no public profile', async () => {
+  await pool.query(
+    "INSERT INTO contributors (github_id, github_login, status, profile_completeness) VALUES ('1001', 'octocat', 'revoke_pending', 'ready')",
+  )
   const { key } = await regenerateApiKey('1001')
 
   const response = await meRoute(requestWithKey(key))
@@ -36,7 +64,7 @@ test('404s when the key owner is not a confirmed contributor', async () => {
 
 test('returns the same fields the public profile screen shows, plus track participation', async () => {
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, name, email, email_confirmed_at, status) VALUES ('1001', 'octocat', 'Ada Lovelace', 'ada@example.com', now(), 'confirmed')",
+    "INSERT INTO contributors (github_id, github_login, name, email, email_confirmed_at, status, profile_completeness) VALUES ('1001', 'octocat', 'Ada Lovelace', 'ada@example.com', now(), 'confirmed', 'ready')",
   )
   const { key } = await regenerateApiKey('1001')
   const { rows: trackRows } = await pool.query<{ id: string }>(
@@ -63,7 +91,7 @@ test('returns the same fields the public profile screen shows, plus track partic
 // the same profile through /contributors/[hash].
 test('a contributor whose Telegram is locked still gets it back from /api/me', async () => {
   await pool.query(
-    "INSERT INTO contributors (github_id, github_login, status, telegram_username, telegram_admins_only) VALUES ('1001', 'octocat', 'confirmed', 'ada-tg', true)",
+    "INSERT INTO contributors (github_id, github_login, status, profile_completeness, telegram_username, telegram_admins_only) VALUES ('1001', 'octocat', 'confirmed', 'ready', 'ada-tg', true)",
   )
   const { key } = await regenerateApiKey('1001')
 
