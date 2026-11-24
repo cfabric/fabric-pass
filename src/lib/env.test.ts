@@ -71,6 +71,39 @@ test('treats a blank ROOT_GITHUB_ID as unset', () => {
   expect(result.ROOT_GITHUB_ID).toBeUndefined()
 })
 
+// Every optional variable the way .env.example and the setup guide ship it —
+// `KEY=`, which the env loader delivers as '' — must still let the app boot.
+const OPTIONAL_KEYS = [
+  'RESEND_API_KEY',
+  'RESEND_FROM_ADDRESS',
+  'LINKEDIN_CLIENT_ID',
+  'LINKEDIN_CLIENT_SECRET',
+  'GITLAB_CLIENT_ID',
+  'GITLAB_CLIENT_SECRET',
+  'ROOT_GITHUB_ID',
+  'DO_API_TOKEN',
+  'DO_DROPLET_ID',
+  'GITHUB_ORG_TOKEN',
+  'DISCORD_BOT_TOKEN',
+] as const
+
+test('treats every blank optional variable as unset', () => {
+  const blanks = Object.fromEntries(OPTIONAL_KEYS.map((key) => [key, '']))
+  const result = envSchema.parse({ ...baseEnv, ...blanks })
+  for (const key of OPTIONAL_KEYS) expect(result[key]).toBeUndefined()
+})
+
+test.each([
+  ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'],
+  ['LINKEDIN_CLIENT_SECRET', 'LINKEDIN_CLIENT_ID'],
+  ['GITLAB_CLIENT_ID', 'GITLAB_CLIENT_SECRET'],
+  ['GITLAB_CLIENT_SECRET', 'GITLAB_CLIENT_ID'],
+  ['DO_API_TOKEN', 'DO_DROPLET_ID'],
+  ['DO_DROPLET_ID', 'DO_API_TOKEN'],
+])('still rejects %s set with %s left blank', (setKey, blankKey) => {
+  expect(() => envSchema.parse({ ...baseEnv, [setKey]: 'value', [blankKey]: '' })).toThrow()
+})
+
 test('parses with both DO credentials unset', () => {
   expect(() => envSchema.parse(baseEnv)).not.toThrow()
 })

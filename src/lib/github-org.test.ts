@@ -23,7 +23,7 @@ afterEach(() => {
 })
 
 test('inviteAsOutsideCollaborator returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {
-  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
+  await expect(inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass')).resolves.toBe(false)
 })
 
 test('inviteAsOutsideCollaborator calls the repo collaborator endpoint with the permission and returns true on success', async () => {
@@ -31,7 +31,7 @@ test('inviteAsOutsideCollaborator calls the repo collaborator endpoint with the 
   const fetchMock = vi.fn(async () => new Response(null, { status: 201 }))
   vi.stubGlobal('fetch', fetchMock)
 
-  const result = await inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass', 'push')
+  const result = await inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass', 'push')
 
   expect(result).toBe(true)
   expect(fetchMock).toHaveBeenCalledWith(
@@ -49,7 +49,7 @@ test('inviteAsOutsideCollaborator defaults to pull permission', async () => {
   const fetchMock = vi.fn(async () => new Response(null, { status: 204 }))
   vi.stubGlobal('fetch', fetchMock)
 
-  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(true)
+  await expect(inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass')).resolves.toBe(true)
   expect(fetchMock).toHaveBeenCalledWith(
     'https://api.github.com/repos/cfabric/fabric-pass/collaborators/octocat',
     expect.objectContaining({ body: JSON.stringify({ permission: 'pull' }) }),
@@ -63,7 +63,7 @@ test('inviteAsOutsideCollaborator treats 204 (already a collaborator) as success
     vi.fn(async () => new Response(null, { status: 204 })),
   )
 
-  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(true)
+  await expect(inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass')).resolves.toBe(true)
 })
 
 test('inviteAsOutsideCollaborator returns false without throwing when GitHub responds with an error', async () => {
@@ -73,7 +73,7 @@ test('inviteAsOutsideCollaborator returns false without throwing when GitHub res
     vi.fn(async () => new Response('nope', { status: 403 })),
   )
 
-  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
+  await expect(inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass')).resolves.toBe(false)
 })
 
 test('inviteAsOutsideCollaborator returns false without throwing on a network failure', async () => {
@@ -85,7 +85,7 @@ test('inviteAsOutsideCollaborator returns false without throwing on a network fa
     }),
   )
 
-  await expect(inviteAsOutsideCollaborator('octocat', 'constructorfabric', 'fabric-pass')).resolves.toBe(false)
+  await expect(inviteAsOutsideCollaborator('octocat', 'cfabric', 'fabric-pass')).resolves.toBe(false)
 })
 
 test('isOrgMember returns false without throwing when GITHUB_ORG_TOKEN is unset', async () => {

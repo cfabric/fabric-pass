@@ -1,5 +1,13 @@
 import { z } from 'zod'
 
+// A blank value counts as unset for every optional variable below:
+// .env.example and the setup guide ship each of them as `KEY=`, and Next's env
+// loader (like `node --env-file` and docker compose's `env_file`) delivers that
+// line as `''`, not undefined — so a bare `.min(1).optional()` would reject the
+// documented default at boot.
+const blankAsUnset = (value: unknown) => (value === '' ? undefined : value)
+const optionalString = () => z.preprocess(blankAsUnset, z.string().min(1).optional())
+
 // Exported so tests can exercise the refinement below (see env.test.ts)
 // directly, by parsing sample objects, rather than reloading this module
 // with process.env stubbed just to reach a `.parse()` call.
@@ -37,32 +45,29 @@ export const envSchema = z
     // Optional, unlike everything above: this app must still boot (and did,
     // in production, before these existed) with no Resend key configured at
     // all — see lib/email.ts, which logs instead of sending when unset.
-    RESEND_API_KEY: z.string().min(1).optional(),
-    RESEND_FROM_ADDRESS: z.string().min(1).optional(),
+    RESEND_API_KEY: optionalString(),
+    RESEND_FROM_ADDRESS: optionalString(),
     // An optional *provider* (GitLab below is the other) — unlike
-    // GitHub/Discord/Telegram above, LinkedIn must be possible to leave unconfigured and still have
-    // the app boot and run. See lib/providers/index.ts, which admits
+    // GitHub/Discord/Telegram above, LinkedIn must be possible to leave
+    // unconfigured and still have the app boot and run. See lib/providers/index.ts, which admits
     // 'linkedin' into its providers map only when both of these are set, and
     // form.tsx, which hides the LinkedIn row unless the page resolved a
     // provider for it.
-    LINKEDIN_CLIENT_ID: z.string().min(1).optional(),
-    LINKEDIN_CLIENT_SECRET: z.string().min(1).optional(),
+    LINKEDIN_CLIENT_ID: optionalString(),
+    LINKEDIN_CLIENT_SECRET: optionalString(),
     // IDEA-169 — GitLab is optional the same way LinkedIn is: with both
     // unset the app boots, lib/providers/index.ts leaves 'gitlab' out of its
     // providers map, and form.tsx hides the GitLab row.
-    GITLAB_CLIENT_ID: z.string().min(1).optional(),
-    GITLAB_CLIENT_SECRET: z.string().min(1).optional(),
+    GITLAB_CLIENT_ID: optionalString(),
+    GITLAB_CLIENT_SECRET: optionalString(),
     // Optional — this app's single root user, identified by GitHub's numeric
     // id (stored as digit-only text elsewhere in this app; see
     // contributors.ts's Row#github_id). Unset means no root user at all.
     // Groundwork for IDEA-011's roles work — nothing consults this yet except
     // isRootUser (lib/root-user.ts).
-    // A blank value counts as unset too: both .env.example and the setup guide
-    // ship `ROOT_GITHUB_ID=` as the no-op default, and Next's env loader (like
-    // `node --env-file`) delivers that line as `''`, not undefined — so the
-    // regex below would otherwise reject the documented default at boot.
+    // A blank value counts as unset here too (see blankAsUnset above).
     ROOT_GITHUB_ID: z.preprocess(
-      (value) => (value === '' ? undefined : value),
+      blankAsUnset,
       z.string().regex(/^\d+$/, 'ROOT_GITHUB_ID must be numeric').optional(),
     ),
     // IDEA-027 — optional, the same way RESEND_API_KEY is: this app must
@@ -71,8 +76,8 @@ export const envSchema = z
     // reports "not configured" instead of fetching when either is unset.
     // A read-only DO API token, generated in DO's own dashboard — not
     // something this app or an agent can provision on its own.
-    DO_API_TOKEN: z.string().min(1).optional(),
-    DO_DROPLET_ID: z.string().min(1).optional(),
+    DO_API_TOKEN: optionalString(),
+    DO_DROPLET_ID: optionalString(),
     // IDEA-041/042 — optional and independent of each other (unlike the
     // DO_* pair above, GitHub org invites/team adds and Discord role
     // grants are two genuinely separate capabilities; either can be set up
@@ -83,8 +88,8 @@ export const envSchema = z
     // Manage Roles, positioned above every role it's asked to grant. See
     // lib/github-org.ts/lib/discord-role.ts, which no-op with a logged
     // reason whichever of these is unset.
-    GITHUB_ORG_TOKEN: z.string().min(1).optional(),
-    DISCORD_BOT_TOKEN: z.string().min(1).optional(),
+    GITHUB_ORG_TOKEN: optionalString(),
+    DISCORD_BOT_TOKEN: optionalString(),
   })
   .refine((data) => Boolean(data.LINKEDIN_CLIENT_ID) === Boolean(data.LINKEDIN_CLIENT_SECRET), {
     // Independently optional fields would otherwise let exactly one of the
